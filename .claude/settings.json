@@ -23,7 +23,9 @@
       "Bash(gh --version)",
       "Bash(gh auth *)",
       "Bash(git ls-remote *)",
-      "Bash(echo \"EXIT CODE: $?\")"
+      "Bash(echo \"EXIT CODE: $?\")",
+      "Bash(grep -o '\\\\$f\\\\$' migrations/0014_rls.sql)",
+      "Bash(awk -F: '{sum+=$2; print} END {print \"TOTAL:\", sum}')"
     ]
   }
 }
