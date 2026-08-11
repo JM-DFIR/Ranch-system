@@ -53,8 +53,16 @@ export default tseslint.config(
   {
     // Every file-based route exports `Route` alongside its component —
     // that's the TanStack Router convention, not a fast-refresh mistake.
+    // `throw redirect(...)` in beforeLoad/loader is the same story:
+    // Redirect is a Response-based type, not an Error subclass, by the
+    // router's own design (mirrors `throw new Response()` in Remix) —
+    // a legitimate control-flow pattern this generic rule doesn't know
+    // about, used throughout every protected route's auth guard.
     files: ["src/routes/**/*.{ts,tsx}"],
-    rules: { "react-refresh/only-export-components": "off" },
+    rules: {
+      "react-refresh/only-export-components": "off",
+      "@typescript-eslint/only-throw-error": "off",
+    },
   },
   {
     // Vendored shadcn primitives export a component alongside its cva
@@ -67,6 +75,13 @@ export default tseslint.config(
     // coupled to the component itself (e.g. FeatureGate + useFeatureFlags)
     // — same rationale as the shadcn override above.
     files: ["src/components/patterns/**/*.{ts,tsx}"],
+    rules: { "react-refresh/only-export-components": "off" },
+  },
+  {
+    // The bootstrap entry point — nothing here is ever meant to be
+    // hot-module-replaced as a component, so there's no exportable
+    // boundary for react-refresh to attach to.
+    files: ["src/main.tsx"],
     rules: { "react-refresh/only-export-components": "off" },
   },
   eslintConfigPrettier,

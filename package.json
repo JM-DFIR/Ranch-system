@@ -12,7 +12,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest run",
-    "db:types": "supabase gen types typescript --linked > src/types/database.generated.ts",
+    "db:types": "node scripts/gen-types.mjs",
     "db:test": "supabase test db"
   },
   "dependencies": {

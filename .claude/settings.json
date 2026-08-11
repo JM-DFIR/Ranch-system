@@ -41,7 +41,8 @@
       "Bash(xargs grep -l \"invoke\")",
       "Bash(echo \"started pid $!\")",
       "Bash(curl -s -o /dev/null -w \"index.html: HTTP %{http_code}\\\\n\" http://localhost:5184/)",
-      "Bash(curl -s http://localhost:5184/)"
+      "Bash(curl -s http://localhost:5184/)",
+      "Bash(pnpm db:types)"
     ]
   }
 }
