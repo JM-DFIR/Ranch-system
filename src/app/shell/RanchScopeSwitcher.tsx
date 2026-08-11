@@ -66,7 +66,10 @@ function ScopeOption({ label, active, onSelect }: { label: string; active: boole
     <button
       type="button"
       onClick={onSelect}
-      className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-14 hover:bg-accent hover:text-accent-foreground"
+      // py-2.5 rather than py-1.5 — a ~30px row is an easy mis-tap
+      // target on a phone, especially two adjacent options in a short
+      // list ("All ranches" sitting right above the one you meant).
+      className="flex w-full items-center gap-2 rounded-sm px-2 py-2.5 text-left text-14 hover:bg-accent hover:text-accent-foreground"
     >
       <Check className={cn("size-3.5", active ? "opacity-100" : "opacity-0")} aria-hidden />
       <span className="truncate">{label}</span>
