@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 
+import { useSyncWorker } from "@/lib/offline/useSyncWorker";
 import { DesktopSidebar, MobileNav } from "./Sidebar";
 import { TopBar } from "./TopBar";
 
@@ -28,6 +29,7 @@ function useSidebarCollapsed() {
 export function AppShell({ children }: { children: ReactNode }) {
   const [collapsed, setCollapsed] = useSidebarCollapsed();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  useSyncWorker();
 
   return (
     <div className="flex min-h-screen bg-background">

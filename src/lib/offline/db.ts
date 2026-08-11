@@ -29,6 +29,11 @@ export interface QueueEntry {
   // attributed to the person who actually made it, not the service account.
   attemptCount: number;
   lastError?: string;
+  // Exponential backoff needs to know when an entry is next allowed to
+  // retry, not just how many times it's failed — added in v2 (sync.ts,
+  // Session 5a) alongside the sync worker that actually needs it.
+  // Undefined means "due now."
+  nextRetryAt?: string;
 }
 
 // The write queue only — the read-side TanStack Query cache persists
@@ -41,6 +46,11 @@ class OfflineDatabase extends Dexie {
   constructor() {
     super("lims-offline");
     this.version(1).stores({
+      writeQueue: "id, status, operationType, createdAt",
+    });
+    // v2 only adds an optional field (nextRetryAt) — no index change, no
+    // data migration needed, existing rows just read back as undefined.
+    this.version(2).stores({
       writeQueue: "id, status, operationType, createdAt",
     });
   }
