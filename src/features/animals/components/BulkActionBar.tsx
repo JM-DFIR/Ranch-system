@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Download, Syringe, Stethoscope, Scale, ArrowRightLeft, RefreshCcw, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { RecordVaccinationDrawer } from "@/features/health/components/RecordVaccinationDrawer";
 import type { AnimalRegisterRow } from "../api";
 
 interface BulkAction {
@@ -27,55 +29,65 @@ function exportCsv(rows: AnimalRegisterRow[]) {
   URL.revokeObjectURL(url);
 }
 
-// Record vaccination/treatment/weight and Transfer/Change status all
-// depend on drawers that ship in later sessions (Session 6 for
-// vaccination, session-pack.md's "M3 remainder" for treatment,
-// movement/weight forms alongside them) — listed now per spec so the
-// bar's shape is locked, wired for real as each lands, same pattern as
-// the sidebar's "Soon" nav items (Session 2).
-const ACTIONS: BulkAction[] = [
-  { label: "Record vaccination", icon: Syringe },
-  { label: "Record treatment", icon: Stethoscope },
-  { label: "Record weight", icon: Scale },
-  { label: "Transfer", icon: ArrowRightLeft },
-  { label: "Change status", icon: RefreshCcw },
-  { label: "Export", icon: Download, onSelect: exportCsv },
-];
-
 interface BulkActionBarProps {
   selectedRows: AnimalRegisterRow[];
   onClearSelection: () => void;
 }
 
+// Record vaccination is real now (Session 6's Record Vaccination
+// drawer — entry point #3, "the register's bulk action bar"). Record
+// treatment/weight and Transfer/Change status still depend on drawers
+// that ship in later sessions — listed per spec so the bar's shape is
+// locked, wired for real as each lands, same pattern as the sidebar's
+// "Soon" nav items (Session 2).
 export function BulkActionBar({ selectedRows, onClearSelection }: BulkActionBarProps) {
+  const [recordVaccinationOpen, setRecordVaccinationOpen] = useState(false);
+
+  const actions: BulkAction[] = [
+    { label: "Record vaccination", icon: Syringe, onSelect: () => setRecordVaccinationOpen(true) },
+    { label: "Record treatment", icon: Stethoscope },
+    { label: "Record weight", icon: Scale },
+    { label: "Transfer", icon: ArrowRightLeft },
+    { label: "Change status", icon: RefreshCcw },
+    { label: "Export", icon: Download, onSelect: exportCsv },
+  ];
+
   if (selectedRows.length === 0) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-4 z-40 flex justify-center px-4">
-      <div className="flex items-center gap-2 rounded-card border border-line bg-card px-4 py-2.5 shadow-lg">
-        <span className="text-14 font-medium whitespace-nowrap">
-          {selectedRows.length} {selectedRows.length === 1 ? "animal" : "animals"} selected
-        </span>
-        <div className="mx-1 h-5 w-px bg-line" aria-hidden />
-        {ACTIONS.map((action) => (
-          <Button
-            key={action.label}
-            variant="ghost"
-            size="sm"
-            disabled={!action.onSelect}
-            title={action.onSelect ? undefined : "Coming in a later session"}
-            onClick={() => action.onSelect?.(selectedRows)}
-            className="gap-1.5"
-          >
-            <action.icon className="size-3.5" aria-hidden />
-            {action.label}
+    <>
+      <div className="fixed inset-x-0 bottom-4 z-40 flex justify-center px-4">
+        <div className="flex items-center gap-2 rounded-card border border-line bg-card px-4 py-2.5 shadow-lg">
+          <span className="text-14 font-medium whitespace-nowrap">
+            {selectedRows.length} {selectedRows.length === 1 ? "animal" : "animals"} selected
+          </span>
+          <div className="mx-1 h-5 w-px bg-line" aria-hidden />
+          {actions.map((action) => (
+            <Button
+              key={action.label}
+              variant="ghost"
+              size="sm"
+              disabled={!action.onSelect}
+              title={action.onSelect ? undefined : "Coming in a later session"}
+              onClick={() => action.onSelect?.(selectedRows)}
+              className="gap-1.5"
+            >
+              <action.icon className="size-3.5" aria-hidden />
+              {action.label}
+            </Button>
+          ))}
+          <div className="mx-1 h-5 w-px bg-line" aria-hidden />
+          <Button variant="ghost" size="icon-sm" onClick={onClearSelection} aria-label="Clear selection">
+            <X className="size-4" aria-hidden />
           </Button>
-        ))}
-        <div className="mx-1 h-5 w-px bg-line" aria-hidden />
-        <Button variant="ghost" size="icon-sm" onClick={onClearSelection} aria-label="Clear selection">
-          <X className="size-4" aria-hidden />
-        </Button>
+        </div>
       </div>
-    </div>
+
+      <RecordVaccinationDrawer
+        open={recordVaccinationOpen}
+        onOpenChange={setRecordVaccinationOpen}
+        preselectedAnimals={selectedRows.map((r) => ({ id: r.id, tagNumber: r.tagNumber, speciesId: r.speciesId }))}
+      />
+    </>
   );
 }

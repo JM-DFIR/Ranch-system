@@ -36,6 +36,12 @@ export const queryKeys = {
     treatments: (animalId: string) => ["health", "treatments", animalId] as const,
     illnesses: (animalId: string) => ["health", "illnesses", animalId] as const,
     vetVisits: (animalId: string) => ["health", "vet-visits", animalId] as const,
+    // Reference data for the Record Vaccination drawer (Session 6) —
+    // its own sub-tree, not nested under an animalId, since these are
+    // org-wide catalogue reads, not per-animal ones.
+    vaccineOptions: (orgId: string, speciesId: string | undefined) =>
+      ["health", "vaccine-options", orgId, speciesId] as const,
+    administeredByOptions: (orgId: string) => ["health", "administered-by-options", orgId] as const,
   },
   weights: {
     series: (animalId: string) => ["weights", "series", animalId] as const,

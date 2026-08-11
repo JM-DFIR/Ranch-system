@@ -1,5 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { nonNull } from "@/lib/utils";
+import { cancelQueuedEntry, enqueueCreateHealthEvent } from "@/lib/offline/queue";
+import type { VaccinationFormValues } from "./schema";
 
 export interface Vaccination {
   id: string;
@@ -153,4 +155,130 @@ export async function fetchVetVisits(animalId: string): Promise<VetVisit[]> {
       recommendations: visit.recommendations,
       nextVisitDate: visit.next_visit_date,
     }));
+}
+
+// ---------------------------------------------------------------------
+// Record Vaccination drawer (Session 6) — the canonical "record X"
+// pattern every other record flow copies. See docs/patterns/record-drawer.md.
+// ---------------------------------------------------------------------
+
+export interface VaccineOption {
+  id: string;
+  name: string;
+  defaultIntervalDays: number | null;
+}
+
+// vaccines.species_id is nullable — a vaccine with no species set
+// applies to any species (0005_reference.sql), so it's always offered
+// alongside whatever's specific to the selected animal(s).
+export async function fetchVaccineOptions(orgId: string, speciesId?: string): Promise<VaccineOption[]> {
+  let query = supabase.from("vaccines").select("id, name, default_interval_days").eq("org_id", orgId).is("deleted_at", null);
+  if (speciesId) query = query.or(`species_id.is.null,species_id.eq.${speciesId}`);
+  const { data, error } = await query.order("name");
+  if (error) throw error;
+  return (data ?? []).map((v) => ({ id: v.id, name: v.name, defaultIntervalDays: v.default_interval_days }));
+}
+
+// The inline "add new vaccine" affordance — vaccines are reference data
+// any org member can extend since 0021_reference_catalogue_manager_write.sql,
+// not just the owner.
+export async function createVaccine(orgId: string, name: string, speciesId: string | undefined): Promise<VaccineOption> {
+  const { data, error } = await supabase
+    .from("vaccines")
+    .insert({ org_id: orgId, name, species_id: speciesId })
+    .select("id, name, default_interval_days")
+    .single();
+  if (error) throw error;
+  return { id: data.id, name: data.name, defaultIntervalDays: data.default_interval_days };
+}
+
+export interface AdministeredByOption {
+  type: "profile" | "veterinarian";
+  id: string;
+  name: string;
+}
+
+// "Administered by" combines staff (profiles) and veterinarians into
+// one searchable list (session-pack.md, Session 6) — the two are
+// mutually exclusive on the vaccinations row itself
+// (administered_by_profile vs veterinarian_id), never both.
+export async function fetchAdministeredByOptions(orgId: string): Promise<AdministeredByOption[]> {
+  const [profilesRes, vetsRes] = await Promise.all([
+    supabase.from("profiles").select("id, full_name").eq("org_id", orgId).eq("is_active", true).order("full_name"),
+    supabase.from("veterinarians").select("id, name").eq("org_id", orgId).is("deleted_at", null).order("name"),
+  ]);
+  if (profilesRes.error) throw profilesRes.error;
+  if (vetsRes.error) throw vetsRes.error;
+
+  return [
+    ...profilesRes.data.map((p): AdministeredByOption => ({ type: "profile", id: p.id, name: p.full_name })),
+    ...vetsRes.data.map((v): AdministeredByOption => ({ type: "veterinarian", id: v.id, name: v.name })),
+  ];
+}
+
+export type RecordVaccinationResult =
+  | { mode: "online"; vaccinationIds: string[] }
+  | { mode: "offline"; queueEntryId: string };
+
+// Online: bulk_health_event() directly — the same RPC the offline sync
+// worker replays through (lib/offline/sync.ts), so the two paths never
+// diverge on validation. Offline: queued via create_health_event, with
+// created_by stamped client-side the same way create_animal is
+// (session-pack.md, Session 6). Either way, the result carries what
+// the drawer's 8-second Undo needs to actually reverse the write, not
+// just show a button — see undoRecordVaccination below.
+export async function recordVaccination(values: VaccinationFormValues, createdBy: string): Promise<RecordVaccinationResult> {
+  const administeredByProfile = values.administeredBy.type === "profile" ? values.administeredBy.id : undefined;
+  const veterinarianId = values.administeredBy.type === "veterinarian" ? values.administeredBy.id : undefined;
+
+  if (!navigator.onLine) {
+    const queueEntryId = await enqueueCreateHealthEvent({
+      animalIds: values.animalIds,
+      vaccineId: values.vaccineId,
+      dateAdministered: values.dateAdministered,
+      dose: values.dose,
+      batchNumber: values.batchNumber,
+      route: values.route,
+      administeredByProfile,
+      veterinarianId,
+      nextDueDate: values.nextDueDate,
+      notes: values.notes,
+      createdBy,
+    });
+    return { mode: "offline", queueEntryId };
+  }
+
+  const { data, error } = await supabase.rpc("bulk_health_event", {
+    p_animal_ids: values.animalIds,
+    p_vaccine_id: values.vaccineId,
+    p_date_administered: values.dateAdministered,
+    p_dose: values.dose,
+    p_batch_number: values.batchNumber,
+    p_route: values.route,
+    p_administered_by_profile: administeredByProfile,
+    p_veterinarian_id: veterinarianId,
+    p_next_due_date: values.nextDueDate,
+    p_notes: values.notes,
+  });
+  if (error) throw error;
+  return { mode: "online", vaccinationIds: (data ?? []).map((v) => v.id) };
+}
+
+// The 8-second Undo (session-pack.md, Session 6) — a real reversal,
+// not a cosmetic button. Online, soft-deletes the exact rows
+// bulk_health_event just created (the standard "no hard DELETE"
+// pattern, CLAUDE.md §6, applies to an undo too — it's still a
+// deletion). Offline, cancels the queued entry outright, since nothing
+// was ever written anywhere yet.
+export async function undoRecordVaccination(result: RecordVaccinationResult): Promise<boolean> {
+  if (result.mode === "offline") {
+    return cancelQueuedEntry(result.queueEntryId);
+  }
+  if (result.vaccinationIds.length === 0) return false;
+  const { error } = await supabase
+    .from("vaccinations")
+    .update({ deleted_at: new Date().toISOString() })
+    .in("id", result.vaccinationIds);
+  if (error) throw error;
+  return true;
 }

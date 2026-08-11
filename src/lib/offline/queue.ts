@@ -131,10 +131,16 @@ interface EnqueueCreateHealthEventParams {
 // Vaccination drawer). Treatments/illnesses would need their own
 // operation type if a later session queues them offline; not invented
 // here ahead of that need.
-export async function enqueueCreateHealthEvent(params: EnqueueCreateHealthEventParams): Promise<void> {
+//
+// Returns the queue entry's own id — the Record Vaccination drawer's
+// Undo affordance (session-pack.md, Session 6) needs it to cancel the
+// entry via cancelQueuedEntry() below, the same way an online write's
+// Undo needs the created rows' ids to soft-delete them.
+export async function enqueueCreateHealthEvent(params: EnqueueCreateHealthEventParams): Promise<string> {
   const { createdBy, ...payload } = params;
+  const id = uuidv7();
   const entry: QueueEntry = {
-    id: uuidv7(),
+    id,
     operationType: "create_health_event",
     payload,
     status: "pending",
@@ -143,6 +149,20 @@ export async function enqueueCreateHealthEvent(params: EnqueueCreateHealthEventP
     attemptCount: 0,
   };
   await offlineDb.writeQueue.add(entry);
+  return id;
+}
+
+// Undo, for a queued (not yet synced) entry — only removes it while
+// it's genuinely still 'pending'. If the sync worker has already
+// picked it up ('syncing') or finished ('synced'/'conflict'), there's
+// a real write to reason about instead of a queue entry to simply
+// drop, so this deliberately does nothing in that case rather than
+// racing the sync worker.
+export async function cancelQueuedEntry(id: string): Promise<boolean> {
+  const entry = await offlineDb.writeQueue.get(id);
+  if (entry?.status !== "pending") return false;
+  await offlineDb.writeQueue.delete(id);
+  return true;
 }
 
 interface EnqueueCreateWeightParams {
