@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { X } from "lucide-react";
+import { TriangleAlert, X } from "lucide-react";
 
 import { useAuth } from "@/lib/auth";
 import { queryKeys } from "@/lib/query-keys";
@@ -197,6 +197,16 @@ export function FilterBar() {
           aria-label="To date"
         />
       </div>
+      <Button
+        variant={search.attention ? "default" : "outline"}
+        size="sm"
+        className="gap-1.5"
+        aria-pressed={!!search.attention}
+        onClick={() => setFilter("attention", search.attention ? undefined : "1")}
+      >
+        <TriangleAlert className="size-3.5" aria-hidden />
+        Needs attention
+      </Button>
       {hasActiveFilters ? (
         <Button variant="ghost" size="sm" onClick={clearAll} className="gap-1 text-muted-foreground">
           <X className="size-3.5" aria-hidden />

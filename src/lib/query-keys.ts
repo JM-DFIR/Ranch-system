@@ -58,4 +58,17 @@ export const queryKeys = {
     records: (animalId: string) => ["feeding", "records", animalId] as const,
     careActivities: (animalId: string) => ["feeding", "care-activities", animalId] as const,
   },
+  // Session 7 — Owner/Manager Dashboard. `filters` is the dashboard's
+  // own {ranchIds, speciesId, dateFrom, dateTo} params object, kept
+  // untyped here for the same reason animals.register's `params` is —
+  // this factory only owns key shape, not the param contract (see
+  // features/dashboard/schema.ts).
+  dashboard: {
+    stats: (orgId: string, filters: unknown) => ["dashboard", orgId, "stats", filters] as const,
+    ranchStats: (orgId: string) => ["dashboard", orgId, "ranch-stats"] as const,
+    upcoming: (orgId: string, filters: unknown) => ["dashboard", orgId, "upcoming", filters] as const,
+    recentActivity: (orgId: string, filters: unknown) => ["dashboard", orgId, "recent-activity", filters] as const,
+    animalSearchOptions: (orgId: string) => ["dashboard", orgId, "animal-search-options"] as const,
+    firstRun: (orgId: string) => ["dashboard", orgId, "first-run"] as const,
+  },
 } as const;

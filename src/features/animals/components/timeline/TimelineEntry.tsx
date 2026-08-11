@@ -4,15 +4,7 @@ import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/format";
 import type { TimelineEvent } from "../../api";
-import { EVENT_TYPE_META } from "./eventTypes";
-
-const MARKER_CLASSES: Record<string, string> = {
-  ok: "border-status-ok/30 bg-status-ok/10 text-status-ok",
-  warn: "border-status-warn/30 bg-status-warn/10 text-status-warn",
-  critical: "border-status-critical/30 bg-status-critical/10 text-status-critical",
-  info: "border-status-info/30 bg-status-info/10 text-status-info",
-  neutral: "border-status-neutral/30 bg-status-neutral/10 text-status-neutral",
-};
+import { EVENT_TYPE_META, MARKER_CLASSES } from "./eventTypes";
 
 // details keys are formatted from snake_case to a plain label —
 // generic on purpose, since every event type's details jsonb

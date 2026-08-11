@@ -19,6 +19,13 @@ export const animalsSearchSchema = z.object({
   dateFrom: z.string().optional(),
   dateTo: z.string().optional(),
   search: z.string().optional(),
+  // "1" = only animals with an open attention reason (any severity).
+  // The dashboard's attention counterpoint metric (Session 7) links
+  // here rather than to a standalone Attention Queue screen, which
+  // isn't built yet (blueprint.md Part 4's coverage matrix lists it
+  // under the future Health module) — this makes that link land
+  // somewhere real today instead of a disabled placeholder.
+  attention: z.literal("1").optional(),
   sort: z.string().optional(),
   sortDir: z.enum(["asc", "desc"]).optional(),
   page: z.number().int().min(0).optional(),
@@ -44,6 +51,7 @@ export function hasActiveAnimalFilters(search: AnimalsSearch, ranch: string | un
     !!search.section ||
     !!search.dateFrom ||
     !!search.dateTo ||
-    !!search.search
+    !!search.search ||
+    !!search.attention
   );
 }

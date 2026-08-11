@@ -35,6 +35,17 @@ export const EVENT_TYPE_META: Record<TimelineEventType, { icon: LucideIcon; colo
   mortality: { icon: Skull, colorToken: "critical", label: "Death" },
 };
 
+// Shared by TimelineEntry and the dashboard's Recent Activity feed
+// (Session 7) — one definition of "what a severity token looks like as
+// a marker" rather than two copies drifting apart.
+export const MARKER_CLASSES: Record<string, string> = {
+  ok: "border-status-ok/30 bg-status-ok/10 text-status-ok",
+  warn: "border-status-warn/30 bg-status-warn/10 text-status-warn",
+  critical: "border-status-critical/30 bg-status-critical/10 text-status-critical",
+  info: "border-status-info/30 bg-status-info/10 text-status-info",
+  neutral: "border-status-neutral/30 bg-status-neutral/10 text-status-neutral",
+};
+
 export const EVENT_TYPE_ORDER: TimelineEventType[] = [
   "origin",
   "vaccination",

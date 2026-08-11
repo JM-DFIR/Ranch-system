@@ -597,6 +597,18 @@ create trigger profiles_guard
 | §17 Reports                          | **Reports**           | Report Gallery · Report Viewer · Export                                                                |
 | §6 UX requirements                   | **Cross-cutting**     | Shell, ranch scope switcher, toasts, confirm dialogs, empty states                                     |
 
+**Dashboard Quick Actions (2026-08-12).** The client PRD's own §7.2 lists
+the dashboard's nine persistent quick actions, but that list was never
+transcribed into this document — §7 isn't marked "(reconstructed)" like
+Health/Breeding are, so the gap wasn't caught until Session 7 needed the
+literal list. Reconstructed from the modules already scoped above and
+confirmed with the client rather than guessed silently: **Add animal ·
+Record vaccination · Record treatment · Record weight · Record movement
+· Record death · Record breeding event · Record birth · Record vet
+visit.** Only Add animal and Record vaccination open a real drawer as of
+Session 7; the other seven render disabled ("coming in a later
+session") until their own "record X" flows ship in M3/M4.
+
 ## 4.2 Screen inventory — **59 screens** (58 confirmed by tally per decision #6, plus Batch Enrollment added per §0.6 #2)
 
 ```

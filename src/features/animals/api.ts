@@ -61,6 +61,7 @@ export async function fetchAnimalRegister(params: AnimalRegisterParams): Promise
   if (params.sex) query = query.eq("sex", params.sex);
   if (params.status) query = query.eq("status_id", params.status);
   if (params.section) query = query.eq("section_id", params.section);
+  if (params.attention) query = query.not("attention_severity", "is", null);
   if (params.dateFrom) query = query.gte("created_at", params.dateFrom);
   if (params.dateTo) query = query.lte("created_at", params.dateTo);
   if (params.search) {
