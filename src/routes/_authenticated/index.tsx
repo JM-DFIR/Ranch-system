@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 // Placeholder only — the real dashboard is Session 7. This exists so
-// `/` resolves to something during Session 0 rather than a 404.
-export const Route = createFileRoute("/")({
+// `/` resolves to something now rather than a 404.
+export const Route = createFileRoute("/_authenticated/")({
   component: HomePlaceholder,
 });
 

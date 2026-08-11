@@ -38,7 +38,10 @@
       "Bash(pnpm dlx *)",
       "Bash(echo \"TC_EXIT:$?\")",
       "Bash(echo \"LINT_EXIT:$?\")",
-      "Bash(xargs grep -l \"invoke\")"
+      "Bash(xargs grep -l \"invoke\")",
+      "Bash(echo \"started pid $!\")",
+      "Bash(curl -s -o /dev/null -w \"index.html: HTTP %{http_code}\\\\n\" http://localhost:5184/)",
+      "Bash(curl -s http://localhost:5184/)"
     ]
   }
 }
