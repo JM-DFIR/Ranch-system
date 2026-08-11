@@ -32,7 +32,13 @@
       "Bash(mkdir -p supabase-extract)",
       "Bash(tar -tzf supabase-cli-test.tgz)",
       "Bash(awk '{print $5}')",
-      "Bash(awk '{print $4}')"
+      "Bash(awk '{print $4}')",
+      "Bash(curl -s https://api.github.com/repos/JM-DFIR/Ranch-system)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" https://api.github.com/repos/JM-DFIR/Ranch-system)",
+      "Bash(pnpm dlx *)",
+      "Bash(echo \"TC_EXIT:$?\")",
+      "Bash(echo \"LINT_EXIT:$?\")",
+      "Bash(xargs grep -l \"invoke\")"
     ]
   }
 }

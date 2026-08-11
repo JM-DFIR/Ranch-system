@@ -12,6 +12,10 @@ export default tseslint.config(
       "dev-dist",
       "src/routeTree.gen.ts",
       "src/types/database.generated.ts",
+      // Deno runtime (global `Deno`, `jsr:`/`npm:` specifiers) — a
+      // different TypeScript project entirely, not part of the Vite
+      // app's tsconfig, and not something this ESLint config understands.
+      "supabase/functions/**",
     ],
   },
   {
@@ -56,6 +60,13 @@ export default tseslint.config(
     // Vendored shadcn primitives export a component alongside its cva
     // variants function (e.g. `Button` + `buttonVariants`) by convention.
     files: ["src/components/ui/**/*.{ts,tsx}"],
+    rules: { "react-refresh/only-export-components": "off" },
+  },
+  {
+    // Shared patterns sometimes export a hook/context/provider tightly
+    // coupled to the component itself (e.g. FeatureGate + useFeatureFlags)
+    // — same rationale as the shadcn override above.
+    files: ["src/components/patterns/**/*.{ts,tsx}"],
     rules: { "react-refresh/only-export-components": "off" },
   },
   eslintConfigPrettier,

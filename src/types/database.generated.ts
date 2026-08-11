@@ -2,13 +2,23 @@
 // PLACEHOLDER — not real generated output.
 //
 // This file is normally produced by `pnpm db:types`
-// (`supabase gen types typescript --local`), which requires a running
-// local Supabase stack (Docker). This environment has neither Docker
-// nor the Supabase CLI available, so the real command could not be run
-// for Session 1 — see the migrations in supabase/migrations/ for the
-// actual schema this file should reflect once regenerated.
+// (`supabase gen types typescript --linked`), which requires the
+// project to be linked via `supabase link` — see the Session 2
+// conversation for why that hasn't happened from this environment yet.
+// See supabase/migrations/ for the actual schema this file should
+// reflect once regenerated.
 //
-// Regenerate for real before any feature code imports from this file:
+// Shape note: `Tables`/`Views`/etc. below are empty object type
+// literals (`{}`), not `Record<string, never>` — that distinction
+// matters. `keyof Record<string, never>` is `string`, not the empty
+// set, and that was enough to break supabase-js's internal generic
+// resolution for the ENTIRE client (not just `.from()` calls — even
+// `.functions.invoke()` was silently degrading to `any`, caught by
+// eslint's no-unsafe-* rules rather than a hard tsc error). `keyof {}`
+// correctly resolves to `never`, matching what real generated output
+// for an empty schema actually looks like.
+//
+// Regenerate for real before any feature code relies on this further:
 //   pnpm db:types
 //
 // CLAUDE.md §3: this file is never hand-edited once real generated
@@ -21,10 +31,15 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 
 export interface Database {
   public: {
-    Tables: Record<string, never>;
-    Views: Record<string, never>;
-    Functions: Record<string, never>;
-    Enums: Record<string, never>;
-    CompositeTypes: Record<string, never>;
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- see shape note above
+    Tables: {};
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- see shape note above
+    Views: {};
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- see shape note above
+    Functions: {};
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- see shape note above
+    Enums: {};
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- see shape note above
+    CompositeTypes: {};
   };
 }
