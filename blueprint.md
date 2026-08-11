@@ -16,7 +16,7 @@
 
 A multi-ranch livestock records system for a Kenyan owner with two properties, replacing paper exercise books and herder memory. Every animal — cow, goat, sheep, or any species the owner adds — gets one individual digital record, created once and updated for the rest of its life: origin, parents, every vaccination, treatment, illness, vet visit, weight, movement, breeding event, and eventual death. Nothing is ever deleted. Five users at most: the owner and up to four family members as ranch managers.
 
-Two roles, differing in **scope, not capability**. A Ranch Manager can do everything the Owner can do — including recording deaths and transfers — but only on ranches assigned to them. The Owner has the same abilities everywhere, plus user management, reference catalogues, org settings, and the audit log.
+Two roles, differing in **scope, not capability**. A Ranch Manager can do everything the Owner can do — including recording deaths and transfers, and (decided 2026-08-11, superseding the original design below) extending or soft-deleting the reference catalogues — but only on ranches assigned to them; the catalogues themselves are org-wide, not ranch-scoped, so that one exception isn't ranch-limited either. The Owner has the same abilities everywhere, plus user management, org settings, and the audit log — those three stay owner-only.
 
 ## 0.2 The client's document was incomplete, and the reconstruction stands
 
@@ -33,7 +33,7 @@ The client's source PRD jumps from §11 to §16; §12–15 don't exist in the fi
 ## 0.3 Nine signals that shape the architecture (unchanged from v2.0, still load-bearing)
 
 1. **Individual-record-first.** Every animal has its own record, always — bulk data entry is solved with multi-select bulk actions (a UX layer), never with batch/mob records as the underlying model.
-2. **Species is open-ended.** Species and breed are owner-extensible lookup tables, never hardcoded enums.
+2. **Species is open-ended.** Species and breed are extensible lookup tables (owner or ranch manager, per §0.1's 2026-08-11 update), never hardcoded enums.
 3. **No money, deliberately.** Zero prices, sales, costs, or profit in v1. Schema carries nullable cost columns and a feature flag so finance can switch on later without a rewrite; nothing renders it.
 4. **Desktop-first for management, field-first for enrollment.** Both must work well — they are different jobs by different people at different times.
 5. **Nothing is ever deleted.** Soft-delete and status-driven lifecycle throughout. A dead animal leaves active counts but stays fully browsable.
@@ -562,7 +562,7 @@ create trigger profiles_guard
 
 - `role` and `org_id` mirrored into the JWT via `app_metadata`; role checks cost nothing.
 - **No hard DELETE policy on any business table.** Deletion is `update … set deleted_at`.
-- Owner-only tables (`invitations`, `organizations`, `organization_settings`, reference catalogues) use `is_owner()`. `profiles` is now the carved-out exception above.
+- Owner-only tables (`invitations`, `organizations`, `organization_settings`) use `is_owner()`. `profiles` is the carved-out self-service exception above. Reference catalogues (species, breeds, statuses, vaccines, medications, illness types, feed items, care activity types, veterinarians) were owner-only through v3.0's original design but were reopened to any org member on 2026-08-11 — insert/update now check `org_id = auth_org_id()` only, no role check (`0021_reference_catalogue_manager_write.sql`).
 - `service_role` key exists only in Edge Functions, never in the client bundle.
 - **pgTAP suite proves:**
   - a manager cannot read an unassigned ranch's animals;
@@ -571,6 +571,7 @@ create trigger profiles_guard
   - soft-deleted rows are invisible to normal queries;
   - a manager _can_ transfer an animal out to a ranch they don't manage (the legitimate case);
   - **new** — a manager _cannot_ record a movement claiming an animal whose current ranch they have no access to, even when the destination is their own ranch. This is the specific negative test that would have caught the v2.0 hole, and it did not exist until this review. It ships in Session 1 alongside the others.
+  - **new (2026-08-11)** — a manager _can_ insert and soft-delete a reference-catalogue row (e.g. a breed), and still _cannot_ insert one into another organisation — proving the owner-only half of the original policy was removed on purpose while the org boundary was not (`06_reference_catalogue_write.sql`).
 
 ---
 

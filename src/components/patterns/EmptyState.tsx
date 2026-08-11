@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 
 interface EmptyStateAction {
   label: string;
-  onClick: () => void;
+  /** Undefined = the destination doesn't exist yet (later session) — renders disabled, not omitted. */
+  onClick?: () => void;
 }
 
 interface EmptyStateProps {
@@ -26,12 +27,23 @@ export function EmptyState({ icon: Icon, title, description, action, secondaryAc
       {action || secondaryAction ? (
         <div className="mt-2 flex items-center gap-2">
           {action ? (
-            <Button size="sm" onClick={action.onClick}>
+            <Button
+              size="sm"
+              disabled={!action.onClick}
+              title={action.onClick ? undefined : "Coming in a later session"}
+              onClick={action.onClick}
+            >
               {action.label}
             </Button>
           ) : null}
           {secondaryAction ? (
-            <Button size="sm" variant="outline" onClick={secondaryAction.onClick}>
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={!secondaryAction.onClick}
+              title={secondaryAction.onClick ? undefined : "Coming in a later session"}
+              onClick={secondaryAction.onClick}
+            >
               {secondaryAction.label}
             </Button>
           ) : null}

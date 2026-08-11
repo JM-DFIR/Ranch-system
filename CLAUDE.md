@@ -20,11 +20,17 @@ replaces paper books.
 
 Two roles:
 
-- **Owner** — every ranch, every action, plus user management,
-  reference catalogues, org settings and the audit log.
+- **Owner** — every ranch, every action, plus user management, org
+  settings and the audit log.
 - **Ranch Manager** — the same recording abilities, restricted to
   assigned ranches. The difference is scope, not capability. Managers
-  record deaths and transfers routinely.
+  record deaths and transfers routinely, and (decided 2026-08-11) can
+  also extend and soft-delete the reference catalogues (species,
+  breeds, statuses, vaccines, medications, illness types, feed items,
+  care activity types, veterinarians) — those tables are org-wide,
+  not ranch-scoped, so this is one shared catalogue either role can
+  maintain, same as it already worked for the owner. User management,
+  org settings and the audit log stay owner-only.
 
 The owner will enrol several hundred animals by hand, each with a
 photograph, either (a) live in the field on a phone, outdoors, on rural
@@ -204,9 +210,13 @@ Words are design material. Follow these exactly.
 - **RLS enabled on every table, default deny.** Then explicit policies.
 - **Index every column referenced in an RLS policy.** No exceptions.
   Missing policy indexes are the top Supabase performance killer.
-- Lookup tables, never Postgres enums, for anything the owner can
-  extend: species, breeds, statuses, vaccines, medications, illness
-  types, feed items, care activity types.
+- Lookup tables, never Postgres enums, for anything an owner or
+  manager can extend: species, breeds, statuses, vaccines, medications,
+  illness types, feed items, care activity types. These are org-wide
+  (no `ranch_id`), and any org member — owner or ranch manager — can
+  insert and soft-delete rows; only user management, org settings and
+  the audit log stay owner-only (`is_owner()` in RLS). See
+  `0021_reference_catalogue_manager_write.sql`.
 - **Tag numbers are freeform, always.** `species.default_tag_prefix`
   and the `tag_sequences` counter table exist purely to _suggest_ the
   next tag during enrollment (goats run `M1`, `M2`…; cattle run

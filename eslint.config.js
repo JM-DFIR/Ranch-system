@@ -84,5 +84,14 @@ export default tseslint.config(
     files: ["src/main.tsx"],
     rules: { "react-refresh/only-export-components": "off" },
   },
+  {
+    // TanStack Table column definitions routinely need a small
+    // presentational cell component (e.g. animals/columns.tsx's
+    // AnimalThumbnail) colocated with the exported ColumnDef array —
+    // same rationale as the shadcn/patterns overrides above, expected
+    // to recur in every feature's own columns.tsx.
+    files: ["src/features/**/columns.tsx"],
+    rules: { "react-refresh/only-export-components": "off" },
+  },
   eslintConfigPrettier,
 );

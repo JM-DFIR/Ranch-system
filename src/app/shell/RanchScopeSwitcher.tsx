@@ -2,29 +2,18 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Check, ChevronsUpDown } from "lucide-react";
 
-import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
+import { queryKeys } from "@/lib/query-keys";
 import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
+import { fetchRanchList } from "@/features/ranches/api";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
-interface RanchOption {
-  id: string;
-  name: string;
-}
-
 function ranchesQueryOptions(orgId: string | undefined) {
   return {
-    queryKey: ["ranches", orgId, "scope-switcher"] as const,
-    queryFn: async (): Promise<RanchOption[]> => {
-      // No org_id filter needed client-side — RLS (0014_rls.sql)
-      // already scopes this to ranches the current user can see: every
-      // ranch for an owner, only assigned ones for a manager.
-      const { data, error } = await supabase.from("ranches").select("id, name").order("name");
-      if (error) throw error;
-      return data ?? [];
-    },
+    queryKey: queryKeys.ranches.list(orgId ?? ""),
+    queryFn: fetchRanchList,
     enabled: !!orgId,
   };
 }

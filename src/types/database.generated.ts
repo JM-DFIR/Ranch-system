@@ -3401,6 +3401,8 @@ export type Database = {
           acquisition_date: string | null
           acquisition_type: string | null
           anitrac_ain: string | null
+          attention_reason_count: number | null
+          attention_severity: string | null
           breed_id: string | null
           breed_name: string | null
           color: string | null
@@ -3816,6 +3818,18 @@ export type Database = {
           id: string
           relation: string
         }[]
+      }
+      get_animal_facet_counts: {
+        Args: {
+          p_breed_ids?: string[]
+          p_ranch_id?: string
+          p_search?: string
+          p_section_ids?: string[]
+          p_sexes?: string[]
+          p_species_ids?: string[]
+          p_status_ids?: string[]
+        }
+        Returns: Json
       }
       get_descendants: {
         Args: { p_animal_id: string; p_max_depth?: number }

@@ -85,8 +85,7 @@ begin
   values
     (v_org_id, 'Cattle', 283, 'MUX ', true),
     (v_org_id, 'Goat', 150, 'M', true),
-    (v_org_id, 'Sheep', 148, 'S', true),
-    (v_org_id, 'Chicken', 21, 'C', true)
+    (v_org_id, 'Sheep', 148, 'S', true)
   on conflict (org_id, name) do nothing;
 
   -- Breeds — a handful common to Kenyan smallholder and ranch operations
@@ -96,8 +95,7 @@ begin
   join (values
     ('Cattle', 'Boran'), ('Cattle', 'Sahiwal'), ('Cattle', 'Friesian'), ('Cattle', 'Ayrshire'),
     ('Goat', 'Galla'), ('Goat', 'Boer'), ('Goat', 'Toggenburg'),
-    ('Sheep', 'Dorper'), ('Sheep', 'Red Maasai'),
-    ('Chicken', 'Kienyeji'), ('Chicken', 'Kuroiler')
+    ('Sheep', 'Dorper'), ('Sheep', 'Red Maasai')
   ) as b(species_name, name) on b.species_name = s.name
   where s.org_id = v_org_id
   on conflict (org_id, species_id, name) do nothing;
@@ -122,8 +120,7 @@ begin
     ('Lumpy skin disease vaccine', 'Cattle', 'Lumpy skin disease', 365),
     ('CBPP vaccine', 'Cattle', 'Contagious bovine pleuropneumonia', 365),
     ('PPR vaccine', 'Goat', 'Peste des petits ruminants', 365),
-    ('CCPP vaccine', 'Goat', 'Contagious caprine pleuropneumonia', 365),
-    ('Newcastle disease vaccine', 'Chicken', 'Newcastle disease', 120)
+    ('CCPP vaccine', 'Goat', 'Contagious caprine pleuropneumonia', 365)
   ) as v(name, species_name, target_disease, interval_days)
   left join species s on s.name = v.species_name and s.org_id = v_org_id;
 
@@ -140,8 +137,7 @@ begin
   select v_org_id, i.name, s.id
   from (values
     ('East Coast fever', 'Cattle'), ('Mastitis', 'Cattle'), ('Foot rot', 'Cattle'),
-    ('Pneumonia', 'Goat'), ('Bloat', 'Goat'),
-    ('Coccidiosis', 'Chicken')
+    ('Pneumonia', 'Goat'), ('Bloat', 'Goat')
   ) as i(name, species_name)
   left join species s on s.name = i.species_name and s.org_id = v_org_id;
 

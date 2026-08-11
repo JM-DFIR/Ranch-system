@@ -42,7 +42,7 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     label: "Livestock",
     items: [
-      { label: "Animals", icon: PawPrint },
+      { label: "Animals", icon: PawPrint, to: "/animals" },
       { label: "Enrollment", icon: ScanLine },
       { label: "Batch Enrollment", icon: Images },
     ],
