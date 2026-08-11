@@ -3599,10 +3599,13 @@ export type Database = {
         Row: {
           active_animal_count: number | null
           animals_requiring_attention_count: number | null
+          deaths_last_30_days: number | null
           female_count: number | null
           male_count: number | null
+          new_enrollments_last_30_days: number | null
           org_id: string | null
           ranch_count: number | null
+          species_breakdown: Json | null
         }
         Relationships: []
       }
@@ -3610,8 +3613,10 @@ export type Database = {
         Row: {
           active_animal_count: number | null
           attention_count: number | null
+          deaths_last_30_days: number | null
           female_count: number | null
           male_count: number | null
+          new_enrollments_last_30_days: number | null
           org_id: string | null
           ranch_id: string | null
           ranch_name: string | null
@@ -3647,6 +3652,7 @@ export type Database = {
           org_id: string | null
           ranch_id: string | null
           source_id: string | null
+          species_id: string | null
         }
         Relationships: []
       }
@@ -3657,6 +3663,7 @@ export type Database = {
           next_due_date: string | null
           org_id: string | null
           ranch_id: string | null
+          species_id: string | null
           tag_number: string | null
           vaccination_id: string | null
           vaccine_name: string | null
@@ -3675,6 +3682,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_ranch_stats"
             referencedColumns: ["ranch_id"]
+          },
+          {
+            foreignKeyName: "animals_species_id_fkey"
+            columns: ["species_id"]
+            isOneToOne: false
+            referencedRelation: "species"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "vaccinations_org_id_fkey"
@@ -3873,6 +3887,15 @@ export type Database = {
           p_sexes?: string[]
           p_species_ids?: string[]
           p_status_ids?: string[]
+        }
+        Returns: Json
+      }
+      get_dashboard_stats: {
+        Args: {
+          p_date_from?: string
+          p_date_to?: string
+          p_ranch_ids?: string[]
+          p_species_id?: string
         }
         Returns: Json
       }
