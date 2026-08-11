@@ -1,5 +1,8 @@
 import { fileURLToPath, URL } from "node:url";
-import { defineConfig } from "vite";
+// vitest/config's defineConfig merges Vite's own options with the
+// `test` block's typing — a drop-in replacement for vite's defineConfig
+// in a single shared config file, not a second build tool bolted on.
+import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
@@ -45,5 +48,12 @@ export default defineConfig({
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
+  },
+  test: {
+    environment: "jsdom",
+    // fake-indexeddb's auto side-effecting import — lib/offline/db.ts's
+    // Dexie database needs a real IndexedDB implementation to open at
+    // all, which jsdom itself doesn't provide.
+    setupFiles: ["fake-indexeddb/auto"],
   },
 });

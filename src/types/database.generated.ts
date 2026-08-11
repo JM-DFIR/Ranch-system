@@ -3782,6 +3782,48 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      bulk_reserve_tags: {
+        Args: {
+          p_count: number
+          p_prefix: string
+          p_ranch_id: string
+          p_section_id?: string
+          p_species_id?: string
+        }
+        Returns: {
+          acquisition_date: string | null
+          acquisition_type: string
+          anitrac_ain: string | null
+          breed_id: string | null
+          color: string | null
+          created_at: string
+          created_by: string | null
+          dam_id: string | null
+          date_of_birth: string | null
+          deleted_at: string | null
+          dob_is_estimated: boolean
+          id: string
+          name: string | null
+          notes: string | null
+          org_id: string
+          photo_path: string | null
+          ranch_id: string
+          section_id: string | null
+          sex: string
+          sire_id: string | null
+          species_id: string | null
+          status_id: string
+          tag_number: string
+          updated_at: string
+          updated_by: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "animals"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       bulk_weight_event: {
         Args: {
           p_animal_ids: string[]

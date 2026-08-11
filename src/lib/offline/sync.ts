@@ -12,6 +12,22 @@ function str(value: unknown): string {
   return typeof value === "string" ? value : "";
 }
 
+function strOpt(value: unknown): string | undefined {
+  return typeof value === "string" && value.length > 0 ? value : undefined;
+}
+
+function numOpt(value: unknown): number | undefined {
+  return typeof value === "number" ? value : undefined;
+}
+
+function boolOpt(value: unknown): boolean | undefined {
+  return typeof value === "boolean" ? value : undefined;
+}
+
+function strArray(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((v): v is string => typeof v === "string") : [];
+}
+
 // Postgres's unique_violation — the specific, expected shape of "two
 // people offline both claimed the same tag_number" (CLAUDE.md §8). This
 // is the one failure this function does NOT retry as a transient error:
@@ -29,7 +45,18 @@ async function syncCreateAnimal(entry: QueueEntry): Promise<void> {
     ranch_id: str(p.ranchId),
     tag_number: str(p.tagNumber),
     status_id: str(p.statusId),
-    sex: "unknown",
+    sex: strOpt(p.sex) ?? "unknown",
+    species_id: strOpt(p.speciesId),
+    breed_id: strOpt(p.breedId),
+    color: strOpt(p.color),
+    date_of_birth: strOpt(p.dateOfBirth),
+    dob_is_estimated: boolOpt(p.dobIsEstimated) ?? false,
+    acquisition_type: strOpt(p.acquisitionType) ?? "unknown",
+    acquisition_date: strOpt(p.acquisitionDate),
+    dam_id: strOpt(p.damId),
+    sire_id: strOpt(p.sireId),
+    section_id: strOpt(p.sectionId),
+    notes: strOpt(p.notes),
     created_by: entry.createdBy,
     updated_by: entry.createdBy,
   });
@@ -92,22 +119,78 @@ async function syncAttachPhoto(entry: QueueEntry): Promise<void> {
   await offlineDb.writeQueue.update(entry.id, { status: "synced" });
 }
 
+// bulk_health_event/bulk_weight_event/record_movement are all the
+// established SECURITY DEFINER RPCs these writes already go through
+// online (0017_rpc.sql) — the sync worker replays through the same
+// path rather than a parallel raw-table-insert route, so validation
+// (ranch access, required fields) stays in exactly one place.
+async function syncCreateHealthEvent(entry: QueueEntry): Promise<void> {
+  const p = entry.payload;
+  const { error } = await supabase.rpc("bulk_health_event", {
+    p_animal_ids: strArray(p.animalIds),
+    p_vaccine_id: str(p.vaccineId),
+    p_date_administered: str(p.dateAdministered),
+    p_dose: strOpt(p.dose),
+    p_batch_number: strOpt(p.batchNumber),
+    p_route: strOpt(p.route),
+    p_administered_by_profile: strOpt(p.administeredByProfile) ?? entry.createdBy,
+    p_veterinarian_id: strOpt(p.veterinarianId),
+    p_next_due_date: strOpt(p.nextDueDate),
+    p_notes: strOpt(p.notes),
+  });
+  if (error) throw error;
+  await offlineDb.writeQueue.update(entry.id, { status: "synced" });
+}
+
+async function syncCreateWeight(entry: QueueEntry): Promise<void> {
+  const p = entry.payload;
+  const { error } = await supabase.rpc("bulk_weight_event", {
+    p_animal_ids: strArray(p.animalIds),
+    p_weight_date: str(p.weightDate),
+    p_method: str(p.method),
+    p_weight_kg: numOpt(p.weightKg),
+    p_body_condition_score: numOpt(p.bodyConditionScore),
+    p_notes: strOpt(p.notes),
+  });
+  if (error) throw error;
+  await offlineDb.writeQueue.update(entry.id, { status: "synced" });
+}
+
+async function syncCreateMovement(entry: QueueEntry): Promise<void> {
+  const p = entry.payload;
+  const { error } = await supabase.rpc("record_movement", {
+    p_animal_id: str(p.animalId),
+    p_to_ranch_id: str(p.toRanchId),
+    p_to_section_id: strOpt(p.toSectionId),
+    p_movement_date: str(p.movementDate),
+    p_reason: strOpt(p.reason),
+    p_permit_number: strOpt(p.permitNumber),
+    p_notes: strOpt(p.notes),
+  });
+  if (error) throw error;
+  await offlineDb.writeQueue.update(entry.id, { status: "synced" });
+}
+
 async function syncEntry(entry: QueueEntry): Promise<void> {
   await offlineDb.writeQueue.update(entry.id, { status: "syncing" });
 
   try {
-    if (entry.operationType === "create_animal") {
-      await syncCreateAnimal(entry);
-    } else if (entry.operationType === "attach_photo") {
-      await syncAttachPhoto(entry);
-    } else {
-      // create_health_event / create_weight / create_movement — arrive
-      // in Session 5b (session-pack.md). Left visibly failed rather than
-      // silently stuck, in the unlikely event one predates this build.
-      await offlineDb.writeQueue.update(entry.id, {
-        status: "failed",
-        lastError: "This kind of record can't sync yet — not supported until a later update.",
-      });
+    switch (entry.operationType) {
+      case "create_animal":
+        await syncCreateAnimal(entry);
+        break;
+      case "attach_photo":
+        await syncAttachPhoto(entry);
+        break;
+      case "create_health_event":
+        await syncCreateHealthEvent(entry);
+        break;
+      case "create_weight":
+        await syncCreateWeight(entry);
+        break;
+      case "create_movement":
+        await syncCreateMovement(entry);
+        break;
     }
   } catch (error) {
     const attemptCount = entry.attemptCount + 1;

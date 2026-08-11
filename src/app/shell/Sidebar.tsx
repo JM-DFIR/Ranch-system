@@ -3,6 +3,7 @@ import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
+import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { NAV_GROUPS, type NavItem } from "./nav-items";
@@ -12,6 +13,13 @@ import { NAV_GROUPS, type NavItem } from "./nav-items";
 function NavContent({ collapsed }: { collapsed: boolean }) {
   const { isOwner } = useAuth();
   const currentPath = useRouterState({ select: (s) => s.location.pathname });
+  // Enrollment Mode (Session 5b) lives under its own full-screen,
+  // sidebar-free layout (_enrollment.tsx) rather than _authenticated's
+  // AppShell — carrying `ranch` through on every nav link is what lets
+  // it (and every other destination) open already scoped to whatever
+  // ranch was active, instead of only working for links that happen to
+  // stay within _authenticated's own route tree.
+  const { ranch } = AuthenticatedRoute.useSearch();
 
   return (
     <nav className="flex flex-1 flex-col gap-6 overflow-y-auto px-3 py-4">
@@ -29,7 +37,7 @@ function NavContent({ collapsed }: { collapsed: boolean }) {
             <ul className="space-y-0.5">
               {items.map((item) => (
                 <li key={item.label}>
-                  <NavLink item={item} collapsed={collapsed} active={item.to === currentPath} />
+                  <NavLink item={item} collapsed={collapsed} active={item.to === currentPath} ranch={ranch} />
                 </li>
               ))}
             </ul>
@@ -40,7 +48,17 @@ function NavContent({ collapsed }: { collapsed: boolean }) {
   );
 }
 
-function NavLink({ item, collapsed, active }: { item: NavItem; collapsed: boolean; active: boolean }) {
+function NavLink({
+  item,
+  collapsed,
+  active,
+  ranch,
+}: {
+  item: NavItem;
+  collapsed: boolean;
+  active: boolean;
+  ranch: string | undefined;
+}) {
   const Icon = item.icon;
 
   const content = (
@@ -61,7 +79,7 @@ function NavLink({ item, collapsed, active }: { item: NavItem; collapsed: boolea
   );
 
   const inner = item.to ? (
-    <Link to={item.to} className="block">
+    <Link to={item.to} search={{ ranch }} className="block">
       {content}
     </Link>
   ) : (

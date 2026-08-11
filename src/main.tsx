@@ -1,10 +1,11 @@
 import { StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "@tanstack/react-router";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 
 import { router } from "./app/router";
 import { queryClient } from "./app/query-client";
+import { queryPersister } from "./app/query-persister";
 import { initAuthListener } from "./lib/auth";
 import { TooltipProvider } from "./components/ui/tooltip";
 import "./styles/tokens.css";
@@ -22,11 +23,14 @@ function App() {
 if (!rootElement.innerHTML) {
   createRoot(rootElement).render(
     <StrictMode>
-      <QueryClientProvider client={queryClient}>
+      <PersistQueryClientProvider
+        client={queryClient}
+        persistOptions={{ persister: queryPersister, maxAge: 24 * 60 * 60 * 1000 }}
+      >
         <TooltipProvider>
           <App />
         </TooltipProvider>
-      </QueryClientProvider>
+      </PersistQueryClientProvider>
     </StrictMode>,
   );
 }

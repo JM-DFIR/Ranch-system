@@ -65,6 +65,15 @@ export default tseslint.config(
     },
   },
   {
+    // requireSession() throws TanStack Router's redirect() on behalf of
+    // every route's own beforeLoad (_authenticated.tsx, _enrollment.tsx)
+    // — same Response-based, not-an-Error-subclass pattern as the
+    // src/routes/** override above, just centralised in one shared
+    // helper instead of duplicated per layout.
+    files: ["src/lib/auth.ts"],
+    rules: { "@typescript-eslint/only-throw-error": "off" },
+  },
+  {
     // Vendored shadcn primitives export a component alongside its cva
     // variants function (e.g. `Button` + `buttonVariants`) by convention.
     files: ["src/components/ui/**/*.{ts,tsx}"],

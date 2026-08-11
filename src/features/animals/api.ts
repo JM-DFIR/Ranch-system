@@ -530,7 +530,11 @@ export async function fetchAnimalTimeline(
 }
 
 export interface AnimalFilterOptions {
-  species: { id: string; name: string }[];
+  // defaultTagPrefix feeds Enrollment Mode's tag suggestion
+  // (features/enrollment, Session 5b) — species.default_tag_prefix,
+  // not invented here, just carried through to the one other place
+  // that already needed the rest of this reference data.
+  species: { id: string; name: string; defaultTagPrefix: string | null }[];
   breeds: { id: string; name: string; speciesId: string }[];
   statuses: { id: string; name: string; colorToken: string }[];
   sections: { id: string; name: string; ranchId: string }[];
@@ -541,7 +545,7 @@ export interface AnimalFilterOptions {
 // scopes to the current org; no explicit filter needed here.
 export async function fetchAnimalFilterOptions(): Promise<AnimalFilterOptions> {
   const [speciesRes, breedsRes, statusesRes, sectionsRes] = await Promise.all([
-    supabase.from("species").select("id, name").order("name"),
+    supabase.from("species").select("id, name, default_tag_prefix").order("name"),
     supabase.from("breeds").select("id, name, species_id").order("name"),
     supabase.from("animal_statuses").select("id, name, color_token").order("sort_order"),
     supabase.from("ranch_sections").select("id, name, ranch_id").order("sort_order"),
@@ -553,7 +557,7 @@ export async function fetchAnimalFilterOptions(): Promise<AnimalFilterOptions> {
   if (sectionsRes.error) throw sectionsRes.error;
 
   return {
-    species: speciesRes.data,
+    species: speciesRes.data.map((s) => ({ id: s.id, name: s.name, defaultTagPrefix: s.default_tag_prefix })),
     breeds: breedsRes.data.map((b) => ({ id: b.id, name: b.name, speciesId: b.species_id })),
     statuses: statusesRes.data.map((s) => ({ id: s.id, name: s.name, colorToken: s.color_token })),
     sections: sectionsRes.data.map((s) => ({ id: s.id, name: s.name, ranchId: s.ranch_id })),

@@ -1,4 +1,5 @@
 import { queryOptions, useQuery, type QueryClient } from "@tanstack/react-query";
+import { redirect } from "@tanstack/react-router";
 import type { Session } from "@supabase/supabase-js";
 
 import { supabase } from "./supabase";
@@ -39,6 +40,18 @@ export function useSession() {
     isLoading,
     isAuthenticated: !!data?.session,
   };
+}
+
+// The protected-route guard itself, shared between every top-level
+// auth-gated layout — _authenticated.tsx (the App Shell) and
+// _enrollment.tsx (Session 5b's full-screen, sidebar-free Enrollment
+// Mode). Two layouts, one guard, so the redirect-to-login behaviour
+// can't drift between them.
+export async function requireSession(queryClient: QueryClient, currentUrl: string): Promise<void> {
+  const { session } = await queryClient.ensureQueryData(sessionQueryOptions());
+  if (!session) {
+    throw redirect({ to: "/login", search: { redirect: currentUrl } });
+  }
 }
 
 // ---------------------------------------------------------------------

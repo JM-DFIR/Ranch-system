@@ -9,40 +9,37 @@ import { fetchRanchList } from "@/features/ranches/api";
 import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
 import { EmptyState } from "@/components/patterns/EmptyState";
 import { Skeleton } from "@/components/ui/skeleton";
-import { EnrollmentScreen } from "@/features/enrollment/components/EnrollmentScreen";
+import { BatchEnrollmentPage } from "@/features/enrollment/components/BatchEnrollmentPage";
 
-// Enrollment is inherently ranch-specific — you're standing on one
-// ranch enrolling its animals — so this reads the same global ranch
-// scope every other screen does (_authenticated's `ranch` search
-// param, Session 2) rather than adding a second, competing ranch
-// picker. Choosing a ranch is something to do before losing signal,
-// not part of the minimal capture flow itself (session-pack.md,
-// Session 5a).
-export const Route = createFileRoute("/_authenticated/enroll")({
-  component: EnrollRoute,
+// Desktop-sized (session-pack.md, Session 5b) — unlike live Enrollment
+// Mode, this stays inside the normal AppShell (sidebar, top bar, ranch
+// switcher) rather than _enrollment's full-screen layout, since it's a
+// desk-based data-entry task, not a field-capture one.
+export const Route = createFileRoute("/_authenticated/enroll/batch")({
+  component: BatchEnrollRoute,
 });
 
-function EnrollRoute() {
+function BatchEnrollRoute() {
   const { profile } = useAuth();
   const { ranch } = AuthenticatedRoute.useSearch();
   const navigate = AuthenticatedRoute.useNavigate();
+  // Fetched regardless of whether `ranch` is already set — even then,
+  // BatchEnrollmentPage needs the ranch's *name*, not just its id.
   const { data: ranches, isLoading } = useQuery({
     queryKey: queryKeys.ranches.list(profile?.orgId ?? ""),
     queryFn: fetchRanchList,
-    enabled: !!profile?.orgId && !ranch,
+    enabled: !!profile?.orgId,
   });
 
-  // If there's only one ranch in scope, use it rather than making
-  // enrollment depend on a manual switcher interaction working
-  // correctly first — most single-ranch owners and every manager with
-  // one assignment never need to touch the switcher at all for this.
   useEffect(() => {
     if (!ranch && ranches?.length === 1) {
       void navigate({ search: (prev) => ({ ...prev, ranch: ranches[0]?.id }) });
     }
   }, [ranch, ranches, navigate]);
 
-  if (!ranch && isLoading) {
+  const selectedRanch = ranches?.find((r) => r.id === ranch);
+
+  if (isLoading) {
     return (
       <div className="p-4 md:p-6">
         <Skeleton className="h-40 w-full" />
@@ -50,17 +47,17 @@ function EnrollRoute() {
     );
   }
 
-  if (!ranch) {
+  if (!ranch || !selectedRanch) {
     return (
       <div className="p-4 md:p-6">
         <EmptyState
           icon={MapPin}
           title="Choose a ranch first"
-          description="Enrollment records animals against the ranch you're currently scoped to. Pick one from the switcher at the top of the screen before you head out."
+          description="Batch Enrollment records animals against the ranch you're currently scoped to. Pick one from the switcher at the top of the screen."
         />
       </div>
     );
   }
 
-  return <EnrollmentScreen ranchId={ranch} />;
+  return <BatchEnrollmentPage ranch={selectedRanch} />;
 }

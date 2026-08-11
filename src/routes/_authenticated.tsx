@@ -1,7 +1,7 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { z } from "zod";
 
-import { sessionQueryOptions } from "@/lib/auth";
+import { requireSession } from "@/lib/auth";
 import { AppShell } from "@/app/shell/AppShell";
 
 // Every screen behind this layout requires a session, and shares one
@@ -16,15 +16,7 @@ const authenticatedSearchSchema = z.object({
 
 export const Route = createFileRoute("/_authenticated")({
   validateSearch: authenticatedSearchSchema,
-  beforeLoad: async ({ context, location }) => {
-    const { session } = await context.queryClient.ensureQueryData(sessionQueryOptions());
-    if (!session) {
-      throw redirect({
-        to: "/login",
-        search: { redirect: location.href },
-      });
-    }
-  },
+  beforeLoad: ({ context, location }) => requireSession(context.queryClient, location.href),
   component: () => (
     <AppShell>
       <Outlet />
