@@ -5,15 +5,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-const DATE_FORMATTER = new Intl.DateTimeFormat("en-KE", { day: "numeric", month: "short", year: "numeric" });
-
-// Shared short date format (e.g. "11 Aug 2026") — every feature that
-// renders a Postgres date/timestamptz column funnels through this one
-// formatter rather than each inventing its own.
-export function formatDate(value: string): string {
-  return DATE_FORMATTER.format(new Date(value));
-}
-
 // Postgres views report every column as nullable to PostgREST's
 // codegen, even when the underlying structure guarantees a value (an
 // INNER JOIN's columns, a NOT NULL base column, a COALESCE(...,

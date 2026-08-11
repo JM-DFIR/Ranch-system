@@ -1,30 +1,60 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
+import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
+import { ArrowLeft, PawPrint } from "lucide-react";
 
-// Placeholder only — the real animal profile and timeline is Session 4
-// (session-pack.md's "signature screen"). Exists now so the register's
-// row click (Session 3) has a real destination instead of a dead
-// click, same reasoning as `_authenticated/index.tsx`'s dashboard stub.
+import { EmptyState } from "@/components/patterns/EmptyState";
+import { ErrorState } from "@/components/patterns/ErrorState";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useAnimalProfile } from "@/features/animals/hooks";
+import { ProfileHeader } from "@/features/animals/components/ProfileHeader";
+import { ProfileTabNav } from "@/features/animals/components/ProfileTabNav";
+
+// Layout route (session-pack.md, Session 4 — "the signature screen"):
+// fetches the animal once here, renders the header + tab nav, and every
+// child tab route reads the same cached profile via useAnimalProfile()
+// rather than re-fetching (same query key, TanStack Query dedupes it).
 export const Route = createFileRoute("/_authenticated/animals/$animalId")({
-  component: AnimalProfilePlaceholder,
+  component: AnimalProfileLayout,
 });
 
-function AnimalProfilePlaceholder() {
+function AnimalProfileLayout() {
   const { animalId } = Route.useParams();
+  const { data: animal, isLoading, isError, error, refetch } = useAnimalProfile(animalId);
 
   return (
     <div className="flex flex-col gap-4 p-4 md:p-6">
-      <Link
-        to="/animals"
-        className="flex w-fit items-center gap-1 text-13 text-muted-foreground hover:text-foreground"
-      >
+      <Link to="/animals" className="flex w-fit items-center gap-1 text-13 text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-3.5" aria-hidden />
         Back to register
       </Link>
-      <div className="rounded-card border border-dashed border-line bg-secondary/40 px-8 py-12 text-center">
-        <p className="text-14 font-medium text-foreground">Animal profile — coming in Session 4</p>
-        <p className="mt-1 text-13 text-muted-foreground">Animal ID: {animalId}</p>
-      </div>
+
+      {isLoading ? (
+        <div className="flex items-start gap-4 border-b border-line pb-4">
+          <Skeleton className="size-20 shrink-0 rounded-card" />
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-4 w-64" />
+            <Skeleton className="h-5 w-32" />
+          </div>
+        </div>
+      ) : isError ? (
+        <ErrorState
+          title="Couldn't load this animal"
+          description={error instanceof Error ? error.message : "Check your connection and try again."}
+          onRetry={() => void refetch()}
+        />
+      ) : !animal ? (
+        <EmptyState
+          icon={PawPrint}
+          title="Animal not found"
+          description="It may have been removed, or you may not have access to its ranch."
+        />
+      ) : (
+        <>
+          <ProfileHeader animal={animal} />
+          <ProfileTabNav animalId={animalId} />
+          <Outlet />
+        </>
+      )}
     </div>
   );
 }

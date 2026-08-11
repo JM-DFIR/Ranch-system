@@ -52,10 +52,17 @@ export function can(ctx: PermissionContext, action: Action): boolean {
     case "record_death":
       return hasRanchAccess(ctx, action.ranchId);
 
+    case "edit_reference_data":
+      // Reopened from owner-only to any org member, 2026-08-11 —
+      // 0021_reference_catalogue_manager_write.sql. Kept as its own
+      // Action kind rather than folded into record_on_ranch: reference
+      // catalogues are org-wide, not ranch-scoped, so there's no
+      // ranchId to check here at all.
+      return true;
+
     case "create_ranch":
     case "edit_ranch":
     case "manage_users":
-    case "edit_reference_data":
     case "edit_org_settings":
     case "view_audit_log":
       return ctx.role === "owner";

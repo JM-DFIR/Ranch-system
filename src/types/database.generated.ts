@@ -3637,13 +3637,16 @@ export type Database = {
       v_recent_activity: {
         Row: {
           actor_id: string | null
+          actor_name: string | null
           animal_id: string | null
           description: string | null
+          details: Json | null
           event_date: string | null
           event_type: string | null
           occurred_at: string | null
           org_id: string | null
           ranch_id: string | null
+          source_id: string | null
         }
         Relationships: []
       }

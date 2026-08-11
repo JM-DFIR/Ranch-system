@@ -1,29 +1,11 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { PawPrint } from "lucide-react";
 
-import { formatDate } from "@/lib/utils";
+import { formatAge, formatDate } from "@/lib/format";
 import { Checkbox } from "@/components/ui/checkbox";
 import { StatusBadge } from "@/components/patterns/StatusBadge";
 import { AttentionBadge } from "@/components/patterns/AttentionBadge";
 import type { AnimalRegisterRow } from "./api";
-
-// "~2y 3m" when estimated (session-pack.md §Session 3), "0m" for a
-// newborn rather than a fussier "<1 month" — the register is a scan
-// surface, not the profile page.
-function formatAge(dateOfBirth: string | null, isEstimated: boolean): string {
-  if (!dateOfBirth) return "—";
-  const dob = new Date(dateOfBirth);
-  const now = new Date();
-  let years = now.getFullYear() - dob.getFullYear();
-  let months = now.getMonth() - dob.getMonth();
-  if (now.getDate() < dob.getDate()) months -= 1;
-  if (months < 0) {
-    years -= 1;
-    months += 12;
-  }
-  const age = years > 0 ? `${years}y ${months}m` : `${months}m`;
-  return isEstimated ? `~${age}` : age;
-}
 
 // Always renders the fallback glyph today: photo_path resolution to an
 // actual image URL (public vs. signed, storage bucket policy) is part
