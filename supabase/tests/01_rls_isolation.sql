@@ -13,6 +13,10 @@ insert into organizations (id, name) values
   ('a0000000-0000-0000-0000-000000000001', 'RLS Test Org 1'),
   ('a0000000-0000-0000-0000-000000000002', 'RLS Test Org 2');
 
+select tests.create_test_user('a0000000-0000-0000-0000-000000000011', 'owner1@rls.test');
+select tests.create_test_user('a0000000-0000-0000-0000-000000000012', 'mgr1@rls.test');
+select tests.create_test_user('a0000000-0000-0000-0000-000000000021', 'owner2@rls.test');
+
 insert into profiles (id, org_id, full_name, email, role) values
   ('a0000000-0000-0000-0000-000000000011', 'a0000000-0000-0000-0000-000000000001', 'Owner One', 'owner1@rls.test', 'owner'),
   ('a0000000-0000-0000-0000-000000000012', 'a0000000-0000-0000-0000-000000000001', 'Manager One', 'mgr1@rls.test', 'ranch_manager'),

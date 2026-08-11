@@ -25,7 +25,14 @@
       "Bash(git ls-remote *)",
       "Bash(echo \"EXIT CODE: $?\")",
       "Bash(grep -o '\\\\$f\\\\$' migrations/0014_rls.sql)",
-      "Bash(awk -F: '{sum+=$2; print} END {print \"TOTAL:\", sum}')"
+      "Bash(awk -F: '{sum+=$2; print} END {print \"TOTAL:\", sum}')",
+      "Bash(curl -s -o /tmp/repo_info.json -w \"HTTP %{http_code}\\\\n\" https://api.github.com/repos/JM-DFIR/Ranch-system)",
+      "Bash(echo \"PNPM_EXIT:$?\")",
+      "Bash(time curl -sL -o /tmp/supabase-cli-test.tgz -w \"HTTP %{http_code}, size %{size_download} bytes, speed %{speed_download} B/s\\\\n\" --max-time 120 \"https://registry.npmjs.org/@supabase/cli-windows-x64/-/cli-windows-x64-2.113.0.tgz\")",
+      "Bash(mkdir -p supabase-extract)",
+      "Bash(tar -tzf supabase-cli-test.tgz)",
+      "Bash(awk '{print $5}')",
+      "Bash(awk '{print $4}')"
     ]
   }
 }

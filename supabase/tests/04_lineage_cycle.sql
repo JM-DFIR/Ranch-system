@@ -4,6 +4,8 @@ select plan(3);
 select tests.clear_authentication();
 
 insert into organizations (id, name) values ('d0000000-0000-0000-0000-000000000001', 'Lineage Test Org');
+select tests.create_test_user('d0000000-0000-0000-0000-000000000011', 'owner@lineage.test');
+
 insert into profiles (id, org_id, full_name, email, role) values
   ('d0000000-0000-0000-0000-000000000011', 'd0000000-0000-0000-0000-000000000001', 'Owner', 'owner@lineage.test', 'owner');
 insert into ranches (id, org_id, name) values

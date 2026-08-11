@@ -14,6 +14,9 @@ select tests.clear_authentication();
 
 insert into organizations (id, name) values ('c0000000-0000-0000-0000-000000000001', 'Movements Test Org');
 
+select tests.create_test_user('c0000000-0000-0000-0000-000000000011', 'owner@mv.test');
+select tests.create_test_user('c0000000-0000-0000-0000-000000000012', 'mgr@mv.test');
+
 insert into profiles (id, org_id, full_name, email, role) values
   ('c0000000-0000-0000-0000-000000000011', 'c0000000-0000-0000-0000-000000000001', 'Owner', 'owner@mv.test', 'owner'),
   ('c0000000-0000-0000-0000-000000000012', 'c0000000-0000-0000-0000-000000000001', 'Manager', 'mgr@mv.test', 'ranch_manager');

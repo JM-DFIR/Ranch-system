@@ -15,6 +15,8 @@ select plan(4);
 select tests.clear_authentication();
 
 insert into organizations (id, name) values ('e0000000-0000-0000-0000-000000000001', 'Tag Sequence Test Org');
+select tests.create_test_user('e0000000-0000-0000-0000-000000000011', 'owner@tag.test');
+
 insert into profiles (id, org_id, full_name, email, role) values
   ('e0000000-0000-0000-0000-000000000011', 'e0000000-0000-0000-0000-000000000001', 'Owner', 'owner@tag.test', 'owner');
 

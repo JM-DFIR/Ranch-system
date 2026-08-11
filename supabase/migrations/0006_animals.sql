@@ -106,29 +106,35 @@ create trigger animals_prevent_lineage_cycle
 -- the views migration because they operate directly on animals'
 -- self-referential columns, not on a derived/denormalised view.
 -- ---------------------------------------------------------------------
+-- Postgres requires a recursive CTE's self-reference to appear only in
+-- the LAST branch of its UNION ALL chain — with four branches (two
+-- anchors, two recursive, one per dam/sire path) the chain parses
+-- left-associatively as ((b1 UNION ALL b2) UNION ALL b3) UNION ALL b4,
+-- which put the third branch's self-reference inside what Postgres
+-- treats as the "non-recursive term" and fails with 42P19. Folding
+-- dam/sire into a single unnest() per branch gets back to the required
+-- two-branch shape (one anchor, one recursive) while still walking
+-- both parents at every depth.
 create or replace function get_ancestors(p_animal_id uuid, p_max_depth integer default 5)
 returns table (id uuid, depth integer, relation text)
 language sql
 stable
 as $$
   with recursive ancestors as (
-    select a.dam_id as id, 1 as depth, 'dam'::text as relation
-    from animals a where a.id = p_animal_id and a.dam_id is not null
+    select p.id, 1 as depth, p.relation
+    from animals a,
+      unnest(array[a.dam_id, a.sire_id], array['dam', 'sire']) as p(id, relation)
+    where a.id = p_animal_id and p.id is not null
+
     union all
-    select a.sire_id, 1, 'sire'::text
-    from animals a where a.id = p_animal_id and a.sire_id is not null
-    union all
-    select a.dam_id, anc.depth + 1, 'dam'::text
-    from animals a
-    join ancestors anc on a.id = anc.id
-    where a.dam_id is not null and anc.depth < p_max_depth
-    union all
-    select a.sire_id, anc.depth + 1, 'sire'::text
-    from animals a
-    join ancestors anc on a.id = anc.id
-    where a.sire_id is not null and anc.depth < p_max_depth
+
+    select p.id, anc.depth + 1, p.relation
+    from ancestors anc
+    join animals a on a.id = anc.id,
+      unnest(array[a.dam_id, a.sire_id], array['dam', 'sire']) as p(id, relation)
+    where p.id is not null and anc.depth < p_max_depth
   )
-  select id, depth, relation from ancestors where id is not null;
+  select id, depth, relation from ancestors;
 $$;
 
 create or replace function get_descendants(p_animal_id uuid, p_max_depth integer default 5)

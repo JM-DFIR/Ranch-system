@@ -5,6 +5,9 @@ select tests.clear_authentication();
 
 insert into organizations (id, name) values ('b0000000-0000-0000-0000-000000000001', 'Profiles Test Org');
 
+select tests.create_test_user('b0000000-0000-0000-0000-000000000011', 'owner@profiles.test');
+select tests.create_test_user('b0000000-0000-0000-0000-000000000012', 'mgr@profiles.test');
+
 insert into profiles (id, org_id, full_name, email, role) values
   ('b0000000-0000-0000-0000-000000000011', 'b0000000-0000-0000-0000-000000000001', 'Owner', 'owner@profiles.test', 'owner'),
   ('b0000000-0000-0000-0000-000000000012', 'b0000000-0000-0000-0000-000000000001', 'Manager', 'mgr@profiles.test', 'ranch_manager');
