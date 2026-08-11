@@ -19,7 +19,11 @@
       "Bash(curl -s -o /dev/null -w \"index.html: HTTP %{http_code}\\\\n\" http://localhost:5183/)",
       "Bash(curl -s -o /dev/null -w \"kitchen-sink: HTTP %{http_code}\\\\n\" http://localhost:5183/kitchen-sink)",
       "Bash(curl -s http://localhost:5183/kitchen-sink)",
-      "Bash(kill %1)"
+      "Bash(kill %1)",
+      "Bash(gh --version)",
+      "Bash(gh auth *)",
+      "Bash(git ls-remote *)",
+      "Bash(echo \"EXIT CODE: $?\")"
     ]
   }
 }
