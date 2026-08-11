@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(corepack enable *)",
+      "Bash(corepack prepare *)",
+      "Bash(pnpm --version)",
+      "Bash(pnpm add *)",
+      "Bash(rm -f src/App.tsx src/App.css src/index.css src/assets/react.svg src/assets/hero.png)",
+      "Bash(rmdir src/assets)",
+      "Bash(mkdir -p src/app src/routes)",
+      "Bash(timeout 20 pnpm exec vite build --mode development)",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(pnpm lint *)",
+      "Bash(pnpm typecheck *)",
+      "Bash(pnpm exec *)",
+      "Bash(pnpm build *)",
+      "Bash(pnpm dev *)",
+      "Bash(echo \"started with pid $!\")",
+      "Bash(curl -s -o /dev/null -w \"index.html: HTTP %{http_code}\\\\n\" http://localhost:5183/)",
+      "Bash(curl -s -o /dev/null -w \"kitchen-sink: HTTP %{http_code}\\\\n\" http://localhost:5183/kitchen-sink)",
+      "Bash(curl -s http://localhost:5183/kitchen-sink)",
+      "Bash(kill %1)"
+    ]
+  }
+}

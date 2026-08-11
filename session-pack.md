@@ -1,5 +1,6 @@
 # LIMS — Claude Code Session Pack
-## Companion to blueprint.md v3.0 and CLAUDE.md
+
+\## Companion to blueprint.md v3.0 and CLAUDE.md
 
 **Purpose:** everything Claude Code needs to build the design system and the six anchor screens, in code, correctly, first time — updated for every correction and addition in blueprint v3.0.
 
@@ -91,10 +92,10 @@ Never start a session on a dirty tree.
 >
 > - a manager cannot read animals on an unassigned ranch;
 > - a manager cannot change their own role or org_id (test both a direct table update attempt and confirm the trigger fires even via the self-update policy);
-> - a manager *can* update their own `full_name`/`phone`/`avatar_url`;
+> - a manager _can_ update their own `full_name`/`phone`/`avatar_url`;
 > - cross-org queries return zero rows;
 > - soft-deleted rows are invisible;
-> - a manager *can* transfer an animal out to a ranch they do not manage (call `record_movement` from a session with access to the animal's current ranch, destination unmanaged — must succeed);
+> - a manager _can_ transfer an animal out to a ranch they do not manage (call `record_movement` from a session with access to the animal's current ranch, destination unmanaged — must succeed);
 > - **a manager cannot record a movement claiming an animal whose current ranch they have no access to, even when the destination is their own ranch** — this is the negative test for the hole that was found and fixed; it is not optional;
 > - `dam_id`/`sire_id` cannot be set to create a lineage cycle;
 > - `next_tag_number` is safe under concurrent calls (two calls for the same prefix never return the same number).
@@ -107,7 +108,7 @@ Never start a session on a dirty tree.
 
 ---
 
-## Session 2 — Auth and the App Shell *(anchor 1)*
+## Session 2 — Auth and the App Shell _(anchor 1)_
 
 > Build authentication and the application shell.
 >
@@ -115,7 +116,7 @@ Never start a session on a dirty tree.
 >
 > **App Shell — this is an anchor screen; every other screen inherits from it.**
 >
-> - Left sidebar, 260px, acacia-900 background. Wordmark in Bricolage Grotesque at top. Navigation grouped: *Overview* (Dashboard) · *Livestock* (Animals, Enrollment, Batch Enrollment) · *Records* (Health, Weights, Breeding, Movements, Mortality, Feeding & Care) · *Insight* (Reports) · *Manage* (Ranches, Admin). Collapses to a 64px icon rail with tooltips; state persists.
+> - Left sidebar, 260px, acacia-900 background. Wordmark in Bricolage Grotesque at top. Navigation grouped: _Overview_ (Dashboard) · _Livestock_ (Animals, Enrollment, Batch Enrollment) · _Records_ (Health, Weights, Breeding, Movements, Mortality, Feeding & Care) · _Insight_ (Reports) · _Manage_ (Ranches, Admin). Collapses to a 64px icon rail with tooltips; state persists.
 > - Top bar, left to right: **ranch scope switcher** (combobox, "All ranches" or a specific ranch — sets scope app-wide, encoded in the URL via TanStack Router), global search trigger with the ⌘K hint, sync indicator, notifications bell, profile menu.
 > - **SyncIndicator** — reads the Dexie queue. Hidden at zero pending and zero conflicts. At n pending, an ochre chip: "3 records waiting to sync." **At any item in `conflict` state, a distinct — not just a bigger number — indicator**, since a conflict needs a decision from the user (typically a duplicate tag), not just patience; opens a panel listing pending and conflicted items separately, with manual retry on pending and a rename-and-resync action on conflicts. When offline, a persistent unobtrusive banner: "You're offline. Records are being saved on this device." Never a silent failure, and never collapse "waiting" and "stuck" into the same visual state.
 > - Role-aware nav: managers do not see Admin.
@@ -127,7 +128,7 @@ Never start a session on a dirty tree.
 
 ---
 
-## Session 3 — The Animal Register *(anchor 2)*
+## Session 3 — The Animal Register _(anchor 2)_
 
 > Build the animal register at `/animals`. This is the most demanding component in the product — treat it accordingly.
 >
@@ -153,7 +154,7 @@ Never start a session on a dirty tree.
 
 ---
 
-## Session 4 — The Animal Profile and Timeline *(anchor 3 — the signature screen)*
+## Session 4 — The Animal Profile and Timeline _(anchor 3 — the signature screen)_
 
 > Build the animal profile at `/animals/$animalId`. This is the screen that makes the product make sense to the client. Give it real care.
 >
@@ -172,7 +173,7 @@ Never start a session on a dirty tree.
 
 ---
 
-## Session 5a — Offline thin slice *(field-test checkpoint — build this before 5b)*
+## Session 5a — Offline thin slice _(field-test checkpoint — build this before 5b)_
 
 > **This is deliberately the smallest possible slice, not a shortcut on the way to the full Enrollment Mode.** Read `blueprint.md` §0.5 #13 and §6 (Part 7 milestones, M2a) before starting: the entire offline architecture is a bet made on paper, and this session exists to test it against reality before more is built on top of it.
 >
@@ -188,7 +189,7 @@ Never start a session on a dirty tree.
 
 ---
 
-## Session 5b — Enrollment Mode, Batch Enrollment, and the rest of the offline queue *(anchor 4 — highest stakes)*
+## Session 5b — Enrollment Mode, Batch Enrollment, and the rest of the offline queue _(anchor 4 — highest stakes)_
 
 > Build out the rest of Enrollment Mode and the new Batch Enrollment flow, on top of the infrastructure from 5a. Read `blueprint.md` §0.6 #1 and #2 first — both the tag-prefix system and Batch Enrollment are new since the original design and change this session's scope.
 >
@@ -220,7 +221,7 @@ Never start a session on a dirty tree.
 
 ---
 
-## Session 6 — Record Vaccination drawer *(anchor 5 — the universal record pattern)*
+## Session 6 — Record Vaccination drawer _(anchor 5 — the universal record pattern)_
 
 > Build the record-vaccination flow. It is small, but it establishes the pattern that fifteen other "record X" actions will copy exactly — so get it right and document it.
 >
@@ -240,7 +241,7 @@ Never start a session on a dirty tree.
 
 ---
 
-## Session 7 — The Owner Dashboard *(anchor 6)*
+## Session 7 — The Owner Dashboard _(anchor 6)_
 
 > Build the dashboard at `/`. Follow blueprint.md §5 (design direction) strictly: **one dominant metric, five to nine elements on the default view, everything else behind a drill-down.** Resist the urge to fill space.
 >
@@ -279,17 +280,17 @@ Same three as before, updated to check for the specific mistakes this project ha
 > 4. Run `pnpm typecheck`, `pnpm lint` and `pnpm build`. Report the actual results — do not assume they pass.
 > 5. Fill in this table honestly:
 >
-> | Session | Scope | Status | Evidence |
-> |---|---|---|---|
-> | S0 Scaffold & tokens | | Complete / Partial / Missing / Unknown | files or commits |
-> | S1 Database & RLS | | | |
-> | S2 Auth & App Shell | | | |
-> | S3 Animal Register | | | |
-> | S4 Animal Profile | | | |
-> | S5a Offline thin slice + field test | | | |
-> | S5b Enrollment, Batch Enrollment, offline queue | | | |
-> | S6 Record drawer | | | |
-> | S7 Dashboard | | | |
+> | Session                                         | Scope | Status                                 | Evidence         |
+> | ----------------------------------------------- | ----- | -------------------------------------- | ---------------- |
+> | S0 Scaffold & tokens                            |       | Complete / Partial / Missing / Unknown | files or commits |
+> | S1 Database & RLS                               |       |                                        |                  |
+> | S2 Auth & App Shell                             |       |                                        |                  |
+> | S3 Animal Register                              |       |                                        |                  |
+> | S4 Animal Profile                               |       |                                        |                  |
+> | S5a Offline thin slice + field test             |       |                                        |                  |
+> | S5b Enrollment, Batch Enrollment, offline queue |       |                                        |                  |
+> | S6 Record drawer                                |       |                                        |                  |
+> | S7 Dashboard                                    |       |                                        |                  |
 >
 > 6. Specifically check and report: does `tag_sequences` exist and is `next_tag_number` atomic under concurrency? Does `v_animal_attention_summary` exist separately from `v_animals_requiring_attention`, and does the register join against the summary view? Does the offline queue have a distinct `conflict` state, or does it just retry everything the same way?
 > 7. List anything that looks half-finished, contradictory, or that you do not understand.

@@ -1,0 +1,295 @@
+/*
+ * LIMS design tokens — the single source of truth.
+ * Per CLAUDE.md §4: never hardcode a hex, font-family, or px radius
+ * anywhere outside this file. If a value is missing, add it here first.
+ */
+
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/bricolage-grotesque";
+/* IBM Plex Mono has no variable release — load the two static weights
+   CLAUDE.md §4 actually calls for (400/500) rather than the full family. */
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ---------------------------------------------------------------------
+ * Raw palette — rangeland, not a template.
+ * ------------------------------------------------------------------- */
+:root {
+  /* Acacia — primary, rangeland green */
+  --acacia-50: #f0f5f2;
+  --acacia-100: #dce8e2;
+  --acacia-200: #b9d1c5;
+  --acacia-300: #8db4a2;
+  --acacia-400: #5c9179;
+  --acacia-500: #3d7c61;
+  --acacia-600: #2f6b54;
+  --acacia-700: #265545;
+  --acacia-800: #1f4638;
+  --acacia-900: #1b3a2f;
+  --acacia-950: #0f221b;
+
+  /* Ochre — single accent, used sparingly */
+  --ochre-50: #fdf6ec;
+  --ochre-100: #f9e8ce;
+  --ochre-200: #f2ce9a;
+  --ochre-300: #e7ae60;
+  --ochre-400: #d89138;
+  --ochre-500: #c2761e;
+  --ochre-600: #a25c16;
+  --ochre-700: #7f4515;
+  --ochre-800: #663717;
+  --ochre-900: #552f16;
+
+  /* Bone — warm neutrals, surfaces and text */
+  --bone-50: #faf8f4;
+  --bone-100: #f1ede6;
+  --bone-200: #e2dcd2;
+  --bone-300: #cfc7b9;
+  --bone-400: #ada396;
+  --bone-500: #8a8175;
+  --bone-600: #6b655c;
+  --bone-700: #514c45;
+  --bone-800: #38342f;
+  --bone-900: #1a1815;
+
+  /* Semantic status colours — functional only, never decorative.
+     Red means something is wrong. It never means "look here." */
+  --status-ok: #2f6b54;
+  --status-warn: #c2761e;
+  --status-critical: #a63a2b;
+  --status-info: #2c5d7c;
+  --status-neutral: #6b655c;
+
+  /* Line / border */
+  --line: #e2dcd2;
+
+  /* Radius — restrained, nothing is a pill */
+  --radius-card: 0.5rem; /* 8px */
+  --radius-input: 0.375rem; /* 6px */
+  --radius-badge: 0.25rem; /* 4px */
+
+  /* Motion — nothing else moves */
+  --duration-state: 150ms;
+  --duration-drawer: 220ms;
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+
+  /* -------------------------------------------------------------------
+   * shadcn semantic slots — light mode.
+   * Mapped onto our palette so vendored shadcn primitives inherit our
+   * identity instead of the default slate. `--accent` intentionally
+   * stays a *subtle* tint, not solid ochre-500 — the ochre accent is
+   * used sparingly and directly (bg-ochre-500) for real CTAs and scope
+   * indicators, not wired into every hover/highlight surface.
+   * ----------------------------------------------------------------- */
+  --background: var(--bone-50);
+  --foreground: var(--bone-900);
+  --card: #ffffff;
+  --card-foreground: var(--bone-900);
+  --popover: #ffffff;
+  --popover-foreground: var(--bone-900);
+  --primary: var(--acacia-600);
+  --primary-foreground: #ffffff;
+  --secondary: var(--bone-100);
+  --secondary-foreground: var(--bone-900);
+  --muted: var(--bone-100);
+  --muted-foreground: var(--bone-600);
+  --accent: var(--ochre-100);
+  --accent-foreground: var(--ochre-900);
+  --destructive: var(--status-critical);
+  --destructive-foreground: #ffffff;
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--acacia-600);
+  --radius: var(--radius-input);
+
+  /* Sidebar — always dark-toned, by design, in both modes */
+  --sidebar: var(--acacia-900);
+  --sidebar-foreground: var(--bone-50);
+  --sidebar-primary: var(--ochre-500);
+  --sidebar-primary-foreground: var(--acacia-900);
+  --sidebar-accent: var(--acacia-800);
+  --sidebar-accent-foreground: var(--bone-50);
+  --sidebar-border: var(--acacia-800);
+  --sidebar-ring: var(--ochre-500);
+}
+
+/* ---------------------------------------------------------------------
+ * Dark mode — tokens defined now per CLAUDE.md §4, no toggle wired up
+ * yet. Treat these as a first pass: they can't be properly validated
+ * until the toggle exists and they can be seen live, and will want a
+ * revisit pass at that point, not treated as finished.
+ * ------------------------------------------------------------------- */
+:root.dark {
+  --background: var(--bone-900);
+  --foreground: var(--bone-50);
+  --card: var(--bone-800);
+  --card-foreground: var(--bone-50);
+  --popover: var(--bone-800);
+  --popover-foreground: var(--bone-50);
+  --primary: var(--acacia-400);
+  --primary-foreground: var(--acacia-950);
+  --secondary: var(--bone-700);
+  --secondary-foreground: var(--bone-50);
+  --muted: var(--bone-800);
+  --muted-foreground: var(--bone-400);
+  --accent: var(--ochre-800);
+  --accent-foreground: var(--ochre-200);
+  --destructive: var(--status-critical);
+  --destructive-foreground: #ffffff;
+  --border: var(--bone-700);
+  --input: var(--bone-700);
+  --ring: var(--acacia-400);
+}
+
+/* ---------------------------------------------------------------------
+ * Tailwind v4 theme mapping — turns the tokens above into utilities
+ * (bg-acacia-900, text-status-critical, font-display, text-20, …).
+ * ------------------------------------------------------------------- */
+@theme inline {
+  /* Palette ramps, exposed directly for cases outside the shadcn slots
+     (the acacia-900 sidebar, ochre-500 CTAs, status badges, etc.) */
+  --color-acacia-50: var(--acacia-50);
+  --color-acacia-100: var(--acacia-100);
+  --color-acacia-200: var(--acacia-200);
+  --color-acacia-300: var(--acacia-300);
+  --color-acacia-400: var(--acacia-400);
+  --color-acacia-500: var(--acacia-500);
+  --color-acacia-600: var(--acacia-600);
+  --color-acacia-700: var(--acacia-700);
+  --color-acacia-800: var(--acacia-800);
+  --color-acacia-900: var(--acacia-900);
+  --color-acacia-950: var(--acacia-950);
+
+  --color-ochre-50: var(--ochre-50);
+  --color-ochre-100: var(--ochre-100);
+  --color-ochre-200: var(--ochre-200);
+  --color-ochre-300: var(--ochre-300);
+  --color-ochre-400: var(--ochre-400);
+  --color-ochre-500: var(--ochre-500);
+  --color-ochre-600: var(--ochre-600);
+  --color-ochre-700: var(--ochre-700);
+  --color-ochre-800: var(--ochre-800);
+  --color-ochre-900: var(--ochre-900);
+
+  --color-bone-50: var(--bone-50);
+  --color-bone-100: var(--bone-100);
+  --color-bone-200: var(--bone-200);
+  --color-bone-300: var(--bone-300);
+  --color-bone-400: var(--bone-400);
+  --color-bone-500: var(--bone-500);
+  --color-bone-600: var(--bone-600);
+  --color-bone-700: var(--bone-700);
+  --color-bone-800: var(--bone-800);
+  --color-bone-900: var(--bone-900);
+
+  --color-status-ok: var(--status-ok);
+  --color-status-warn: var(--status-warn);
+  --color-status-critical: var(--status-critical);
+  --color-status-info: var(--status-info);
+  --color-status-neutral: var(--status-neutral);
+
+  --color-line: var(--line);
+
+  /* shadcn semantic slots */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Radius */
+  --radius-card: var(--radius-card);
+  --radius-input: var(--radius-input);
+  --radius-badge: var(--radius-badge);
+  --radius-sm: calc(var(--radius-input) - 2px);
+  --radius-md: var(--radius-input);
+  --radius-lg: var(--radius-card);
+  --radius-xl: calc(var(--radius-card) + 4px);
+
+  /* Fonts — three roles, deliberately paired */
+  --font-display: "Bricolage Grotesque Variable", "Bricolage Grotesque", sans-serif;
+  --font-sans: "Inter Variable", "Inter", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  /* Type scale — 12/13/14/16/20/26/34, and only these seven sizes */
+  --text-12: 0.75rem;
+  --text-12--line-height: 1.4;
+  --text-13: 0.8125rem;
+  --text-13--line-height: 1.4;
+  --text-14: 0.875rem;
+  --text-14--line-height: 1.45;
+  --text-16: 1rem;
+  --text-16--line-height: 1.5;
+  --text-20: 1.25rem;
+  --text-20--line-height: 1.4;
+  --text-26: 1.625rem;
+  --text-26--line-height: 1.3;
+  --text-34: 2.125rem;
+  --text-34--line-height: 1.2;
+}
+
+/* ---------------------------------------------------------------------
+ * Global base + utilities that don't belong in @theme.
+ * ------------------------------------------------------------------- */
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-optical-sizing: auto;
+    font-feature-settings: "cv05", "ss01";
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+  }
+}
+
+@utility tabular {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

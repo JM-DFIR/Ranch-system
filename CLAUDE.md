@@ -19,6 +19,7 @@ that is created once and updated for the rest of its life. The system
 replaces paper books.
 
 Two roles:
+
 - **Owner** — every ranch, every action, plus user management,
   reference catalogues, org settings and the audit log.
 - **Ranch Manager** — the same recording abilities, restricted to
@@ -100,7 +101,7 @@ supabase/
 `features/breeding/`. Never create `src/components/BreedingForm.tsx`.
 
 **Register note:** the animal register uses TanStack Table in full manual
-mode with server-side pagination as the *primary* mechanism (default page
+mode with server-side pagination as the _primary_ mechanism (default page
 size 50, selectable 25/50/100/200). Row virtualization only engages when
 the selected page size exceeds 100 — it protects the "dense view" option,
 it does not run alongside a normal 50-row page. Don't build both as if
@@ -188,7 +189,7 @@ Words are design material. Follow these exactly.
 
 - `org_id` on every business table. Multi-tenant from migration one.
 - **UUIDv7 primary keys, generated client-side.** Offline creation
-  depends on this — but note it only prevents *record*-level collisions.
+  depends on this — but note it only prevents _record_-level collisions.
   A business-key collision (two people claiming the same `tag_number`
   while both offline) is still possible and has its own explicit
   handling — see §7's sync-conflict rule.
@@ -207,14 +208,13 @@ Words are design material. Follow these exactly.
   extend: species, breeds, statuses, vaccines, medications, illness
   types, feed items, care activity types.
 - **Tag numbers are freeform, always.** `species.default_tag_prefix`
-  and the `tag_sequences` counter table exist purely to *suggest* the
+  and the `tag_sequences` counter table exist purely to _suggest_ the
   next tag during enrollment (goats run `M1`, `M2`…; cattle run
   `MUX 1`, `MUX 2`…, per the client's existing convention) — never as a
   format constraint. A purchased animal may arrive with a tag that fits
   no pattern at all, and the field must accept it.
 - The "requires attention" engine is **twelve rules**, not eleven —
-  don't drop the "no health record logged in `stale_health_days` (default
-  120) days" rule if you're reconstructing it from memory. It lives in
+  don't drop the "no health record logged in `stale_health_days` (default 120) days" rule if you're reconstructing it from memory. It lives in
   `v_animals_requiring_attention` (one row per animal per reason — drives
   the Attention Queue) and is separately aggregated in
   `v_animal_attention_summary` (one row per animal, worst severity — drives
@@ -269,8 +269,8 @@ Words are design material. Follow these exactly.
 - pgTAP must prove, at minimum: a manager cannot read an unassigned
   ranch's animals; a manager cannot escalate their own role; cross-org
   reads return zero rows; soft-deleted rows are invisible; a manager
-  *can* transfer an animal out to a ranch they don't manage; **and** a
-  manager *cannot* record a movement claiming an animal whose current
+  _can_ transfer an animal out to a ranch they don't manage; **and** a
+  manager _cannot_ record a movement claiming an animal whose current
   ranch they have no access to, even when the destination is their own
   ranch. That last one is the negative test for the hole above — it is
   not optional, it's the whole point of having found the hole.
@@ -288,7 +288,7 @@ Words are design material. Follow these exactly.
   `tag_number = "M47"`. UUIDv7 keys don't prevent this — it's a
   `unique_violation` on `(org_id, tag_number)`, not a record collision.
   The sync worker must catch it, mark that queue entry `status =
-  'conflict'` (never silently retried forever, never silently dropped),
+'conflict'` (never silently retried forever, never silently dropped),
   and the sync panel must surface it by tag number with a
   rename-and-resync action. This is the specific failure mode that could
   corrupt the client's very first enrollment day if it's skipped.

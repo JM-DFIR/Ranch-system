@@ -1,0 +1,6 @@
+dist
+dev-dist
+node_modules
+src/routeTree.gen.ts
+src/types/database.generated.ts
+pnpm-lock.yaml
