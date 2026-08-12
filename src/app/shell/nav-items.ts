@@ -52,7 +52,7 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     label: "Records",
     items: [
-      { label: "Health", icon: HeartPulse },
+      { label: "Health", icon: HeartPulse, to: "/health" },
       { label: "Attention queue", icon: TriangleAlert, to: "/attention" },
       { label: "Veterinarians", icon: Stethoscope, to: "/veterinarians" },
       { label: "Weights", icon: Scale },

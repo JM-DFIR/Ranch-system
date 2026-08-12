@@ -3796,6 +3796,47 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      bulk_illness_event: {
+        Args: {
+          p_animal_ids: string[]
+          p_custom_name?: string
+          p_diagnosed_by?: string
+          p_diagnosis?: string
+          p_illness_type_id?: string
+          p_notes?: string
+          p_onset_date: string
+          p_resolved_date?: string
+          p_severity: string
+          p_status?: string
+          p_symptoms?: string
+        }
+        Returns: {
+          animal_id: string
+          created_at: string
+          created_by: string | null
+          custom_name: string | null
+          deleted_at: string | null
+          diagnosed_by: string | null
+          diagnosis: string | null
+          id: string
+          illness_type_id: string | null
+          notes: string | null
+          onset_date: string
+          org_id: string
+          resolved_date: string | null
+          severity: string
+          status: string
+          symptoms: string | null
+          updated_at: string
+          updated_by: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "illnesses"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       bulk_reserve_tags: {
         Args: {
           p_count: number
@@ -3834,6 +3875,54 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "animals"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      bulk_treatment_event: {
+        Args: {
+          p_administered_by_profile?: string
+          p_animal_ids: string[]
+          p_custom_medication?: string
+          p_dosage?: string
+          p_duration_days?: number
+          p_follow_up_date?: string
+          p_illness_id?: string
+          p_medication_id?: string
+          p_notes?: string
+          p_outcome?: string
+          p_route?: string
+          p_treatment_date: string
+          p_veterinarian_id?: string
+          p_withdrawal_until?: string
+        }
+        Returns: {
+          administered_by_profile: string | null
+          animal_id: string
+          cost: number | null
+          created_at: string
+          created_by: string | null
+          custom_medication: string | null
+          deleted_at: string | null
+          dosage: string | null
+          duration_days: number | null
+          follow_up_date: string | null
+          id: string
+          illness_id: string | null
+          medication_id: string | null
+          notes: string | null
+          org_id: string
+          outcome: string | null
+          route: string | null
+          treatment_date: string
+          updated_at: string
+          updated_by: string | null
+          veterinarian_id: string | null
+          withdrawal_until: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "treatments"
           isOneToOne: false
           isSetofReturn: true
         }
@@ -4013,6 +4102,42 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "movements"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      record_vet_visit: {
+        Args: {
+          p_animal_ids: string[]
+          p_findings?: string
+          p_next_visit_date?: string
+          p_notes?: string
+          p_purpose?: string
+          p_recommendations?: string
+          p_veterinarian_id?: string
+          p_visit_date: string
+        }
+        Returns: {
+          cost: number | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          findings: string | null
+          id: string
+          next_visit_date: string | null
+          notes: string | null
+          org_id: string
+          purpose: string | null
+          ranch_id: string
+          recommendations: string | null
+          updated_at: string
+          updated_by: string | null
+          veterinarian_id: string | null
+          visit_date: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "vet_visits"
           isOneToOne: true
           isSetofReturn: false
         }

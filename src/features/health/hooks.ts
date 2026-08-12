@@ -4,19 +4,24 @@ import { useAuth } from "@/lib/auth";
 import { queryKeys } from "@/lib/query-keys";
 import {
   fetchAdministeredByOptions,
+  fetchIllnessRegister,
   fetchIllnessTypeOptions,
   fetchIllnesses,
   fetchMedicationOptions,
+  fetchTreatmentRegister,
   fetchTreatments,
+  fetchVaccinationRegister,
   fetchVaccinations,
   fetchVaccineOptions,
   fetchVeterinarianDirectory,
   fetchVeterinarianOptions,
+  fetchVetVisitRegister,
   fetchVetVisits,
   recordIllness,
   recordTreatment,
   recordVaccination,
   recordVetVisit,
+  type HealthRegisterParams,
   type RecordIllnessResult,
   type RecordTreatmentResult,
   type RecordVaccinationResult,
@@ -227,5 +232,41 @@ export function useRecordVetVisit() {
       }
       if (profile?.orgId) void queryClient.invalidateQueries({ queryKey: queryKeys.animals.all(profile.orgId) });
     },
+  });
+}
+
+// ---------------------------------------------------------------------
+// The four standalone health registers (Part 5 — "M3 remainder").
+// ---------------------------------------------------------------------
+
+export function useVaccinationRegister(orgId: string | undefined, params: HealthRegisterParams) {
+  return useQuery({
+    queryKey: queryKeys.health.vaccinationRegister(orgId ?? "", params),
+    queryFn: () => fetchVaccinationRegister(params),
+    enabled: !!orgId,
+  });
+}
+
+export function useTreatmentRegister(orgId: string | undefined, params: HealthRegisterParams) {
+  return useQuery({
+    queryKey: queryKeys.health.treatmentRegister(orgId ?? "", params),
+    queryFn: () => fetchTreatmentRegister(params),
+    enabled: !!orgId,
+  });
+}
+
+export function useIllnessRegister(orgId: string | undefined, params: HealthRegisterParams) {
+  return useQuery({
+    queryKey: queryKeys.health.illnessRegister(orgId ?? "", params),
+    queryFn: () => fetchIllnessRegister(params),
+    enabled: !!orgId,
+  });
+}
+
+export function useVetVisitRegister(orgId: string | undefined, params: HealthRegisterParams) {
+  return useQuery({
+    queryKey: queryKeys.health.vetVisitRegister(orgId ?? "", params),
+    queryFn: () => fetchVetVisitRegister(params),
+    enabled: !!orgId,
   });
 }

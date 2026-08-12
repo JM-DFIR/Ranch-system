@@ -137,3 +137,16 @@ export const newVeterinarianSchema = z.object({
   phone: z.string().optional(),
   email: z.string().optional(),
 });
+
+// Shared by the four standalone health registers (Vaccinations,
+// Treatments, Illnesses, Vet Visits — session-pack.md Part 5's "M3
+// remainder"). `ranch` is not here — that's `_authenticated`'s global
+// search param, same convention `animalsSearchSchema` already follows.
+export const healthRegisterSearchSchema = z.object({
+  dateFrom: z.string().optional(),
+  dateTo: z.string().optional(),
+  page: z.number().int().min(0).optional(),
+  pageSize: z.union([z.literal(25), z.literal(50), z.literal(100), z.literal(200)]).optional(),
+});
+
+export type HealthRegisterSearch = z.infer<typeof healthRegisterSearchSchema>;
