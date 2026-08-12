@@ -18,6 +18,9 @@ import { RecordTreatmentDrawer } from "@/features/health/components/RecordTreatm
 import { RecordIllnessDrawer } from "@/features/health/components/RecordIllnessDrawer";
 import { RecordVetVisitDrawer } from "@/features/health/components/RecordVetVisitDrawer";
 import { RecordWeightDrawer } from "@/features/weights/components/RecordWeightDrawer";
+import { RecordTransferDrawer } from "@/features/movements/components/RecordTransferDrawer";
+import { RecordBreedingDrawer } from "@/features/breeding/components/RecordBreedingDrawer";
+import { RecordBirthDrawer } from "@/features/breeding/components/RecordBirthDrawer";
 import { ChangeStatusDialog } from "./ChangeStatusDialog";
 import { RecordDeathDialog } from "./RecordDeathDialog";
 import type { AnimalProfile } from "../api";
@@ -28,12 +31,13 @@ interface ProfileHeaderProps {
   animal: AnimalProfile;
 }
 
-// Record vaccination, weight, treatment, illness and vet visit are all
-// real now (Sessions 6 and 8), each pre-filled and read-only to this
-// one animal. Transfer and Edit still render disabled — Transfer needs
-// the movements module (M4) and Edit needs a full edit form, neither
-// built yet. Change status and Record death were already real from
-// Session 4.
+// Record vaccination, weight, treatment, illness, vet visit, transfer,
+// breeding and birth are all real now (Sessions 6, 8, and M4). Edit
+// still renders disabled — it needs a full edit form, not built yet.
+// Change status and Record death were already real from Session 4.
+// Breeding/birth only show for a female animal — breeding_events.dam_id
+// and births.dam_id are both females-only by the schema's own design
+// (BreedingTab.tsx draws the same line for the read side).
 export function ProfileHeader({ animal }: ProfileHeaderProps) {
   const [changeStatusOpen, setChangeStatusOpen] = useState(false);
   const [recordDeathOpen, setRecordDeathOpen] = useState(false);
@@ -42,6 +46,9 @@ export function ProfileHeader({ animal }: ProfileHeaderProps) {
   const [recordTreatmentOpen, setRecordTreatmentOpen] = useState(false);
   const [recordIllnessOpen, setRecordIllnessOpen] = useState(false);
   const [recordVetVisitOpen, setRecordVetVisitOpen] = useState(false);
+  const [transferOpen, setTransferOpen] = useState(false);
+  const [recordBreedingOpen, setRecordBreedingOpen] = useState(false);
+  const [recordBirthOpen, setRecordBirthOpen] = useState(false);
 
   return (
     <div className="flex flex-col gap-4 border-b border-line pb-4">
@@ -88,7 +95,7 @@ export function ProfileHeader({ animal }: ProfileHeaderProps) {
           <Button size="sm" variant="outline" onClick={() => setRecordWeightOpen(true)}>
             Record weight
           </Button>
-          <Button size="sm" variant="outline" disabled title="Coming in a later session">
+          <Button size="sm" variant="outline" onClick={() => setTransferOpen(true)}>
             Transfer
           </Button>
           <Button size="sm" variant="outline" disabled title="Coming in a later session">
@@ -104,6 +111,13 @@ export function ProfileHeader({ animal }: ProfileHeaderProps) {
               <DropdownMenuItem onSelect={() => setRecordTreatmentOpen(true)}>Record treatment</DropdownMenuItem>
               <DropdownMenuItem onSelect={() => setRecordIllnessOpen(true)}>Record illness</DropdownMenuItem>
               <DropdownMenuItem onSelect={() => setRecordVetVisitOpen(true)}>Record vet visit</DropdownMenuItem>
+              {animal.sex === "female" ? (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onSelect={() => setRecordBreedingOpen(true)}>Record breeding</DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => setRecordBirthOpen(true)}>Record birth</DropdownMenuItem>
+                </>
+              ) : null}
               <DropdownMenuSeparator />
               <DropdownMenuItem onSelect={() => setChangeStatusOpen(true)}>Change status</DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -142,6 +156,21 @@ export function ProfileHeader({ animal }: ProfileHeaderProps) {
         onOpenChange={setRecordVaccinationOpen}
         preselectedAnimals={[{ id: animal.id, tagNumber: animal.tagNumber, speciesId: animal.speciesId }]}
       />
+      <RecordTransferDrawer
+        open={transferOpen}
+        onOpenChange={setTransferOpen}
+        preselectedAnimals={[{ id: animal.id, tagNumber: animal.tagNumber }]}
+      />
+      {animal.sex === "female" ? (
+        <>
+          <RecordBreedingDrawer
+            open={recordBreedingOpen}
+            onOpenChange={setRecordBreedingOpen}
+            preselectedAnimals={[{ id: animal.id, tagNumber: animal.tagNumber }]}
+          />
+          <RecordBirthDrawer open={recordBirthOpen} onOpenChange={setRecordBirthOpen} dam={{ id: animal.id, tagNumber: animal.tagNumber }} />
+        </>
+      ) : null}
     </div>
   );
 }

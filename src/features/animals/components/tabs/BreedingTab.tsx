@@ -1,10 +1,17 @@
+import { useState } from "react";
+
 import { formatDate } from "@/lib/format";
+import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useBirths, useBreedingEvents } from "@/features/breeding/hooks";
+import { RecordBreedingDrawer } from "@/features/breeding/components/RecordBreedingDrawer";
+import { RecordBirthDrawer } from "@/features/breeding/components/RecordBirthDrawer";
+import { RecordPregnancyCheckDialog } from "@/features/breeding/components/RecordPregnancyCheckDialog";
 import { RecordSection } from "../RecordSection";
 
 interface BreedingTabProps {
   animalId: string;
+  tagNumber: string;
   sex: string;
 }
 
@@ -21,9 +28,12 @@ function formatDueDate(event: { expectedDueDate: string | null; expectedDueWindo
 // animal's profile shows an empty state here rather than the events he
 // sired on other dams' profiles — those are each dam's own record, not
 // his.
-export function BreedingTab({ animalId, sex }: BreedingTabProps) {
+export function BreedingTab({ animalId, tagNumber, sex }: BreedingTabProps) {
   const { data: events, isLoading: eventsLoading } = useBreedingEvents(animalId);
   const { data: births, isLoading: birthsLoading } = useBirths(animalId);
+  const [recordBreedingOpen, setRecordBreedingOpen] = useState(false);
+  const [recordBirthOpen, setRecordBirthOpen] = useState(false);
+  const [checkEventId, setCheckEventId] = useState<string | null>(null);
 
   const emptyMessage =
     sex === "male"
@@ -35,6 +45,7 @@ export function BreedingTab({ animalId, sex }: BreedingTabProps) {
       <RecordSection
         title="Breeding events"
         recordActionLabel="Record breeding"
+        onRecordAction={sex === "female" ? () => setRecordBreedingOpen(true) : undefined}
         isLoading={eventsLoading}
         isEmpty={!events?.length}
         emptyMessage={emptyMessage}
@@ -48,6 +59,7 @@ export function BreedingTab({ animalId, sex }: BreedingTabProps) {
               <TableHead>Status</TableHead>
               <TableHead>Expected due</TableHead>
               <TableHead>Pregnancy checks</TableHead>
+              <TableHead />
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -65,6 +77,13 @@ export function BreedingTab({ animalId, sex }: BreedingTabProps) {
                     ? e.pregnancyChecks.map((c) => `${c.result} (${formatDate(c.checkDate)})`).join(", ")
                     : "—"}
                 </TableCell>
+                <TableCell>
+                  {e.status === "served" ? (
+                    <Button size="sm" variant="ghost" onClick={() => setCheckEventId(e.id)}>
+                      Record check
+                    </Button>
+                  ) : null}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -74,6 +93,7 @@ export function BreedingTab({ animalId, sex }: BreedingTabProps) {
       <RecordSection
         title="Births"
         recordActionLabel="Record birth"
+        onRecordAction={sex === "female" ? () => setRecordBirthOpen(true) : undefined}
         isLoading={birthsLoading}
         isEmpty={!births?.length}
         emptyMessage={sex === "male" ? "Births are recorded on the dam's profile." : "No births recorded yet."}
@@ -101,6 +121,26 @@ export function BreedingTab({ animalId, sex }: BreedingTabProps) {
           </TableBody>
         </Table>
       </RecordSection>
+
+      {sex === "female" ? (
+        <>
+          <RecordBreedingDrawer
+            open={recordBreedingOpen}
+            onOpenChange={setRecordBreedingOpen}
+            preselectedAnimals={[{ id: animalId, tagNumber }]}
+          />
+          <RecordBirthDrawer open={recordBirthOpen} onOpenChange={setRecordBirthOpen} dam={{ id: animalId, tagNumber }} />
+          {checkEventId ? (
+            <RecordPregnancyCheckDialog
+              open={!!checkEventId}
+              onOpenChange={(open) => !open && setCheckEventId(null)}
+              damId={animalId}
+              damTagNumber={tagNumber}
+              breedingEventId={checkEventId}
+            />
+          ) : null}
+        </>
+      ) : null}
     </div>
   );
 }

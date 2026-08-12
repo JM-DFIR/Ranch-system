@@ -207,10 +207,11 @@ interface EnqueueCreateMovementParams {
 // carries no from_ranch_id for the sync worker to (mis)trust. See
 // CLAUDE.md §7's movements rule; the same reasoning applies whether the
 // call happens online, immediately, or replayed later from this queue.
-export async function enqueueCreateMovement(params: EnqueueCreateMovementParams): Promise<void> {
+export async function enqueueCreateMovement(params: EnqueueCreateMovementParams): Promise<string> {
   const { createdBy, ...payload } = params;
+  const id = uuidv7();
   const entry: QueueEntry = {
-    id: uuidv7(),
+    id,
     operationType: "create_movement",
     payload,
     status: "pending",
@@ -219,4 +220,5 @@ export async function enqueueCreateMovement(params: EnqueueCreateMovementParams)
     attemptCount: 0,
   };
   await offlineDb.writeQueue.add(entry);
+  return id;
 }

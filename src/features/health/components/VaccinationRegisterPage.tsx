@@ -12,7 +12,7 @@ import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
 import { Route as VaccinationsRoute } from "@/routes/_authenticated/health.vaccinations";
 import { vaccinationRegisterColumns } from "../columns";
 import { useVaccinationRegister } from "../hooks";
-import { DateRangeFilter } from "./DateRangeFilter";
+import { DateRangeFilter } from "@/components/patterns/DateRangeFilter";
 
 // No columns are sortable (see columns.tsx) — this register has one
 // natural date order and no reason to expose sorting, so the DataTable

@@ -9,10 +9,10 @@ interface DateRangeFilterProps {
   onChange: (range: { dateFrom?: string; dateTo?: string }) => void;
 }
 
-// The one filter every standalone health register shares — ranch is
-// already global via `_authenticated`'s switcher, so this is the only
-// register-local filter these secondary screens need (unlike the
-// animal register's full FilterBar).
+// Shared by every standalone register that isn't the animal register
+// itself — Health's four (Session 8), Movements/Mortality/Breeding
+// (M4). Ranch is already global via `_authenticated`'s switcher, so
+// this is the only register-local filter these secondary screens need.
 export function DateRangeFilter({ dateFrom, dateTo, onChange }: DateRangeFilterProps) {
   const hasRange = !!dateFrom || !!dateTo;
 

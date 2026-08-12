@@ -21,7 +21,11 @@ import type { AnimalProfile } from "../api";
 interface RecordDeathDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  animal: AnimalProfile;
+  // A full AnimalProfile satisfies this trivially (ProfileHeader's own
+  // usage) — loosened for the dashboard quick-action's free-pick entry
+  // point (M4), which only ever has a lightweight search result, not
+  // the full profile fetch.
+  animal: Pick<AnimalProfile, "id" | "orgId" | "tagNumber">;
 }
 
 const CAUSE_SUGGESTIONS = ["Disease", "Predation", "Accident", "Old age", "Complications", "Unknown"];

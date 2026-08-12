@@ -61,9 +61,19 @@ export const queryKeys = {
     events: (animalId: string) => ["breeding", "events", animalId] as const,
     pregnancyChecks: (breedingEventId: string) => ["breeding", "pregnancy-checks", breedingEventId] as const,
     births: (animalId: string) => ["breeding", "births", animalId] as const,
+    // M4 — the standalone Breeding register and Breeding calendar.
+    register: (orgId: string, params: unknown) => ["breeding", orgId, "register", params] as const,
+    calendar: (orgId: string, ranchId: string | undefined) => ["breeding", orgId, "calendar", ranchId] as const,
+    sireOptions: (orgId: string) => ["breeding", orgId, "sire-options"] as const,
   },
   movements: {
     list: (animalId: string) => ["movements", "list", animalId] as const,
+    // M4 — the standalone Movements register.
+    register: (orgId: string, params: unknown) => ["movements", orgId, "register", params] as const,
+  },
+  mortality: {
+    // M4 — the standalone Mortality register.
+    register: (orgId: string, params: unknown) => ["mortality", orgId, "register", params] as const,
   },
   feeding: {
     records: (animalId: string) => ["feeding", "records", animalId] as const,

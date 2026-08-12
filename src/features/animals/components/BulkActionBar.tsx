@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { RecordVaccinationDrawer } from "@/features/health/components/RecordVaccinationDrawer";
 import { RecordTreatmentDrawer } from "@/features/health/components/RecordTreatmentDrawer";
 import { RecordWeightDrawer } from "@/features/weights/components/RecordWeightDrawer";
+import { RecordTransferDrawer } from "@/features/movements/components/RecordTransferDrawer";
 import type { AnimalRegisterRow } from "../api";
 
 interface BulkAction {
@@ -36,21 +37,22 @@ interface BulkActionBarProps {
   onClearSelection: () => void;
 }
 
-// Record vaccination (Session 6), treatment and weight (Session 8) are
-// all real now. Transfer/Change status still depend on the movements
-// module (M4) — listed per spec so the bar's shape is locked, wired for
-// real as each lands, same pattern as the sidebar's "Soon" nav items
-// (Session 2).
+// Record vaccination (Session 6), treatment/weight (Session 8) and
+// Transfer (M4) are all real now. Change status still has no bulk path
+// — it's a plain field update today (ChangeStatusDialog, Session 4),
+// single-animal only from the profile; a bulk version is its own,
+// separate piece of work, not part of movements/mortality/breeding.
 export function BulkActionBar({ selectedRows, onClearSelection }: BulkActionBarProps) {
   const [recordVaccinationOpen, setRecordVaccinationOpen] = useState(false);
   const [recordTreatmentOpen, setRecordTreatmentOpen] = useState(false);
   const [recordWeightOpen, setRecordWeightOpen] = useState(false);
+  const [transferOpen, setTransferOpen] = useState(false);
 
   const actions: BulkAction[] = [
     { label: "Record vaccination", icon: Syringe, onSelect: () => setRecordVaccinationOpen(true) },
     { label: "Record treatment", icon: Stethoscope, onSelect: () => setRecordTreatmentOpen(true) },
     { label: "Record weight", icon: Scale, onSelect: () => setRecordWeightOpen(true) },
-    { label: "Transfer", icon: ArrowRightLeft },
+    { label: "Transfer", icon: ArrowRightLeft, onSelect: () => setTransferOpen(true) },
     { label: "Change status", icon: RefreshCcw },
     { label: "Export", icon: Download, onSelect: exportCsv },
   ];
@@ -99,6 +101,11 @@ export function BulkActionBar({ selectedRows, onClearSelection }: BulkActionBarP
       <RecordWeightDrawer
         open={recordWeightOpen}
         onOpenChange={setRecordWeightOpen}
+        preselectedAnimals={selectedRows.map((r) => ({ id: r.id, tagNumber: r.tagNumber }))}
+      />
+      <RecordTransferDrawer
+        open={transferOpen}
+        onOpenChange={setTransferOpen}
         preselectedAnimals={selectedRows.map((r) => ({ id: r.id, tagNumber: r.tagNumber }))}
       />
     </>

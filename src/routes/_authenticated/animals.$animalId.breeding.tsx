@@ -11,5 +11,5 @@ function BreedingRoute() {
   const { animalId } = Route.useParams();
   const { data: animal } = useAnimalProfile(animalId);
   if (!animal) return null;
-  return <BreedingTab animalId={animalId} sex={animal.sex} />;
+  return <BreedingTab animalId={animalId} tagNumber={animal.tagNumber} sex={animal.sex} />;
 }

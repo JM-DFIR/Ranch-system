@@ -12,7 +12,7 @@ import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
 import { Route as TreatmentsRoute } from "@/routes/_authenticated/health.treatments";
 import { treatmentRegisterColumns } from "../columns";
 import { useTreatmentRegister } from "../hooks";
-import { DateRangeFilter } from "./DateRangeFilter";
+import { DateRangeFilter } from "@/components/patterns/DateRangeFilter";
 
 const NO_SORTING: SortingState = [];
 const noopSortingChange: OnChangeFn<SortingState> = () => undefined;

@@ -12,7 +12,7 @@ import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
 import { Route as VetVisitsRoute } from "@/routes/_authenticated/health.vet-visits";
 import { vetVisitRegisterColumns } from "../columns";
 import { useVetVisitRegister } from "../hooks";
-import { DateRangeFilter } from "./DateRangeFilter";
+import { DateRangeFilter } from "@/components/patterns/DateRangeFilter";
 
 const NO_SORTING: SortingState = [];
 const noopSortingChange: OnChangeFn<SortingState> = () => undefined;

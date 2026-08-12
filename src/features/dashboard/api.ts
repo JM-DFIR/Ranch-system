@@ -241,12 +241,18 @@ export interface AnimalSearchOption {
   id: string;
   tagNumber: string;
   speciesId: string | null;
+  sex: string;
 }
 
+// `sex` is here for M4's breeding/birth quick actions, which need to
+// offer only female animals in their free-pick list (breeding_events.
+// dam_id and births.dam_id are both females-only by the schema's own
+// design) — filtered client-side from this one shared fetch rather
+// than adding a second, near-identical query.
 export async function fetchAnimalSearchOptions(ranchId?: string): Promise<AnimalSearchOption[]> {
   let query = supabase
     .from("v_animal_current")
-    .select("id, tag_number, species_id")
+    .select("id, tag_number, species_id, sex")
     .eq("is_active_status", true)
     .order("tag_number");
   if (ranchId) query = query.eq("ranch_id", ranchId);
@@ -256,6 +262,7 @@ export async function fetchAnimalSearchOptions(ranchId?: string): Promise<Animal
     id: nonNull(row.id, "id"),
     tagNumber: nonNull(row.tag_number, "tag_number"),
     speciesId: row.species_id,
+    sex: nonNull(row.sex, "sex"),
   }));
 }
 

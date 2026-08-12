@@ -1,34 +1,35 @@
 import type { OnChangeFn, PaginationState, SortingState } from "@tanstack/react-table";
-import { ThermometerSun } from "lucide-react";
+import { Heart } from "lucide-react";
 
 import { useAuth } from "@/lib/auth";
 import { PageHeader } from "@/components/patterns/PageHeader";
 import { EmptyState } from "@/components/patterns/EmptyState";
 import { ErrorState } from "@/components/patterns/ErrorState";
 import { DataTable } from "@/components/patterns/DataTable";
+import { DateRangeFilter } from "@/components/patterns/DateRangeFilter";
 import { PaginationFooter } from "@/features/animals/components/PaginationFooter";
 import { DEFAULT_PAGE_SIZE, type PageSize } from "@/features/animals/schema";
 import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
-import { Route as IllnessesRoute } from "@/routes/_authenticated/health.illnesses";
-import { illnessRegisterColumns } from "../columns";
-import { useIllnessRegister } from "../hooks";
-import { DateRangeFilter } from "@/components/patterns/DateRangeFilter";
+import { Route as BreedingRoute } from "@/routes/_authenticated/breeding.index";
+import { breedingRegisterColumns } from "../columns";
+import { useBreedingRegister } from "../hooks";
 
 const NO_SORTING: SortingState = [];
 const noopSortingChange: OnChangeFn<SortingState> = () => undefined;
 
-// The Illnesses register (session-pack.md Part 5 — "M3 remainder").
-export function IllnessRegisterPage() {
+// The Breeding register (M4 — session-pack.md Part 5). Org-wide,
+// paginated, same shape as the health registers.
+export function BreedingRegisterPage() {
   const { profile } = useAuth();
   const { ranch } = AuthenticatedRoute.useSearch();
-  const search = IllnessesRoute.useSearch();
-  const navigate = IllnessesRoute.useNavigate();
+  const search = BreedingRoute.useSearch();
+  const navigate = BreedingRoute.useNavigate();
 
   const page = search.page ?? 0;
   const pageSize = search.pageSize ?? DEFAULT_PAGE_SIZE;
   const pagination: PaginationState = { pageIndex: page, pageSize };
 
-  const { data, isLoading, isError, error, refetch } = useIllnessRegister(profile?.orgId, {
+  const { data, isLoading, isError, error, refetch } = useBreedingRegister(profile?.orgId, {
     ranchId: ranch,
     dateFrom: search.dateFrom,
     dateTo: search.dateTo,
@@ -45,20 +46,20 @@ export function IllnessRegisterPage() {
 
   const emptyState = (
     <EmptyState
-      icon={ThermometerSun}
-      title="No illnesses recorded yet"
-      description="Illnesses recorded from an animal's profile, the register, or the dashboard's quick actions all show up here."
+      icon={Heart}
+      title="No breeding events recorded yet"
+      description="Breeding events recorded from a dam's profile, the register, or the dashboard's quick actions all show up here."
     />
   );
 
   return (
     <div className="flex flex-col gap-4">
-      <PageHeader title="Illnesses" description={totalCount > 0 ? `${totalCount.toLocaleString()} illnesses recorded` : undefined} />
+      <PageHeader title="Breeding" description={totalCount > 0 ? `${totalCount.toLocaleString()} breeding events recorded` : undefined} />
       <div className="overflow-hidden rounded-card border border-line">
         {isError ? (
           <div className="p-4">
             <ErrorState
-              title="Couldn't load illnesses"
+              title="Couldn't load the breeding register"
               description={error instanceof Error ? error.message : "Check your connection and try again."}
               onRetry={() => void refetch()}
             />
@@ -71,7 +72,7 @@ export function IllnessRegisterPage() {
               onChange={(range) => void navigate({ search: (prev) => ({ ...prev, ...range, page: 0 }) })}
             />
             <DataTable
-              columns={illnessRegisterColumns}
+              columns={breedingRegisterColumns}
               data={rows}
               rowCount={totalCount}
               isLoading={isLoading}
