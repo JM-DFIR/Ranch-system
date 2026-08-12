@@ -6,6 +6,8 @@ import {
   ScanLine,
   Images,
   HeartPulse,
+  TriangleAlert,
+  Stethoscope,
   Scale,
   Baby,
   ArrowRightLeft,
@@ -51,6 +53,8 @@ export const NAV_GROUPS: NavGroup[] = [
     label: "Records",
     items: [
       { label: "Health", icon: HeartPulse },
+      { label: "Attention queue", icon: TriangleAlert, to: "/attention" },
+      { label: "Veterinarians", icon: Stethoscope, to: "/veterinarians" },
       { label: "Weights", icon: Scale },
       { label: "Breeding", icon: Baby },
       { label: "Movements", icon: ArrowRightLeft },

@@ -20,3 +20,14 @@ export function nonNull<T>(value: T | null, field: string): T {
   }
   return value;
 }
+
+// An untouched optional react-hook-form text field holds "" at
+// submit time, not undefined — but a Postgres `uuid`/`date` RPC
+// parameter rejects "" with an invalid-input-syntax error where it
+// would happily accept NULL. `value || undefined` reads right here but
+// trips `@typescript-eslint/prefer-nullish-coalescing`, and `??` is
+// actually wrong (it only replaces null/undefined, not ""), so this
+// names the real intent instead of fighting the linter with `||`.
+export function emptyToUndefined(value: string | undefined): string | undefined {
+  return value === undefined || value === "" ? undefined : value;
+}

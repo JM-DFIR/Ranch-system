@@ -42,6 +42,12 @@ export const queryKeys = {
     vaccineOptions: (orgId: string, speciesId: string | undefined) =>
       ["health", "vaccine-options", orgId, speciesId] as const,
     administeredByOptions: (orgId: string) => ["health", "administered-by-options", orgId] as const,
+    // Session 8 — Record Treatment/Illness/Vet Visit reference options.
+    medicationOptions: (orgId: string) => ["health", "medication-options", orgId] as const,
+    illnessTypeOptions: (orgId: string) => ["health", "illness-type-options", orgId] as const,
+    veterinarianOptions: (orgId: string) => ["health", "veterinarian-options", orgId] as const,
+    veterinarianDirectory: (orgId: string) => ["health", "veterinarian-directory", orgId] as const,
+    attentionQueue: (orgId: string, ranchId: string | undefined) => ["health", "attention-queue", orgId, ranchId] as const,
   },
   weights: {
     series: (animalId: string) => ["weights", "series", animalId] as const,

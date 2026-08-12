@@ -1,8 +1,14 @@
+import { useState } from "react";
 import { TriangleAlert } from "lucide-react";
 
 import { formatDate } from "@/lib/format";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useIllnesses, useTreatments, useVaccinations, useVetVisits } from "@/features/health/hooks";
+import { RecordVaccinationDrawer } from "@/features/health/components/RecordVaccinationDrawer";
+import { RecordTreatmentDrawer } from "@/features/health/components/RecordTreatmentDrawer";
+import { RecordIllnessDrawer } from "@/features/health/components/RecordIllnessDrawer";
+import { RecordVetVisitDrawer } from "@/features/health/components/RecordVetVisitDrawer";
+import { useAnimalProfile } from "../../hooks";
 import { RecordSection } from "../RecordSection";
 
 interface HealthTabProps {
@@ -10,14 +16,22 @@ interface HealthTabProps {
 }
 
 export function HealthTab({ animalId }: HealthTabProps) {
+  const { data: animal } = useAnimalProfile(animalId);
   const { data: vaccinations, isLoading: vaccinationsLoading } = useVaccinations(animalId);
   const { data: treatments, isLoading: treatmentsLoading } = useTreatments(animalId);
   const { data: illnesses, isLoading: illnessesLoading } = useIllnesses(animalId);
   const { data: vetVisits, isLoading: vetVisitsLoading } = useVetVisits(animalId);
 
+  const [recordVaccinationOpen, setRecordVaccinationOpen] = useState(false);
+  const [recordTreatmentOpen, setRecordTreatmentOpen] = useState(false);
+  const [recordIllnessOpen, setRecordIllnessOpen] = useState(false);
+  const [recordVetVisitOpen, setRecordVetVisitOpen] = useState(false);
+
   const activeWithdrawal = treatments?.find(
     (t) => t.withdrawalUntil && new Date(t.withdrawalUntil) >= new Date(new Date().toDateString()),
   );
+
+  const preselected = animal ? [{ id: animal.id, tagNumber: animal.tagNumber, speciesId: animal.speciesId }] : undefined;
 
   return (
     <div className="flex flex-col gap-4">
@@ -31,6 +45,7 @@ export function HealthTab({ animalId }: HealthTabProps) {
       <RecordSection
         title="Vaccinations"
         recordActionLabel="Record vaccination"
+        onRecordAction={() => setRecordVaccinationOpen(true)}
         isLoading={vaccinationsLoading}
         isEmpty={!vaccinations?.length}
         emptyMessage="No vaccinations recorded yet."
@@ -62,6 +77,7 @@ export function HealthTab({ animalId }: HealthTabProps) {
       <RecordSection
         title="Treatments"
         recordActionLabel="Record treatment"
+        onRecordAction={() => setRecordTreatmentOpen(true)}
         isLoading={treatmentsLoading}
         isEmpty={!treatments?.length}
         emptyMessage="No treatments recorded yet."
@@ -93,6 +109,7 @@ export function HealthTab({ animalId }: HealthTabProps) {
       <RecordSection
         title="Illnesses"
         recordActionLabel="Record illness"
+        onRecordAction={() => setRecordIllnessOpen(true)}
         isLoading={illnessesLoading}
         isEmpty={!illnesses?.length}
         emptyMessage="No illnesses recorded yet."
@@ -124,6 +141,7 @@ export function HealthTab({ animalId }: HealthTabProps) {
       <RecordSection
         title="Vet visits"
         recordActionLabel="Record vet visit"
+        onRecordAction={() => setRecordVetVisitOpen(true)}
         isLoading={vetVisitsLoading}
         isEmpty={!vetVisits?.length}
         emptyMessage="No vet visits recorded yet."
@@ -149,6 +167,11 @@ export function HealthTab({ animalId }: HealthTabProps) {
           </TableBody>
         </Table>
       </RecordSection>
+
+      <RecordVaccinationDrawer open={recordVaccinationOpen} onOpenChange={setRecordVaccinationOpen} preselectedAnimals={preselected} />
+      <RecordTreatmentDrawer open={recordTreatmentOpen} onOpenChange={setRecordTreatmentOpen} preselectedAnimals={preselected} />
+      <RecordIllnessDrawer open={recordIllnessOpen} onOpenChange={setRecordIllnessOpen} preselectedAnimals={preselected} />
+      <RecordVetVisitDrawer open={recordVetVisitOpen} onOpenChange={setRecordVetVisitOpen} preselectedAnimals={preselected} />
     </div>
   );
 }

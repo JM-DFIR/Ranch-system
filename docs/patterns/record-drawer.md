@@ -129,6 +129,34 @@ CSV importer that writes the same shape. Zod 4 syntax throughout
    one call writes N individual records (CLAUDE.md's
    individual-record-first rule), never a loop of N separate calls.
 
+## The online-only variant
+
+Added in Session 8 (Record Treatment / Record Illness / Record Vet
+Visit — `src/features/health/components/RecordTreatmentDrawer.tsx` is
+the reference). CLAUDE.md §8's five offline-queued operations are
+fixed — `create_animal`, `attach_photo`, `create_health_event`,
+`create_weight`, `create_movement`. Everything else, including these
+three and eventually breeding/birth/mortality, is **online-only**:
+
+- `record<X>()` in `api.ts` calls the RPC directly, with no
+  `navigator.onLine` branch and no `enqueueCreate<X>()` — there is
+  nothing for the offline queue to do here, and adding one would be
+  building offline support CLAUDE.md never asked for.
+- The drawer reads `useOnlineStatus()` (`lib/hooks/useOnlineStatus.ts`)
+  and renders `<OfflineBlock />` (`components/patterns/OfflineBlock.tsx`)
+  when offline — "you're offline, this needs a connection" — with the
+  submit button disabled to match, rather than letting the form submit
+  into a network call that's guaranteed to fail.
+- Everything else about the drawer — schema, entry points, Combobox
+  fields, mutation invalidation shape, toast + Undo — is identical to
+  the offline-eligible flows above.
+
+Use `CatalogueOrCustomField` (`components/patterns/
+CatalogueOrCustomField.tsx`) for any field shaped like `medication_id`/
+`custom_medication` — a real either/or in the schema (unlike vaccine's
+catalogue-only `vaccine_id`), not something to flatten into a single
+combobox for convenience.
+
 ## Toast and Undo
 
 `toast.success("<Outcome>", { duration: 8000, action: { label: "Undo", onClick: ... } })`.

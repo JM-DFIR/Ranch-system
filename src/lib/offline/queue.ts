@@ -175,10 +175,11 @@ interface EnqueueCreateWeightParams {
   notes?: string;
 }
 
-export async function enqueueCreateWeight(params: EnqueueCreateWeightParams): Promise<void> {
+export async function enqueueCreateWeight(params: EnqueueCreateWeightParams): Promise<string> {
   const { createdBy, ...payload } = params;
+  const id = uuidv7();
   const entry: QueueEntry = {
-    id: uuidv7(),
+    id,
     operationType: "create_weight",
     payload,
     status: "pending",
@@ -187,6 +188,7 @@ export async function enqueueCreateWeight(params: EnqueueCreateWeightParams): Pr
     attemptCount: 0,
   };
   await offlineDb.writeQueue.add(entry);
+  return id;
 }
 
 interface EnqueueCreateMovementParams {

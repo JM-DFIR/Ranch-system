@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Scale } from "lucide-react";
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
@@ -6,6 +7,8 @@ import { EmptyState } from "@/components/patterns/EmptyState";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useWeightSeries } from "@/features/weights/hooks";
+import { RecordWeightDrawer } from "@/features/weights/components/RecordWeightDrawer";
+import { useAnimalProfile } from "../../hooks";
 import { RecordSection } from "../RecordSection";
 
 interface WeightsTabProps {
@@ -13,17 +16,24 @@ interface WeightsTabProps {
 }
 
 export function WeightsTab({ animalId }: WeightsTabProps) {
+  const { data: animal } = useAnimalProfile(animalId);
   const { data: series, isLoading } = useWeightSeries(animalId);
+  const [recordWeightOpen, setRecordWeightOpen] = useState(false);
+  const preselected = animal ? [{ id: animal.id, tagNumber: animal.tagNumber }] : undefined;
 
   if (isLoading) return <Skeleton className="h-64 w-full" />;
 
   if (!series || series.length === 0) {
     return (
-      <EmptyState
-        icon={Scale}
-        title="No weights recorded yet"
-        description="Many ranches never use a scale — a body condition score works just as well. A reading here starts the growth chart."
-      />
+      <>
+        <EmptyState
+          icon={Scale}
+          title="No weights recorded yet"
+          description="Many ranches never use a scale — a body condition score works just as well. A reading here starts the growth chart."
+          action={{ label: "Record weight", onClick: () => setRecordWeightOpen(true) }}
+        />
+        <RecordWeightDrawer open={recordWeightOpen} onOpenChange={setRecordWeightOpen} preselectedAnimals={preselected} />
+      </>
     );
   }
 
@@ -71,6 +81,7 @@ export function WeightsTab({ animalId }: WeightsTabProps) {
       <RecordSection
         title="Readings"
         recordActionLabel="Record weight"
+        onRecordAction={() => setRecordWeightOpen(true)}
         isLoading={false}
         isEmpty={false}
         emptyMessage=""
@@ -100,6 +111,8 @@ export function WeightsTab({ animalId }: WeightsTabProps) {
           </TableBody>
         </Table>
       </RecordSection>
+
+      <RecordWeightDrawer open={recordWeightOpen} onOpenChange={setRecordWeightOpen} preselectedAnimals={preselected} />
     </div>
   );
 }

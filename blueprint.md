@@ -605,9 +605,11 @@ literal list. Reconstructed from the modules already scoped above and
 confirmed with the client rather than guessed silently: **Add animal ·
 Record vaccination · Record treatment · Record weight · Record movement
 · Record death · Record breeding event · Record birth · Record vet
-visit.** Only Add animal and Record vaccination open a real drawer as of
-Session 7; the other seven render disabled ("coming in a later
-session") until their own "record X" flows ship in M3/M4.
+visit.** Add animal and Record vaccination opened a real drawer as of
+Session 7; Record treatment, Record weight and Record vet visit joined
+them in Session 8 (M3 remainder). Record movement, Record death, Record
+breeding event and Record birth still render disabled ("coming in a
+later session") until M4.
 
 ## 4.2 Screen inventory — **59 screens** (58 confirmed by tally per decision #6, plus Batch Enrollment added per §0.6 #2)
 

@@ -7,6 +7,8 @@ interface RecordSectionProps {
   title: string;
   /** Undefined = no record action for this section (e.g. read-only history). */
   recordActionLabel?: string;
+  /** Undefined = the drawer this action needs doesn't exist yet — renders disabled, not hidden. */
+  onRecordAction?: () => void;
   isLoading: boolean;
   isEmpty: boolean;
   emptyMessage: string;
@@ -16,17 +18,23 @@ interface RecordSectionProps {
 // The shared shell for every profile tab's "sub-sections, each a
 // compact table with a record action" (session-pack.md, Session 4:
 // Health, Breeding, Movements, Feeding & Care all use this). The
-// record button itself renders disabled everywhere it's used this
-// session — every one of these actions depends on the RecordDrawer
-// pattern Session 6 establishes, same reasoning as ProfileHeader's
-// primary actions.
-export function RecordSection({ title, recordActionLabel, isLoading, isEmpty, emptyMessage, children }: RecordSectionProps) {
+// record button renders disabled wherever its drawer doesn't exist yet
+// (Breeding/Movements/Feeding & Care, still M4/M5) and real wherever it
+// does (Health's four sections + Weights, wired in Session 8) — same
+// optional-callback convention as EmptyState's action buttons.
+export function RecordSection({ title, recordActionLabel, onRecordAction, isLoading, isEmpty, emptyMessage, children }: RecordSectionProps) {
   return (
     <div className="rounded-card border border-line bg-card p-4">
       <div className="mb-3 flex items-center justify-between gap-2">
         <h2 className="text-14 font-medium text-foreground">{title}</h2>
         {recordActionLabel ? (
-          <Button size="sm" variant="outline" disabled title="Coming in a later session">
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={!onRecordAction}
+            title={onRecordAction ? undefined : "Coming in a later session"}
+            onClick={onRecordAction}
+          >
             {recordActionLabel}
           </Button>
         ) : null}

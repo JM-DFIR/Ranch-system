@@ -74,7 +74,7 @@ export function DashboardPage() {
 
       <QuickActionsBar ranch={ranch} />
 
-      <DominantMetric stats={stats} isLoading={statsLoading} ranch={ranch} species={dashboardSearch.species} />
+      <DominantMetric stats={stats} isLoading={statsLoading} ranch={ranch} />
 
       {showRanchStrip ? <RanchComparisonStrip ranches={ranchStats} isLoading={ranchStatsLoading} /> : null}
 

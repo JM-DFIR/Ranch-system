@@ -8,7 +8,6 @@ interface DominantMetricProps {
   stats: DashboardStats | undefined;
   isLoading: boolean;
   ranch: string | undefined;
-  species: string | undefined;
 }
 
 // The dominant metric + its counterpoint (blueprint.md §5: "one
@@ -16,10 +15,12 @@ interface DominantMetricProps {
 // Trend reads new_enrollments_last_30_days/deaths_last_30_days rather
 // than a true historical snapshot diff — see 0027_dashboard_trend.sql
 // for why that reconstruction isn't cheap in this schema. The
-// counterpoint links to the animal register pre-filtered to
-// `attention=1` (features/animals/schema.ts) rather than a standalone
-// Attention Queue screen, which doesn't exist yet.
-export function DominantMetric({ stats, isLoading, ranch, species }: DominantMetricProps) {
+// counterpoint links to the real Attention Queue (Session 8) — it
+// pointed at the register pre-filtered to `attention=1` in Session 7,
+// before that screen existed; the register filter is still there for
+// its own entry point (the register's own FilterBar toggle), just no
+// longer this card's destination.
+export function DominantMetric({ stats, isLoading, ranch }: DominantMetricProps) {
   if (isLoading || !stats) {
     return (
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-[2fr_1fr]">
@@ -38,7 +39,7 @@ export function DominantMetric({ stats, isLoading, ranch, species }: DominantMet
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-[2fr_1fr]">
       <StatCard label="Active animals" value={stats.activeAnimalCount.toLocaleString()} trendLabel={trendLabel} emphasis="dominant" />
-      <Link to="/animals" search={{ ranch, species, attention: "1" }} className="block rounded-card">
+      <Link to="/attention" search={{ ranch }} className="block rounded-card">
         <StatCard
           label="Requires attention"
           value={stats.attentionCount.toLocaleString()}

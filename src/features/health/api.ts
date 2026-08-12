@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase";
-import { nonNull } from "@/lib/utils";
+import { emptyToUndefined, nonNull } from "@/lib/utils";
 import { cancelQueuedEntry, enqueueCreateHealthEvent } from "@/lib/offline/queue";
-import type { VaccinationFormValues } from "./schema";
+import type { IllnessFormValues, TreatmentFormValues, VaccinationFormValues, VetVisitFormValues } from "./schema";
 
 export interface Vaccination {
   id: string;
@@ -279,6 +279,212 @@ export async function undoRecordVaccination(result: RecordVaccinationResult): Pr
     .from("vaccinations")
     .update({ deleted_at: new Date().toISOString() })
     .in("id", result.vaccinationIds);
+  if (error) throw error;
+  return true;
+}
+
+// ---------------------------------------------------------------------
+// Record Treatment / Record Illness / Record Vet Visit (Session 8 —
+// M3 remainder). All three are online-only: treatment/illness/vet
+// visit are not among the five offline-queued operations (CLAUDE.md
+// §8), so there is no enqueue path here the way recordVaccination has
+// one — callers check useOnlineStatus() and disable submission instead.
+// ---------------------------------------------------------------------
+
+export interface MedicationOption {
+  id: string;
+  name: string;
+}
+
+export async function fetchMedicationOptions(orgId: string): Promise<MedicationOption[]> {
+  const { data, error } = await supabase.from("medications").select("id, name").eq("org_id", orgId).is("deleted_at", null).order("name");
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function createMedication(orgId: string, name: string): Promise<MedicationOption> {
+  const { data, error } = await supabase.from("medications").insert({ org_id: orgId, name }).select("id, name").single();
+  if (error) throw error;
+  return data;
+}
+
+export interface IllnessTypeOption {
+  id: string;
+  name: string;
+}
+
+export async function fetchIllnessTypeOptions(orgId: string): Promise<IllnessTypeOption[]> {
+  const { data, error } = await supabase.from("illness_types").select("id, name").eq("org_id", orgId).is("deleted_at", null).order("name");
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function createIllnessType(orgId: string, name: string): Promise<IllnessTypeOption> {
+  const { data, error } = await supabase.from("illness_types").insert({ org_id: orgId, name }).select("id, name").single();
+  if (error) throw error;
+  return data;
+}
+
+export interface VeterinarianOption {
+  id: string;
+  name: string;
+}
+
+export async function fetchVeterinarianOptions(orgId: string): Promise<VeterinarianOption[]> {
+  const { data, error } = await supabase.from("veterinarians").select("id, name").eq("org_id", orgId).is("deleted_at", null).order("name");
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function createVeterinarian(orgId: string, name: string): Promise<VeterinarianOption> {
+  const { data, error } = await supabase.from("veterinarians").insert({ org_id: orgId, name }).select("id, name").single();
+  if (error) throw error;
+  return data;
+}
+
+// ---------------------------------------------------------------------
+// Veterinarians directory (session-pack.md, Session 8) — the fuller
+// record (practice/phone/email) the dedicated screen wants, versus the
+// name-only inline-create the Record Vet Visit drawer's combobox uses
+// above. Same reference-catalogue table, any org member can write
+// (0021_reference_catalogue_manager_write.sql).
+// ---------------------------------------------------------------------
+export interface VeterinarianRecord {
+  id: string;
+  name: string;
+  practice: string | null;
+  phone: string | null;
+  email: string | null;
+}
+
+export async function fetchVeterinarianDirectory(orgId: string): Promise<VeterinarianRecord[]> {
+  const { data, error } = await supabase
+    .from("veterinarians")
+    .select("id, name, practice, phone, email")
+    .eq("org_id", orgId)
+    .is("deleted_at", null)
+    .order("name");
+  if (error) throw error;
+  return data ?? [];
+}
+
+export interface NewVeterinarianInput {
+  name: string;
+  practice?: string;
+  phone?: string;
+  email?: string;
+}
+
+export async function createVeterinarianDetailed(orgId: string, input: NewVeterinarianInput): Promise<VeterinarianRecord> {
+  const { data, error } = await supabase
+    .from("veterinarians")
+    .insert({ org_id: orgId, name: input.name, practice: input.practice, phone: input.phone, email: input.email })
+    .select("id, name, practice, phone, email")
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+// Soft delete only (CLAUDE.md §6) — reference catalogues are the one
+// place any org member, not just the owner, can remove a row
+// (0021_reference_catalogue_manager_write.sql).
+export async function softDeleteVeterinarian(id: string): Promise<void> {
+  const { error } = await supabase.from("veterinarians").update({ deleted_at: new Date().toISOString() }).eq("id", id);
+  if (error) throw error;
+}
+
+export interface RecordTreatmentResult {
+  treatmentIds: string[];
+}
+
+export async function recordTreatment(values: TreatmentFormValues): Promise<RecordTreatmentResult> {
+  const administeredByProfile = values.administeredBy.type === "profile" ? values.administeredBy.id : undefined;
+  const veterinarianId = values.administeredBy.type === "veterinarian" ? values.administeredBy.id : undefined;
+  const medicationId = values.medication.type === "catalogue" ? values.medication.id : undefined;
+  const customMedication = values.medication.type === "custom" ? values.medication.name : undefined;
+
+  const { data, error } = await supabase.rpc("bulk_treatment_event", {
+    p_animal_ids: values.animalIds,
+    p_treatment_date: values.treatmentDate,
+    p_illness_id: emptyToUndefined(values.illnessId),
+    p_medication_id: medicationId,
+    p_custom_medication: customMedication,
+    p_dosage: values.dosage,
+    p_route: values.route,
+    p_duration_days: values.durationDays ? Number(values.durationDays) : undefined,
+    p_administered_by_profile: administeredByProfile,
+    p_veterinarian_id: veterinarianId,
+    p_withdrawal_until: emptyToUndefined(values.withdrawalUntil),
+    p_outcome: values.outcome,
+    p_follow_up_date: emptyToUndefined(values.followUpDate),
+    p_notes: values.notes,
+  });
+  if (error) throw error;
+  return { treatmentIds: (data ?? []).map((t) => t.id) };
+}
+
+export async function undoRecordTreatment(result: RecordTreatmentResult): Promise<boolean> {
+  if (result.treatmentIds.length === 0) return false;
+  const { error } = await supabase.from("treatments").update({ deleted_at: new Date().toISOString() }).in("id", result.treatmentIds);
+  if (error) throw error;
+  return true;
+}
+
+export interface RecordIllnessResult {
+  illnessIds: string[];
+}
+
+export async function recordIllness(values: IllnessFormValues): Promise<RecordIllnessResult> {
+  const illnessTypeId = values.illnessName.type === "catalogue" ? values.illnessName.id : undefined;
+  const customName = values.illnessName.type === "custom" ? values.illnessName.name : undefined;
+
+  const { data, error } = await supabase.rpc("bulk_illness_event", {
+    p_animal_ids: values.animalIds,
+    p_onset_date: values.onsetDate,
+    p_severity: values.severity,
+    p_illness_type_id: illnessTypeId,
+    p_custom_name: customName,
+    p_symptoms: values.symptoms,
+    p_diagnosis: values.diagnosis,
+    p_diagnosed_by: values.diagnosedBy,
+    p_status: values.status,
+    p_resolved_date: emptyToUndefined(values.resolvedDate),
+    p_notes: values.notes,
+  });
+  if (error) throw error;
+  return { illnessIds: (data ?? []).map((i) => i.id) };
+}
+
+export async function undoRecordIllness(result: RecordIllnessResult): Promise<boolean> {
+  if (result.illnessIds.length === 0) return false;
+  const { error } = await supabase.from("illnesses").update({ deleted_at: new Date().toISOString() }).in("id", result.illnessIds);
+  if (error) throw error;
+  return true;
+}
+
+export interface RecordVetVisitResult {
+  vetVisitId: string;
+}
+
+export async function recordVetVisit(values: VetVisitFormValues): Promise<RecordVetVisitResult> {
+  const { data, error } = await supabase
+    .rpc("record_vet_visit", {
+      p_animal_ids: values.animalIds,
+      p_visit_date: values.visitDate,
+      p_veterinarian_id: emptyToUndefined(values.veterinarianId),
+      p_purpose: values.purpose,
+      p_findings: values.findings,
+      p_recommendations: values.recommendations,
+      p_next_visit_date: emptyToUndefined(values.nextVisitDate),
+      p_notes: values.notes,
+    })
+    .single();
+  if (error) throw error;
+  return { vetVisitId: data.id };
+}
+
+export async function undoRecordVetVisit(result: RecordVetVisitResult): Promise<boolean> {
+  const { error } = await supabase.from("vet_visits").update({ deleted_at: new Date().toISOString() }).eq("id", result.vetVisitId);
   if (error) throw error;
   return true;
 }

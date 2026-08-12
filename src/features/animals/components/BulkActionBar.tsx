@@ -3,6 +3,8 @@ import { Download, Syringe, Stethoscope, Scale, ArrowRightLeft, RefreshCcw, X } 
 
 import { Button } from "@/components/ui/button";
 import { RecordVaccinationDrawer } from "@/features/health/components/RecordVaccinationDrawer";
+import { RecordTreatmentDrawer } from "@/features/health/components/RecordTreatmentDrawer";
+import { RecordWeightDrawer } from "@/features/weights/components/RecordWeightDrawer";
 import type { AnimalRegisterRow } from "../api";
 
 interface BulkAction {
@@ -34,19 +36,20 @@ interface BulkActionBarProps {
   onClearSelection: () => void;
 }
 
-// Record vaccination is real now (Session 6's Record Vaccination
-// drawer — entry point #3, "the register's bulk action bar"). Record
-// treatment/weight and Transfer/Change status still depend on drawers
-// that ship in later sessions — listed per spec so the bar's shape is
-// locked, wired for real as each lands, same pattern as the sidebar's
-// "Soon" nav items (Session 2).
+// Record vaccination (Session 6), treatment and weight (Session 8) are
+// all real now. Transfer/Change status still depend on the movements
+// module (M4) — listed per spec so the bar's shape is locked, wired for
+// real as each lands, same pattern as the sidebar's "Soon" nav items
+// (Session 2).
 export function BulkActionBar({ selectedRows, onClearSelection }: BulkActionBarProps) {
   const [recordVaccinationOpen, setRecordVaccinationOpen] = useState(false);
+  const [recordTreatmentOpen, setRecordTreatmentOpen] = useState(false);
+  const [recordWeightOpen, setRecordWeightOpen] = useState(false);
 
   const actions: BulkAction[] = [
     { label: "Record vaccination", icon: Syringe, onSelect: () => setRecordVaccinationOpen(true) },
-    { label: "Record treatment", icon: Stethoscope },
-    { label: "Record weight", icon: Scale },
+    { label: "Record treatment", icon: Stethoscope, onSelect: () => setRecordTreatmentOpen(true) },
+    { label: "Record weight", icon: Scale, onSelect: () => setRecordWeightOpen(true) },
     { label: "Transfer", icon: ArrowRightLeft },
     { label: "Change status", icon: RefreshCcw },
     { label: "Export", icon: Download, onSelect: exportCsv },
@@ -87,6 +90,16 @@ export function BulkActionBar({ selectedRows, onClearSelection }: BulkActionBarP
         open={recordVaccinationOpen}
         onOpenChange={setRecordVaccinationOpen}
         preselectedAnimals={selectedRows.map((r) => ({ id: r.id, tagNumber: r.tagNumber, speciesId: r.speciesId }))}
+      />
+      <RecordTreatmentDrawer
+        open={recordTreatmentOpen}
+        onOpenChange={setRecordTreatmentOpen}
+        preselectedAnimals={selectedRows.map((r) => ({ id: r.id, tagNumber: r.tagNumber }))}
+      />
+      <RecordWeightDrawer
+        open={recordWeightOpen}
+        onOpenChange={setRecordWeightOpen}
+        preselectedAnimals={selectedRows.map((r) => ({ id: r.id, tagNumber: r.tagNumber }))}
       />
     </>
   );

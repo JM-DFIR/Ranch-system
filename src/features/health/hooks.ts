@@ -4,16 +4,26 @@ import { useAuth } from "@/lib/auth";
 import { queryKeys } from "@/lib/query-keys";
 import {
   fetchAdministeredByOptions,
+  fetchIllnessTypeOptions,
   fetchIllnesses,
+  fetchMedicationOptions,
   fetchTreatments,
   fetchVaccinations,
   fetchVaccineOptions,
+  fetchVeterinarianDirectory,
+  fetchVeterinarianOptions,
   fetchVetVisits,
+  recordIllness,
+  recordTreatment,
   recordVaccination,
+  recordVetVisit,
+  type RecordIllnessResult,
+  type RecordTreatmentResult,
   type RecordVaccinationResult,
+  type RecordVetVisitResult,
   type Vaccination,
 } from "./api";
-import type { VaccinationFormValues } from "./schema";
+import type { IllnessFormValues, TreatmentFormValues, VaccinationFormValues, VetVisitFormValues } from "./schema";
 
 export function useVaccinations(animalId: string | undefined) {
   return useQuery({
@@ -113,6 +123,106 @@ export function useRecordVaccination() {
       if (!data) return;
       for (const animalId of data.values.animalIds) {
         void queryClient.invalidateQueries({ queryKey: queryKeys.health.vaccinations(animalId) });
+        void queryClient.invalidateQueries({ queryKey: queryKeys.animals.detail(animalId) });
+      }
+      if (profile?.orgId) void queryClient.invalidateQueries({ queryKey: queryKeys.animals.all(profile.orgId) });
+    },
+  });
+}
+
+// ---------------------------------------------------------------------
+// Session 8 — Record Treatment / Illness / Vet Visit reference options.
+// ---------------------------------------------------------------------
+
+export function useMedicationOptions(orgId: string | undefined) {
+  return useQuery({
+    queryKey: queryKeys.health.medicationOptions(orgId ?? ""),
+    queryFn: () => fetchMedicationOptions(orgId ?? ""),
+    enabled: !!orgId,
+  });
+}
+
+export function useIllnessTypeOptions(orgId: string | undefined) {
+  return useQuery({
+    queryKey: queryKeys.health.illnessTypeOptions(orgId ?? ""),
+    queryFn: () => fetchIllnessTypeOptions(orgId ?? ""),
+    enabled: !!orgId,
+  });
+}
+
+export function useVeterinarianOptions(orgId: string | undefined) {
+  return useQuery({
+    queryKey: queryKeys.health.veterinarianOptions(orgId ?? ""),
+    queryFn: () => fetchVeterinarianOptions(orgId ?? ""),
+    enabled: !!orgId,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useVeterinarianDirectory(orgId: string | undefined) {
+  return useQuery({
+    queryKey: queryKeys.health.veterinarianDirectory(orgId ?? ""),
+    queryFn: () => fetchVeterinarianDirectory(orgId ?? ""),
+    enabled: !!orgId,
+  });
+}
+
+// No offline branch and no optimistic patch on any of the three
+// mutations below — treatment/illness/vet visit are online-only
+// (CLAUDE.md §8), and each write settles fast enough online that
+// invalidate-on-settle alone is enough (same call the vaccination
+// mutation makes for its own bulk/multi-animal case).
+
+export function useRecordTreatment() {
+  const { profile } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (values: TreatmentFormValues): Promise<{ values: TreatmentFormValues; result: RecordTreatmentResult }> => {
+      const result = await recordTreatment(values);
+      return { values, result };
+    },
+    onSuccess: ({ values }) => {
+      for (const animalId of values.animalIds) {
+        void queryClient.invalidateQueries({ queryKey: queryKeys.health.treatments(animalId) });
+        void queryClient.invalidateQueries({ queryKey: queryKeys.animals.detail(animalId) });
+      }
+      if (profile?.orgId) void queryClient.invalidateQueries({ queryKey: queryKeys.animals.all(profile.orgId) });
+    },
+  });
+}
+
+export function useRecordIllness() {
+  const { profile } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (values: IllnessFormValues): Promise<{ values: IllnessFormValues; result: RecordIllnessResult }> => {
+      const result = await recordIllness(values);
+      return { values, result };
+    },
+    onSuccess: ({ values }) => {
+      for (const animalId of values.animalIds) {
+        void queryClient.invalidateQueries({ queryKey: queryKeys.health.illnesses(animalId) });
+        void queryClient.invalidateQueries({ queryKey: queryKeys.animals.detail(animalId) });
+      }
+      if (profile?.orgId) void queryClient.invalidateQueries({ queryKey: queryKeys.animals.all(profile.orgId) });
+    },
+  });
+}
+
+export function useRecordVetVisit() {
+  const { profile } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (values: VetVisitFormValues): Promise<{ values: VetVisitFormValues; result: RecordVetVisitResult }> => {
+      const result = await recordVetVisit(values);
+      return { values, result };
+    },
+    onSuccess: ({ values }) => {
+      for (const animalId of values.animalIds) {
+        void queryClient.invalidateQueries({ queryKey: queryKeys.health.vetVisits(animalId) });
         void queryClient.invalidateQueries({ queryKey: queryKeys.animals.detail(animalId) });
       }
       if (profile?.orgId) void queryClient.invalidateQueries({ queryKey: queryKeys.animals.all(profile.orgId) });
