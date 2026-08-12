@@ -467,18 +467,21 @@ export interface RecordVetVisitResult {
 }
 
 export async function recordVetVisit(values: VetVisitFormValues): Promise<RecordVetVisitResult> {
-  const { data, error } = await supabase
-    .rpc("record_vet_visit", {
-      p_animal_ids: values.animalIds,
-      p_visit_date: values.visitDate,
-      p_veterinarian_id: emptyToUndefined(values.veterinarianId),
-      p_purpose: values.purpose,
-      p_findings: values.findings,
-      p_recommendations: values.recommendations,
-      p_next_visit_date: emptyToUndefined(values.nextVisitDate),
-      p_notes: values.notes,
-    })
-    .single();
+  // record_vet_visit returns a single `vet_visits` row, not `setof` —
+  // unlike the two bulk_*_event RPCs above, the client never calls
+  // `.single()` here, since the generated type already reflects a
+  // single object rather than an array (no `.single()` overload
+  // applies to that shape).
+  const { data, error } = await supabase.rpc("record_vet_visit", {
+    p_animal_ids: values.animalIds,
+    p_visit_date: values.visitDate,
+    p_veterinarian_id: emptyToUndefined(values.veterinarianId),
+    p_purpose: values.purpose,
+    p_findings: values.findings,
+    p_recommendations: values.recommendations,
+    p_next_visit_date: emptyToUndefined(values.nextVisitDate),
+    p_notes: values.notes,
+  });
   if (error) throw error;
   return { vetVisitId: data.id };
 }
