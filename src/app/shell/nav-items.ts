@@ -59,7 +59,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { label: "Breeding", icon: Baby, to: "/breeding" },
       { label: "Movements", icon: ArrowRightLeft, to: "/movements" },
       { label: "Mortality", icon: Skull, to: "/mortality" },
-      { label: "Feeding & Care", icon: Wheat },
+      { label: "Feeding & Care", icon: Wheat, to: "/feeding" },
     ],
   },
   {

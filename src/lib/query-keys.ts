@@ -78,6 +78,12 @@ export const queryKeys = {
   feeding: {
     records: (animalId: string) => ["feeding", "records", animalId] as const,
     careActivities: (animalId: string) => ["feeding", "care-activities", animalId] as const,
+    // M5 — reference options + the two standalone registers.
+    feedItemOptions: (orgId: string) => ["feeding", orgId, "feed-item-options"] as const,
+    careActivityTypeOptions: (orgId: string) => ["feeding", orgId, "care-activity-type-options"] as const,
+    orgMembers: (orgId: string) => ["feeding", orgId, "org-members"] as const,
+    feedingRegister: (orgId: string, params: unknown) => ["feeding", orgId, "feeding-register", params] as const,
+    careActivityRegister: (orgId: string, params: unknown) => ["feeding", orgId, "care-activity-register", params] as const,
   },
   // Session 7 — Owner/Manager Dashboard. `filters` is the dashboard's
   // own {ranchIds, speciesId, dateFrom, dateTo} params object, kept
