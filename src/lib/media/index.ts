@@ -29,3 +29,16 @@ export async function compressAnimalPhoto(file: File): Promise<CompressedPhoto> 
 
   return { photo, thumbnail, photoSizeBytes: photo.size };
 }
+
+// The Ranches module's cover image (0031_ranches_storage.sql) — one
+// image, no thumbnail pairing, since it's shown at card size in one
+// place (the Ranch List) rather than needing a separate small variant
+// the way an animal photo does across register rows and the profile.
+export async function compressRanchCover(file: File): Promise<Blob> {
+  return imageCompression(file, {
+    maxWidthOrHeight: 1600,
+    maxSizeMB: 0.3,
+    fileType: "image/webp",
+    useWebWorker: true,
+  });
+}

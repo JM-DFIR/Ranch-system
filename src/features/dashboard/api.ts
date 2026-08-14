@@ -79,33 +79,6 @@ export async function fetchDashboardStats(params: DashboardStatsParams): Promise
 // filtered slice, and a per-ranch parameterized version would cost N
 // round trips instead of one.
 // ---------------------------------------------------------------------
-export interface RanchStat {
-  ranchId: string;
-  ranchName: string;
-  activeAnimalCount: number;
-  maleCount: number;
-  femaleCount: number;
-  speciesBreakdown: Record<string, number>;
-  attentionCount: number;
-}
-
-export async function fetchRanchStats(): Promise<RanchStat[]> {
-  const { data, error } = await supabase
-    .from("v_ranch_stats")
-    .select("ranch_id, ranch_name, active_animal_count, male_count, female_count, species_breakdown, attention_count")
-    .order("ranch_name");
-  if (error) throw error;
-  return (data ?? []).map((r) => ({
-    ranchId: nonNull(r.ranch_id, "ranch_id"),
-    ranchName: nonNull(r.ranch_name, "ranch_name"),
-    activeAnimalCount: nonNull(r.active_animal_count, "active_animal_count"),
-    maleCount: nonNull(r.male_count, "male_count"),
-    femaleCount: nonNull(r.female_count, "female_count"),
-    speciesBreakdown: (r.species_breakdown as Record<string, number> | null) ?? {},
-    attentionCount: nonNull(r.attention_count, "attention_count"),
-  }));
-}
-
 // ---------------------------------------------------------------------
 // Upcoming — merged, date-sorted vaccinations + vet follow-ups, next 30
 // days (the views' own fixed horizon), capped by the caller. Species

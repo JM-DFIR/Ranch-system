@@ -13,31 +13,29 @@ interface Step {
   title: string;
   description: string;
   done: boolean;
-  action?: { label: string; to: "/enroll" };
+  action?: { label: string; to: "/enroll" | "/ranches" | "/admin/reference-data" };
 }
 
 // "When the org has zero animals... replace the whole dashboard with
 // an onboarding checklist... make it welcoming, not empty"
-// (session-pack.md, Session 7). Ranch creation and the species
-// catalogue manager are both still-unbuilt screens (blueprint.md Part
-// 4's coverage matrix: Ranches' Create/Edit Ranch and Admin's
-// reference-data manager) — those two steps render as guidance without
-// a clickable action, same "coming in a later session" convention used
-// throughout, rather than a link to a screen that doesn't exist. Start
-// Enrollment Mode is real and links out once a ranch exists to enrol
-// against.
+// (session-pack.md, Session 7). All three steps now link somewhere
+// real — Ranches (List · Create/Edit Ranch) and Admin's Reference Data
+// Manager both shipped after this checklist was first written, when
+// they were still "coming in a later session" placeholders.
 export function OnboardingChecklist({ state }: OnboardingChecklistProps) {
   const steps: Step[] = [
     {
       title: "Create your first ranch",
       description: "Every animal belongs to a ranch. Add one with its name and location to get started.",
       done: state.hasRanches,
+      action: state.hasRanches ? undefined : { label: "Create a ranch", to: "/ranches" },
     },
     {
       title: "Add your species",
       description:
         "Set up the species you keep — goats, cattle, or anything else — with a tag prefix if you want the next-tag suggestion to work from day one.",
       done: state.hasSpecies,
+      action: state.hasSpecies ? undefined : { label: "Add a species", to: "/admin/reference-data" },
     },
     {
       title: "Start enrolling",

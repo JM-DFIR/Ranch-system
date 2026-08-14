@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { queryKeys } from "@/lib/query-keys";
+import { fetchRanchStats } from "@/features/ranches/api";
 import {
   fetchAnimalSearchOptions,
   fetchDashboardStats,
   fetchFirstRunState,
-  fetchRanchStats,
   fetchRecentActivity,
   fetchUpcoming,
   type DashboardStatsParams,
@@ -21,9 +21,13 @@ export function useDashboardStats(orgId: string | undefined, params: DashboardSt
   });
 }
 
+// Shares its cache entry with the Ranches module's own useRanchStats
+// (features/ranches/hooks.ts) — same fetcher, same query key
+// (queryKeys.ranches.statsList), so visiting the dashboard and the
+// Ranch List don't each hold a separate copy of the same rows.
 export function useRanchStats(orgId: string | undefined) {
   return useQuery({
-    queryKey: queryKeys.dashboard.ranchStats(orgId ?? ""),
+    queryKey: queryKeys.ranches.statsList(orgId ?? ""),
     queryFn: fetchRanchStats,
     enabled: !!orgId,
   });

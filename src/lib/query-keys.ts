@@ -9,7 +9,14 @@ export const queryKeys = {
   ranches: {
     all: (orgId: string) => ["ranches", orgId] as const,
     list: (orgId: string) => ["ranches", orgId, "list"] as const,
-    detail: (orgId: string, ranchId: string) => ["ranches", orgId, "detail", ranchId] as const,
+    // Ranches module (blueprint.md §4.1) — statsList backs the List
+    // page's cards (v_ranch_stats), detail/sections are keyed by
+    // ranchId alone, same convention as animals.detail(animalId): a
+    // ranch id is already globally unique, no org scoping needed in
+    // the cache key itself (RLS already scopes the data).
+    statsList: (orgId: string) => ["ranches", orgId, "stats-list"] as const,
+    detail: (ranchId: string) => ["ranches", "detail", ranchId] as const,
+    sections: (ranchId: string) => ["ranches", "detail", ranchId, "sections"] as const,
   },
   animals: {
     all: (orgId: string) => ["animals", orgId] as const,
@@ -92,7 +99,9 @@ export const queryKeys = {
   // features/dashboard/schema.ts).
   dashboard: {
     stats: (orgId: string, filters: unknown) => ["dashboard", orgId, "stats", filters] as const,
-    ranchStats: (orgId: string) => ["dashboard", orgId, "ranch-stats"] as const,
+    // Ranch stats moved to ranches.statsList (M7's Ranches module) —
+    // dashboard's useRanchStats hook now keys off that directly so both
+    // features share one cache entry.
     upcoming: (orgId: string, filters: unknown) => ["dashboard", orgId, "upcoming", filters] as const,
     recentActivity: (orgId: string, filters: unknown) => ["dashboard", orgId, "recent-activity", filters] as const,
     animalSearchOptions: (orgId: string) => ["dashboard", orgId, "animal-search-options"] as const,

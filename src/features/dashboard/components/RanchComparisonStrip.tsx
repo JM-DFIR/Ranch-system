@@ -3,7 +3,7 @@ import { MapPin, TriangleAlert } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { RanchStat } from "../api";
+import type { RanchStat } from "@/features/ranches/api";
 
 interface RanchComparisonStripProps {
   ranches: RanchStat[] | undefined;
@@ -19,12 +19,15 @@ function topSpecies(breakdown: Record<string, number>, limit = 3): string {
     .join(" · ");
 }
 
-// One card per ranch — cover image (once that upload flow exists;
-// icon fallback until then, same deferral as every other photo_path
-// field in this codebase), headcount, species split, attention count
-// (session-pack.md, Session 7). Each card is a real destination: the
-// register pre-scoped to that ranch, since there's no Ranch Detail
-// screen built yet.
+// One card per ranch — icon rather than the real cover image (the
+// Ranches module's own List page, features/ranches/components/
+// RanchListPage.tsx, is where cover images are the star; fetching a
+// signed URL per ranch on every dashboard load for a strip this compact
+// isn't worth it), headcount, species split, attention count
+// (session-pack.md, Session 7). Each card links to the Ranch Detail
+// page now that one exists (M7's Ranches module) — previously this
+// linked to the animal register pre-scoped to that ranch, back when
+// Ranch Detail didn't exist yet.
 export function RanchComparisonStrip({ ranches, isLoading }: RanchComparisonStripProps) {
   if (isLoading) {
     return (
@@ -42,8 +45,8 @@ export function RanchComparisonStrip({ ranches, isLoading }: RanchComparisonStri
       {ranches.map((r) => (
         <Link
           key={r.ranchId}
-          to="/animals"
-          search={{ ranch: r.ranchId }}
+          to="/ranches/$ranchId"
+          params={{ ranchId: r.ranchId }}
           className="flex w-56 shrink-0 flex-col gap-2 rounded-card border border-line bg-card p-3 transition-colors hover:border-primary"
         >
           <div className="flex items-center gap-2">
