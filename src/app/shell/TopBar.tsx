@@ -18,9 +18,10 @@ import { RanchScopeSwitcher } from "./RanchScopeSwitcher";
 
 interface TopBarProps {
   onOpenMobileNav: () => void;
+  onOpenCommandPalette: () => void;
 }
 
-export function TopBar({ onOpenMobileNav }: TopBarProps) {
+export function TopBar({ onOpenMobileNav, onOpenCommandPalette }: TopBarProps) {
   const { profile } = useAuth();
   const navigate = useNavigate();
 
@@ -43,11 +44,7 @@ export function TopBar({ onOpenMobileNav }: TopBarProps) {
 
       <RanchScopeSwitcher />
 
-      {/* Command palette is M6 (blueprint.md Part 7, session-pack.md) —
-          this establishes the trigger's place in the top bar now, at
-          full width, so the layout doesn't shift once search actually
-          works, rather than pretending it already does. */}
-      <Button variant="outline" size="sm" className="ml-2 hidden gap-2 text-muted-foreground sm:flex">
+      <Button variant="outline" size="sm" className="ml-2 hidden gap-2 text-muted-foreground sm:flex" onClick={onOpenCommandPalette}>
         <Search className="size-3.5" aria-hidden />
         Search
         <kbd className="ml-2 rounded-badge border border-line bg-muted px-1.5 py-0.5 text-12 text-muted-foreground">

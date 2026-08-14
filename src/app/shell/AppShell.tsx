@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 
 import { useSyncWorker } from "@/lib/offline/useSyncWorker";
+import { CommandPalette } from "@/components/patterns/CommandPalette";
 import { DesktopSidebar, MobileNav } from "./Sidebar";
 import { TopBar } from "./TopBar";
 
@@ -29,16 +30,32 @@ function useSidebarCollapsed() {
 export function AppShell({ children }: { children: ReactNode }) {
   const [collapsed, setCollapsed] = useSidebarCollapsed();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   useSyncWorker();
+
+  // ⌘K / Ctrl+K opens the Command Palette from anywhere in the app —
+  // the one global keyboard shortcut this product has, so it lives at
+  // the shell level rather than in any one screen.
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setCommandPaletteOpen((open) => !open);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   return (
     <div className="flex min-h-screen bg-background">
       <DesktopSidebar collapsed={collapsed} onToggleCollapsed={() => setCollapsed((c) => !c)} />
       <MobileNav open={mobileNavOpen} onOpenChange={setMobileNavOpen} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <TopBar onOpenMobileNav={() => setMobileNavOpen(true)} />
+        <TopBar onOpenMobileNav={() => setMobileNavOpen(true)} onOpenCommandPalette={() => setCommandPaletteOpen(true)} />
         <main className="min-w-0 flex-1 overflow-y-auto">{children}</main>
       </div>
+      <CommandPalette open={commandPaletteOpen} onOpenChange={setCommandPaletteOpen} />
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { Command as CommandPrimitive } from "cmdk";
 import { SearchIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 
 function Command({ className, ...props }: React.ComponentProps<typeof CommandPrimitive>) {
   return (
@@ -77,4 +78,26 @@ function CommandItem({ className, ...props }: React.ComponentProps<typeof Comman
   );
 }
 
-export { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem, CommandSeparator };
+interface CommandDialogProps extends React.ComponentProps<typeof Dialog> {
+  title?: string;
+  description?: string;
+}
+
+// Command Palette's container (M6) — the standard shadcn CommandDialog
+// shape, added here since this project's own cmdk-based Command
+// primitives never had one until the palette needed it. DialogTitle/
+// Description are screen-reader-only: the visible chrome is entirely
+// the Command input/list, not a conventional dialog header.
+function CommandDialog({ title = "Command palette", description = "Search animals or jump to a screen", children, ...props }: CommandDialogProps) {
+  return (
+    <Dialog {...props}>
+      <DialogContent showCloseButton={false} className="overflow-hidden p-0 sm:max-w-xl">
+        <DialogTitle className="sr-only">{title}</DialogTitle>
+        <DialogDescription className="sr-only">{description}</DialogDescription>
+        <Command className="[&_[cmdk-group-heading]]:px-2">{children}</Command>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export { Command, CommandDialog, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem, CommandSeparator };

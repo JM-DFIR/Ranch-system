@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Download, Syringe, Stethoscope, Scale, ArrowRightLeft, RefreshCcw, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { downloadCsv } from "@/lib/csv";
 import { RecordVaccinationDrawer } from "@/features/health/components/RecordVaccinationDrawer";
 import { RecordTreatmentDrawer } from "@/features/health/components/RecordTreatmentDrawer";
 import { RecordWeightDrawer } from "@/features/weights/components/RecordWeightDrawer";
@@ -17,19 +18,18 @@ interface BulkAction {
 
 function exportCsv(rows: AnimalRegisterRow[]) {
   const headers = ["Tag", "Name", "Species", "Breed", "Sex", "Ranch", "Section", "Status", "Last event"];
-  const lines = rows.map((r) =>
-    [r.tagNumber, r.name ?? "", r.speciesName ?? "", r.breedName ?? "", r.sex, r.ranchName, r.sectionName ?? "", r.statusName, r.lastEventDate ?? ""]
-      .map((field) => `"${String(field).replace(/"/g, '""')}"`)
-      .join(","),
-  );
-  const csv = [headers.join(","), ...lines].join("\r\n");
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `animals-export-${new Date().toISOString().slice(0, 10)}.csv`;
-  link.click();
-  URL.revokeObjectURL(url);
+  const lines = rows.map((r) => [
+    r.tagNumber,
+    r.name ?? "",
+    r.speciesName ?? "",
+    r.breedName ?? "",
+    r.sex,
+    r.ranchName,
+    r.sectionName ?? "",
+    r.statusName,
+    r.lastEventDate ?? "",
+  ]);
+  downloadCsv(`animals-export-${new Date().toISOString().slice(0, 10)}.csv`, headers, lines);
 }
 
 interface BulkActionBarProps {

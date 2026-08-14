@@ -3595,6 +3595,347 @@ export type Database = {
         }
         Relationships: []
       }
+      v_attention_summary_report: {
+        Row: {
+          count: number | null
+          org_id: string | null
+          ranch_id: string | null
+          reason: string | null
+          severity: string | null
+          species_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "animals_species_id_fkey"
+            columns: ["species_id"]
+            isOneToOne: false
+            referencedRelation: "species"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_birth_report: {
+        Row: {
+          count: number | null
+          group_label: string | null
+          month: string | null
+          org_id: string | null
+          ranch_id: string | null
+          ranch_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "animals_ranch_id_fkey"
+            columns: ["ranch_id"]
+            isOneToOne: false
+            referencedRelation: "ranches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "animals_ranch_id_fkey"
+            columns: ["ranch_id"]
+            isOneToOne: false
+            referencedRelation: "v_ranch_stats"
+            referencedColumns: ["ranch_id"]
+          },
+          {
+            foreignKeyName: "births_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "births_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "v_org_stats"
+            referencedColumns: ["org_id"]
+          },
+        ]
+      }
+      v_breeding_performance_report: {
+        Row: {
+          aborted_count: number | null
+          confirmed_pregnant_count: number | null
+          delivered_count: number | null
+          not_pregnant_count: number | null
+          org_id: string | null
+          ranch_id: string | null
+          ranch_name: string | null
+          served_count: number | null
+          species_id: string | null
+          species_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "animals_ranch_id_fkey"
+            columns: ["ranch_id"]
+            isOneToOne: false
+            referencedRelation: "ranches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "animals_ranch_id_fkey"
+            columns: ["ranch_id"]
+            isOneToOne: false
+            referencedRelation: "v_ranch_stats"
+            referencedColumns: ["ranch_id"]
+          },
+          {
+            foreignKeyName: "animals_species_id_fkey"
+            columns: ["species_id"]
+            isOneToOne: false
+            referencedRelation: "species"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "breeding_events_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "breeding_events_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "v_org_stats"
+            referencedColumns: ["org_id"]
+          },
+        ]
+      }
+      v_care_activity_report: {
+        Row: {
+          count: number | null
+          group_label: string | null
+          month: string | null
+          org_id: string | null
+          ranch_id: string | null
+          ranch_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "care_activities_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "care_activities_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "v_org_stats"
+            referencedColumns: ["org_id"]
+          },
+        ]
+      }
+      v_feeding_report: {
+        Row: {
+          count: number | null
+          group_label: string | null
+          month: string | null
+          org_id: string | null
+          quantity: number | null
+          ranch_id: string | null
+          ranch_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feeding_records_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feeding_records_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "v_org_stats"
+            referencedColumns: ["org_id"]
+          },
+        ]
+      }
+      v_illness_report: {
+        Row: {
+          count: number | null
+          group_label: string | null
+          month: string | null
+          org_id: string | null
+          ranch_id: string | null
+          ranch_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "animals_ranch_id_fkey"
+            columns: ["ranch_id"]
+            isOneToOne: false
+            referencedRelation: "ranches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "animals_ranch_id_fkey"
+            columns: ["ranch_id"]
+            isOneToOne: false
+            referencedRelation: "v_ranch_stats"
+            referencedColumns: ["ranch_id"]
+          },
+          {
+            foreignKeyName: "illnesses_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "illnesses_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "v_org_stats"
+            referencedColumns: ["org_id"]
+          },
+        ]
+      }
+      v_inventory_report: {
+        Row: {
+          count: number | null
+          is_active_status: boolean | null
+          org_id: string | null
+          ranch_id: string | null
+          ranch_name: string | null
+          sex: string | null
+          species_id: string | null
+          species_name: string | null
+          status_id: string | null
+          status_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "animals_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "animals_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "v_org_stats"
+            referencedColumns: ["org_id"]
+          },
+          {
+            foreignKeyName: "animals_ranch_id_fkey"
+            columns: ["ranch_id"]
+            isOneToOne: false
+            referencedRelation: "ranches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "animals_ranch_id_fkey"
+            columns: ["ranch_id"]
+            isOneToOne: false
+            referencedRelation: "v_ranch_stats"
+            referencedColumns: ["ranch_id"]
+          },
+          {
+            foreignKeyName: "animals_species_id_fkey"
+            columns: ["species_id"]
+            isOneToOne: false
+            referencedRelation: "species"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "animals_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "animal_statuses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_mortality_report: {
+        Row: {
+          count: number | null
+          group_label: string | null
+          month: string | null
+          org_id: string | null
+          ranch_id: string | null
+          ranch_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mortalities_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mortalities_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "v_org_stats"
+            referencedColumns: ["org_id"]
+          },
+          {
+            foreignKeyName: "mortalities_ranch_id_fkey"
+            columns: ["ranch_id"]
+            isOneToOne: false
+            referencedRelation: "ranches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mortalities_ranch_id_fkey"
+            columns: ["ranch_id"]
+            isOneToOne: false
+            referencedRelation: "v_ranch_stats"
+            referencedColumns: ["ranch_id"]
+          },
+        ]
+      }
+      v_movement_report: {
+        Row: {
+          count: number | null
+          group_label: string | null
+          month: string | null
+          org_id: string | null
+          ranch_id: string | null
+          ranch_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "movements_from_ranch_id_fkey"
+            columns: ["ranch_id"]
+            isOneToOne: false
+            referencedRelation: "ranches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movements_from_ranch_id_fkey"
+            columns: ["ranch_id"]
+            isOneToOne: false
+            referencedRelation: "v_ranch_stats"
+            referencedColumns: ["ranch_id"]
+          },
+          {
+            foreignKeyName: "movements_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movements_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "v_org_stats"
+            referencedColumns: ["org_id"]
+          },
+        ]
+      }
       v_org_stats: {
         Row: {
           active_animal_count: number | null
@@ -3655,6 +3996,46 @@ export type Database = {
           species_id: string | null
         }
         Relationships: []
+      }
+      v_treatment_report: {
+        Row: {
+          count: number | null
+          group_label: string | null
+          month: string | null
+          org_id: string | null
+          ranch_id: string | null
+          ranch_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "animals_ranch_id_fkey"
+            columns: ["ranch_id"]
+            isOneToOne: false
+            referencedRelation: "ranches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "animals_ranch_id_fkey"
+            columns: ["ranch_id"]
+            isOneToOne: false
+            referencedRelation: "v_ranch_stats"
+            referencedColumns: ["ranch_id"]
+          },
+          {
+            foreignKeyName: "treatments_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "treatments_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "v_org_stats"
+            referencedColumns: ["org_id"]
+          },
+        ]
       }
       v_upcoming_vaccinations: {
         Row: {
@@ -3751,6 +4132,103 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "veterinarians"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_vaccination_compliance_report: {
+        Row: {
+          active_count: number | null
+          org_id: string | null
+          overdue_count: number | null
+          ranch_id: string | null
+          ranch_name: string | null
+          species_id: string | null
+          species_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "animals_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "animals_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "v_org_stats"
+            referencedColumns: ["org_id"]
+          },
+          {
+            foreignKeyName: "animals_ranch_id_fkey"
+            columns: ["ranch_id"]
+            isOneToOne: false
+            referencedRelation: "ranches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "animals_ranch_id_fkey"
+            columns: ["ranch_id"]
+            isOneToOne: false
+            referencedRelation: "v_ranch_stats"
+            referencedColumns: ["ranch_id"]
+          },
+          {
+            foreignKeyName: "animals_species_id_fkey"
+            columns: ["species_id"]
+            isOneToOne: false
+            referencedRelation: "species"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_weight_growth_report: {
+        Row: {
+          avg_adg_kg: number | null
+          month: string | null
+          org_id: string | null
+          ranch_id: string | null
+          ranch_name: string | null
+          reading_count: number | null
+          species_id: string | null
+          species_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "animals_ranch_id_fkey"
+            columns: ["ranch_id"]
+            isOneToOne: false
+            referencedRelation: "ranches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "animals_ranch_id_fkey"
+            columns: ["ranch_id"]
+            isOneToOne: false
+            referencedRelation: "v_ranch_stats"
+            referencedColumns: ["ranch_id"]
+          },
+          {
+            foreignKeyName: "animals_species_id_fkey"
+            columns: ["species_id"]
+            isOneToOne: false
+            referencedRelation: "species"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "weight_records_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "weight_records_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "v_org_stats"
+            referencedColumns: ["org_id"]
           },
         ]
       }

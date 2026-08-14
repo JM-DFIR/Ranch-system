@@ -98,4 +98,15 @@ export const queryKeys = {
     animalSearchOptions: (orgId: string) => ["dashboard", orgId, "animal-search-options"] as const,
     firstRun: (orgId: string) => ["dashboard", orgId, "first-run"] as const,
   },
+  // M6 — the thirteen §17 reports. One namespace per reportId
+  // (features/reports/registry.ts owns the id list), `params` untyped
+  // for the same reason every other register's params key is.
+  reports: {
+    data: (orgId: string, reportId: string, params: unknown) => ["reports", orgId, reportId, params] as const,
+  },
+  // M6 — Command Palette's animal search (global search, blueprint.md
+  // Part 4's "Command palette (⌘K) · Search Results").
+  commandPalette: {
+    animalSearch: (orgId: string, query: string) => ["command-palette", orgId, "animal-search", query] as const,
+  },
 } as const;
