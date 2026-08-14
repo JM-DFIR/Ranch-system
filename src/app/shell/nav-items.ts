@@ -70,7 +70,11 @@ export const NAV_GROUPS: NavGroup[] = [
     label: "Manage",
     items: [
       { label: "Ranches", icon: MapPin },
-      { label: "Admin", icon: Settings, ownerOnly: true },
+      // Not ownerOnly: Reference Data (one of Admin's four sections) is
+      // usable by any org member (0021_reference_catalogue_manager_write.sql).
+      // The other three sections gate themselves, both in AdminSectionNav
+      // and at the route level (requireOwner).
+      { label: "Admin", icon: Settings, to: "/admin" },
     ],
   },
 ];

@@ -109,4 +109,21 @@ export const queryKeys = {
   commandPalette: {
     animalSearch: (orgId: string, query: string) => ["command-palette", orgId, "animal-search", query] as const,
   },
+  // M7 — Admin: Users & Roles, Invite User, Ranch Assignments,
+  // Reference Data Manager, Organisation Settings, Audit Log.
+  admin: {
+    members: (orgId: string, page: number, pageSize: number) => ["admin", orgId, "members", page, pageSize] as const,
+    ranchAssignments: (profileId: string) => ["admin", "ranch-assignments", profileId] as const,
+    invitations: (orgId: string) => ["admin", orgId, "invitations"] as const,
+    orgSettings: (orgId: string) => ["admin", orgId, "org-settings"] as const,
+    auditLog: (orgId: string, params: unknown) => ["admin", orgId, "audit-log", params] as const,
+    species: (orgId: string) => ["admin", orgId, "reference", "species"] as const,
+    breeds: (orgId: string) => ["admin", orgId, "reference", "breeds"] as const,
+    animalStatuses: (orgId: string) => ["admin", orgId, "reference", "animal-statuses"] as const,
+    vaccines: (orgId: string) => ["admin", orgId, "reference", "vaccines"] as const,
+    medications: (orgId: string) => ["admin", orgId, "reference", "medications"] as const,
+    illnessTypes: (orgId: string) => ["admin", orgId, "reference", "illness-types"] as const,
+    feedItems: (orgId: string) => ["admin", orgId, "reference", "feed-items"] as const,
+    careActivityTypes: (orgId: string) => ["admin", orgId, "reference", "care-activity-types"] as const,
+  },
 } as const;

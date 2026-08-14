@@ -143,6 +143,21 @@ export function useAuth() {
   };
 }
 
+// Guards the three owner-only Admin routes (Users & Roles, Settings,
+// Audit Log — see AdminSectionNav.tsx). Runs after _authenticated's own
+// requireSession, so a session is already guaranteed to exist here;
+// this only adds the role check. Redirects to the Admin hub rather than
+// throwing, same as any other "you can't do that from here" case in
+// this app — a manager typing the URL directly lands somewhere useful,
+// not on an error page. This is the convenience-layer redirect only;
+// the real enforcement is RLS (is_owner()), same as everywhere else.
+export async function requireOwner(queryClient: QueryClient): Promise<void> {
+  const { profile } = await queryClient.ensureQueryData(authQueryOptions());
+  if (profile?.role !== "owner") {
+    throw redirect({ to: "/admin" });
+  }
+}
+
 // Called once at app bootstrap (src/main.tsx) so both query caches stay
 // correct across sign-in, sign-out, and token refresh without every
 // consumer re-implementing its own listener.

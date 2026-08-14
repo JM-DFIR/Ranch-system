@@ -7,6 +7,21 @@ export function formatDate(value: string): string {
   return DATE_FORMATTER.format(new Date(value));
 }
 
+const DATETIME_FORMATTER = new Intl.DateTimeFormat("en-KE", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  hour: "numeric",
+  minute: "2-digit",
+});
+
+// "11 Aug 2026, 3:45 pm" — Admin's Audit Log and "last seen" (Users &
+// Roles), the two places this project shows a timestamp down to the
+// minute rather than just a date.
+export function formatDateTime(value: string): string {
+  return DATETIME_FORMATTER.format(new Date(value));
+}
+
 const MONTH_FORMATTER = new Intl.DateTimeFormat("en-KE", { month: "long", year: "numeric" });
 
 // "August 2026" — the Timeline's sticky month headers.

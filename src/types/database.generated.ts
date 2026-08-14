@@ -91,6 +91,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "animal_statuses_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "animal_statuses_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
@@ -109,6 +116,13 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "animal_statuses_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
         ]
@@ -211,6 +225,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "animals_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "animals_dam_id_fkey"
             columns: ["dam_id"]
             isOneToOne: false
@@ -308,6 +329,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "animals_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
         ]
       }
       attachments: {
@@ -368,6 +396,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "attachments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "attachments_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
@@ -389,10 +424,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "attachments_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "attachments_uploaded_by_fkey"
             columns: ["uploaded_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
         ]
@@ -437,6 +486,13 @@ export type Database = {
             columns: ["actor_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
           {
@@ -535,6 +591,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "birth_offspring_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "birth_offspring_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
@@ -553,6 +616,13 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "birth_offspring_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
         ]
@@ -622,6 +692,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "births_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "births_dam_id_fkey"
             columns: ["dam_id"]
             isOneToOne: false
@@ -661,6 +738,13 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "births_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
         ]
@@ -744,6 +828,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "breeding_events_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "breeding_events_dam_id_fkey"
             columns: ["dam_id"]
             isOneToOne: false
@@ -806,6 +897,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "breeding_events_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
         ]
       }
       breeds: {
@@ -851,6 +949,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "breeds_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "breeds_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
@@ -876,6 +981,13 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "breeds_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
         ]
@@ -972,6 +1084,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "care_activities_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "care_activities_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
@@ -990,6 +1109,13 @@ export type Database = {
             columns: ["performed_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "care_activities_performed_by_fkey"
+            columns: ["performed_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
           {
@@ -1018,6 +1144,13 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "care_activities_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
         ]
@@ -1062,6 +1195,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "care_activity_types_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "care_activity_types_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
@@ -1080,6 +1220,13 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "care_activity_types_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
         ]
@@ -1130,6 +1277,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "feed_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "feed_items_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
@@ -1148,6 +1302,13 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feed_items_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
         ]
@@ -1234,6 +1395,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "feeding_records_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "feeding_records_feed_item_id_fkey"
             columns: ["feed_item_id"]
             isOneToOne: false
@@ -1280,6 +1448,13 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feeding_records_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
         ]
@@ -1330,6 +1505,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "illness_types_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "illness_types_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
@@ -1355,6 +1537,13 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "illness_types_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
         ]
@@ -1450,6 +1639,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "illnesses_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "illnesses_illness_type_id_fkey"
             columns: ["illness_type_id"]
             isOneToOne: false
@@ -1475,6 +1671,13 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "illnesses_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
         ]
@@ -1525,6 +1728,13 @@ export type Database = {
             columns: ["invited_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invitations_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
           {
@@ -1592,6 +1802,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "medications_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "medications_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
@@ -1610,6 +1827,13 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "medications_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
         ]
@@ -1699,6 +1923,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "mortalities_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "mortalities_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
@@ -1738,6 +1969,13 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mortalities_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
         ]
@@ -1830,6 +2068,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "movements_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "movements_from_ranch_id_fkey"
             columns: ["from_ranch_id"]
             isOneToOne: false
@@ -1872,6 +2117,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "movements_recorded_by_fkey"
+            columns: ["recorded_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "movements_to_ranch_id_fkey"
             columns: ["to_ranch_id"]
             isOneToOne: false
@@ -1897,6 +2149,13 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movements_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
         ]
@@ -2035,10 +2294,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "pregnancy_checks_checked_by_fkey"
+            columns: ["checked_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "pregnancy_checks_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pregnancy_checks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
           {
@@ -2060,6 +2333,13 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pregnancy_checks_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
         ]
@@ -2119,6 +2399,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "profiles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "profiles_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
@@ -2137,6 +2424,13 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
         ]
@@ -2187,6 +2481,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "ranch_assignments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "ranch_assignments_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
@@ -2208,6 +2509,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "ranch_assignments_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "ranch_assignments_ranch_id_fkey"
             columns: ["ranch_id"]
             isOneToOne: false
@@ -2226,6 +2534,13 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ranch_assignments_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
         ]
@@ -2279,6 +2594,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "ranch_sections_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "ranch_sections_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
@@ -2311,6 +2633,13 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ranch_sections_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
         ]
@@ -2382,6 +2711,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "ranches_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "ranches_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
@@ -2400,6 +2736,13 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ranches_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
         ]
@@ -2483,6 +2826,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "reminders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "reminders_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
@@ -2515,6 +2865,13 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reminders_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
         ]
@@ -2571,6 +2928,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "species_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "species_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
@@ -2589,6 +2953,13 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "species_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
         ]
@@ -2711,6 +3082,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "treatments_administered_by_profile_fkey"
+            columns: ["administered_by_profile"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "treatments_animal_id_fkey"
             columns: ["animal_id"]
             isOneToOne: false
@@ -2736,6 +3114,13 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "treatments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
           {
@@ -2771,6 +3156,13 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "treatments_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
           {
@@ -2849,6 +3241,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "vaccinations_administered_by_profile_fkey"
+            columns: ["administered_by_profile"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "vaccinations_animal_id_fkey"
             columns: ["animal_id"]
             isOneToOne: false
@@ -2877,6 +3276,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "vaccinations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "vaccinations_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
@@ -2895,6 +3301,13 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vaccinations_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
           {
@@ -2965,6 +3378,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "vaccines_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "vaccines_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
@@ -2990,6 +3410,13 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vaccines_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
         ]
@@ -3058,6 +3485,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "vet_visit_animals_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "vet_visit_animals_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
@@ -3076,6 +3510,13 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vet_visit_animals_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
           {
@@ -3158,6 +3599,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "vet_visits_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "vet_visits_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
@@ -3190,6 +3638,13 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vet_visits_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
           {
@@ -3253,6 +3708,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "veterinarians_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "veterinarians_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
@@ -3271,6 +3733,13 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "veterinarians_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
         ]
@@ -3354,6 +3823,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "weight_records_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "weight_records_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
@@ -3375,10 +3851,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "weight_records_recorded_by_fkey"
+            columns: ["recorded_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "weight_records_updated_by_fkey"
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "weight_records_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
             referencedColumns: ["id"]
           },
         ]
@@ -3611,6 +4101,50 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "species"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_audit_log: {
+        Row: {
+          action: string | null
+          actor_id: string | null
+          actor_name: string | null
+          after: Json | null
+          before: Json | null
+          id: string | null
+          occurred_at: string | null
+          org_id: string | null
+          record_id: string | null
+          table_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "v_org_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audit_log_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audit_log_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "v_org_stats"
+            referencedColumns: ["org_id"]
           },
         ]
       }
@@ -3929,6 +4463,63 @@ export type Database = {
           },
           {
             foreignKeyName: "movements_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "v_org_stats"
+            referencedColumns: ["org_id"]
+          },
+        ]
+      }
+      v_org_members: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          full_name: string | null
+          id: string | null
+          is_active: boolean | null
+          last_seen_at: string | null
+          org_id: string | null
+          phone: string | null
+          ranch_count: number | null
+          ranch_names: string[] | null
+          role: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          last_seen_at?: string | null
+          org_id?: string | null
+          phone?: string | null
+          ranch_count?: never
+          ranch_names?: never
+          role?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          last_seen_at?: string | null
+          org_id?: string | null
+          phone?: string | null
+          ranch_count?: never
+          ranch_names?: never
+          role?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "v_org_stats"

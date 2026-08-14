@@ -2,7 +2,7 @@ import { fileURLToPath, URL } from "node:url";
 // vitest/config's defineConfig merges Vite's own options with the
 // `test` block's typing — a drop-in replacement for vite's defineConfig
 // in a single shared config file, not a second build tool bolted on.
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
@@ -55,5 +55,11 @@ export default defineConfig({
     // Dexie database needs a real IndexedDB implementation to open at
     // all, which jsdom itself doesn't provide.
     setupFiles: ["fake-indexeddb/auto"],
+    // e2e/**: Playwright specs, not Vitest's — both tools default to
+    // scanning **/*.spec.ts, so without this Vitest tries to run
+    // Playwright's test.describe() in its own runner and fails with
+    // "did not expect test.describe() to be called here" (found
+    // running `pnpm test` for real after adding the Playwright suite).
+    exclude: [...configDefaults.exclude, "e2e/**"],
   },
 });
