@@ -1,0 +1,26 @@
+[build]
+  command = "pnpm build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# TanStack Router is client-side routing on a static SPA — every real
+# path (e.g. /animals/123) has to fall through to index.html so the
+# router can take over, or a hard refresh on any non-root route 404s.
+# Netlify only applies this when no real file in `dist/` already
+# matches the request, so actual assets (JS bundles, the service
+# worker, fonts) are served directly and never touch this rule.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# The service worker itself must never be served from a stale cache —
+# an outdated sw.js can pin users to an old app version indefinitely
+# (vite-plugin-pwa's whole precache-and-update model depends on the
+# browser actually fetching the latest sw.js on each visit).
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

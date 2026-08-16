@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# A second push to the same branch/PR cancels whatever CI run is still
+# in flight for it — no point finishing a check against code that's
+# already been superseded.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  app:
+    name: Typecheck, lint, unit test, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm build
+
+  e2e:
+    name: Playwright E2E
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Only the auth shell's unauthenticated critical paths (login
+      # validation, the protected-route redirect, Accept Invitation) —
+      # see e2e/README.md. Nothing here needs real Supabase credentials,
+      # which is exactly why this suite can run in CI with no secrets
+      # configured at all.
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm exec playwright test
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+  db:
+    name: Migration dry-run + pgTAP
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      # `supabase start` applies every migration in supabase/migrations/
+      # to a fresh local Postgres, in order, then runs seed.sql — the
+      # same "does the whole chain actually apply cleanly" check this
+      # project didn't have any automated way to run until now (every
+      # migration before this was applied by hand, one at a time,
+      # against a project that already had the previous ones). Runs
+      # against ephemeral CI-only containers, never a real project.
+      - run: supabase start
+
+      # supabase test db runs the full pgTAP suite (supabase/tests/) —
+      # the RLS isolation proofs CLAUDE.md §7/§10 requires, now actually
+      # exercised on every push instead of only when someone remembers
+      # to run it locally.
+      - run: supabase test db
