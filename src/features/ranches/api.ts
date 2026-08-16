@@ -231,7 +231,13 @@ export async function updateRanchSection(id: string, values: RanchSectionFormVal
   if (error) throw error;
 }
 
+// A SECURITY DEFINER RPC (0032_soft_delete_rpcs.sql), not a plain
+// client-side update: Postgres RLS requires the row resulting from an
+// UPDATE to still satisfy the table's SELECT policy, and
+// ranch_sections_select filters deleted_at is null, so a plain
+// `.update({deleted_at})` here rejects its own write with 42501. Found
+// running the pgTAP suite for real, not theoretical.
 export async function softDeleteRanchSection(id: string): Promise<void> {
-  const { error } = await supabase.from("ranch_sections").update({ deleted_at: new Date().toISOString() }).eq("id", id);
+  const { error } = await supabase.rpc("soft_delete_ranch_section", { p_section_id: id });
   if (error) throw error;
 }

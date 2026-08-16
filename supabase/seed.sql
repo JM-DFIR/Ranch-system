@@ -77,7 +77,11 @@ begin
 
   insert into ranch_assignments (org_id, ranch_id, profile_id)
   values (v_org_id, v_ranch_b_id, v_manager_id)
-  on conflict (ranch_id, profile_id) do nothing;
+  -- Matches ranch_assignments_ranch_id_profile_id_unique's predicate
+  -- (0030_admin.sql) exactly — a partial unique index only works as an
+  -- ON CONFLICT arbiter when the clause repeats its WHERE, otherwise
+  -- Postgres can't find a matching constraint (42P10).
+  on conflict (ranch_id, profile_id) where deleted_at is null do nothing;
 
   -- Species — default_tag_prefix illustrates the client's real
   -- convention: goats "M1", "M2"…; cattle "MUX 1", "MUX 2"… -----------
@@ -86,7 +90,10 @@ begin
     (v_org_id, 'Cattle', 283, 'MUX ', true),
     (v_org_id, 'Goat', 150, 'M', true),
     (v_org_id, 'Sheep', 148, 'S', true)
-  on conflict (org_id, name) do nothing;
+  -- Matches species_org_id_name_unique's predicate (0022_reference_
+  -- catalogue_reusable_names.sql) — same partial-index-as-arbiter
+  -- requirement as ranch_assignments above.
+  on conflict (org_id, name) where deleted_at is null do nothing;
 
   -- Breeds — a handful common to Kenyan smallholder and ranch operations
   insert into breeds (org_id, species_id, name)
@@ -98,7 +105,9 @@ begin
     ('Sheep', 'Dorper'), ('Sheep', 'Red Maasai')
   ) as b(species_name, name) on b.species_name = s.name
   where s.org_id = v_org_id
-  on conflict (org_id, species_id, name) do nothing;
+  -- Matches breeds_org_id_species_id_name_unique's predicate (0022) —
+  -- same reasoning as species above.
+  on conflict (org_id, species_id, name) where deleted_at is null do nothing;
 
   -- Animal statuses — the five from blueprint.md §2.2. Names are the
   -- contract record_death()/record_birth() (0017) look up by, so don't
@@ -110,7 +119,9 @@ begin
     (v_org_id, 'Deceased', false, 'status-neutral', true, 3),
     (v_org_id, 'Missing', false, 'status-warn', true, 4),
     (v_org_id, 'Sold', false, 'status-neutral', true, 5)
-  on conflict (org_id, name) do nothing;
+  -- Matches animal_statuses_org_id_name_unique's predicate (0022) —
+  -- same reasoning as species above.
+  on conflict (org_id, name) where deleted_at is null do nothing;
 
   -- Vaccines — starter catalogue relevant to Kenyan livestock ------------
   insert into vaccines (org_id, name, species_id, target_disease, default_interval_days)

@@ -387,9 +387,16 @@ export async function createVeterinarianDetailed(orgId: string, input: NewVeteri
 
 // Soft delete only (CLAUDE.md §6) — reference catalogues are the one
 // place any org member, not just the owner, can remove a row
-// (0021_reference_catalogue_manager_write.sql).
+// (0021_reference_catalogue_manager_write.sql). Goes through a
+// SECURITY DEFINER RPC (0032_soft_delete_rpcs.sql), not a plain
+// client-side update: Postgres RLS requires the row resulting from an
+// UPDATE to still satisfy the table's own SELECT policy, and
+// veterinarians_select filters deleted_at is null, so a plain
+// `.update({deleted_at})` here rejects its own write with 42501 — this
+// button has been broken since it shipped in Session 8, only caught
+// now that the pgTAP suite has actually run for the first time.
 export async function softDeleteVeterinarian(id: string): Promise<void> {
-  const { error } = await supabase.from("veterinarians").update({ deleted_at: new Date().toISOString() }).eq("id", id);
+  const { error } = await supabase.rpc("soft_delete_reference_row", { p_table: "veterinarians", p_id: id });
   if (error) throw error;
 }
 

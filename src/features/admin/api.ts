@@ -102,11 +102,15 @@ export async function assignRanch(orgId: string, ranchId: string, profileId: str
   if (error) throw error;
 }
 
+// A SECURITY DEFINER RPC (0032_soft_delete_rpcs.sql), not a plain
+// client-side update: Postgres RLS requires the row RESULTING from an
+// UPDATE to still satisfy the table's SELECT policy, not just the
+// UPDATE policy's own with_check — and ranch_assignments_select filters
+// deleted_at is null, so a plain `.update({deleted_at})` here would
+// reject its own write with 42501. Found running the pgTAP suite for
+// real, not theoretical.
 export async function unassignRanch(assignmentId: string): Promise<void> {
-  const { error } = await supabase
-    .from("ranch_assignments")
-    .update({ deleted_at: new Date().toISOString() })
-    .eq("id", assignmentId);
+  const { error } = await supabase.rpc("unassign_ranch", { p_assignment_id: assignmentId });
   if (error) throw error;
 }
 
@@ -163,8 +167,10 @@ export async function inviteUser(orgId: string, invitedBy: string, values: Invit
   };
 }
 
+// SECURITY DEFINER RPC — see unassignRanch's note; invitations_select
+// also filters deleted_at is null.
 export async function revokeInvitation(id: string): Promise<void> {
-  const { error } = await supabase.from("invitations").update({ deleted_at: new Date().toISOString() }).eq("id", id);
+  const { error } = await supabase.rpc("revoke_invitation", { p_invitation_id: id });
   if (error) throw error;
 }
 
@@ -335,8 +341,17 @@ export async function createSpecies(orgId: string, values: NewSpeciesFormValues)
   if (error) throw error;
 }
 
+// A SECURITY DEFINER RPC (0032_soft_delete_rpcs.sql), not a plain
+// client-side update: Postgres RLS requires the row RESULTING from an
+// UPDATE to still satisfy the table's SELECT policy, not just the
+// UPDATE policy's own with_check — and every reference catalogue's
+// select policy filters deleted_at is null, so a plain
+// `.update({deleted_at})` here rejects its own write with 42501. Found
+// running the pgTAP suite for real, not theoretical — same fix applies
+// to every softDelete* function below, and to unassignRanch/
+// revokeInvitation above.
 export async function softDeleteSpecies(id: string): Promise<void> {
-  const { error } = await supabase.from("species").update({ deleted_at: new Date().toISOString() }).eq("id", id);
+  const { error } = await supabase.rpc("soft_delete_reference_row", { p_table: "species", p_id: id });
   if (error) throw error;
 }
 
@@ -363,8 +378,9 @@ export async function createBreed(orgId: string, values: NewBreedFormValues): Pr
   if (error) throw error;
 }
 
+// See softDeleteSpecies's note.
 export async function softDeleteBreed(id: string): Promise<void> {
-  const { error } = await supabase.from("breeds").update({ deleted_at: new Date().toISOString() }).eq("id", id);
+  const { error } = await supabase.rpc("soft_delete_reference_row", { p_table: "breeds", p_id: id });
   if (error) throw error;
 }
 
@@ -393,8 +409,9 @@ export async function createAnimalStatus(orgId: string, values: NewAnimalStatusF
   if (error) throw error;
 }
 
+// See softDeleteSpecies's note.
 export async function softDeleteAnimalStatus(id: string): Promise<void> {
-  const { error } = await supabase.from("animal_statuses").update({ deleted_at: new Date().toISOString() }).eq("id", id);
+  const { error } = await supabase.rpc("soft_delete_reference_row", { p_table: "animal_statuses", p_id: id });
   if (error) throw error;
 }
 
@@ -434,8 +451,9 @@ export async function createVaccineDetailed(orgId: string, values: NewVaccineFor
   if (error) throw error;
 }
 
+// See softDeleteSpecies's note.
 export async function softDeleteVaccine(id: string): Promise<void> {
-  const { error } = await supabase.from("vaccines").update({ deleted_at: new Date().toISOString() }).eq("id", id);
+  const { error } = await supabase.rpc("soft_delete_reference_row", { p_table: "vaccines", p_id: id });
   if (error) throw error;
 }
 
@@ -472,8 +490,9 @@ export async function createMedicationDetailed(orgId: string, values: NewMedicat
   if (error) throw error;
 }
 
+// See softDeleteSpecies's note.
 export async function softDeleteMedication(id: string): Promise<void> {
-  const { error } = await supabase.from("medications").update({ deleted_at: new Date().toISOString() }).eq("id", id);
+  const { error } = await supabase.rpc("soft_delete_reference_row", { p_table: "medications", p_id: id });
   if (error) throw error;
 }
 
@@ -501,8 +520,9 @@ export async function createIllnessTypeDetailed(orgId: string, values: NewIllnes
   if (error) throw error;
 }
 
+// See softDeleteSpecies's note.
 export async function softDeleteIllnessType(id: string): Promise<void> {
-  const { error } = await supabase.from("illness_types").update({ deleted_at: new Date().toISOString() }).eq("id", id);
+  const { error } = await supabase.rpc("soft_delete_reference_row", { p_table: "illness_types", p_id: id });
   if (error) throw error;
 }
 
@@ -528,8 +548,9 @@ export async function createFeedItemDetailed(orgId: string, values: NewFeedItemF
   if (error) throw error;
 }
 
+// See softDeleteSpecies's note.
 export async function softDeleteFeedItem(id: string): Promise<void> {
-  const { error } = await supabase.from("feed_items").update({ deleted_at: new Date().toISOString() }).eq("id", id);
+  const { error } = await supabase.rpc("soft_delete_reference_row", { p_table: "feed_items", p_id: id });
   if (error) throw error;
 }
 
@@ -554,7 +575,8 @@ export async function createCareActivityTypeDetailed(orgId: string, values: NewC
   if (error) throw error;
 }
 
+// See softDeleteSpecies's note.
 export async function softDeleteCareActivityType(id: string): Promise<void> {
-  const { error } = await supabase.from("care_activity_types").update({ deleted_at: new Date().toISOString() }).eq("id", id);
+  const { error } = await supabase.rpc("soft_delete_reference_row", { p_table: "care_activity_types", p_id: id });
   if (error) throw error;
 }

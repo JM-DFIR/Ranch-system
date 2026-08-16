@@ -16,6 +16,13 @@ export default tseslint.config(
       // different TypeScript project entirely, not part of the Vite
       // app's tsconfig, and not something this ESLint config understands.
       "supabase/functions/**",
+      // Local Supabase CLI state (`supabase start`/`supabase link`) —
+      // already gitignored, but ESLint doesn't read .gitignore on its
+      // own. Includes generated edge-function bootstrap files that
+      // aren't part of any tsconfig here either. Found running
+      // `supabase start` for the first time in this environment.
+      "supabase/.temp/**",
+      "supabase/.branches/**",
     ],
   },
   {

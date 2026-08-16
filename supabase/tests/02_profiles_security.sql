@@ -29,13 +29,26 @@ select lives_ok(
 -- Still the manager: escalating their own role or org must be blocked
 -- by the trigger, not merely discouraged by the policy.
 -- ---------------------------------------------------------------------
+-- pgTAP's throws_ok has no (sql, description) 2-arg form, AND its
+-- 3-arg form is (sql, errcode, errmsg) — the 3rd position is always
+-- compared against the caught exception's actual message text, never
+-- treated as a free-standing description. A description needs the
+-- full 4-arg form: (sql, errcode, errmsg, description). Found running
+-- this suite for the first time — both prior attempts (bare
+-- description, then errcode-only) failed for exactly this reason.
+-- prevent_self_role_escalation's raise exception (0014_rls.sql) is a
+-- plain RAISE EXCEPTION, always SQLSTATE P0001.
 select throws_ok(
   $$ update profiles set role = 'owner' where id = 'b0000000-0000-0000-0000-000000000012' $$,
+  'P0001',
+  'only an owner may change role or organisation',
   'a manager cannot change their own role to owner'
 );
 
 select throws_ok(
   $$ update profiles set org_id = 'b0000000-0000-0000-0000-000000000099' where id = 'b0000000-0000-0000-0000-000000000012' $$,
+  'P0001',
+  'only an owner may change role or organisation',
   'a manager cannot move themselves to a different organisation'
 );
 

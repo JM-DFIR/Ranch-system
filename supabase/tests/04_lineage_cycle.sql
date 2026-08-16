@@ -40,16 +40,23 @@ select lives_ok(
   'a legitimate three-generation chain (grandparent -> parent -> child) is accepted'
 );
 
--- The cycle: make the grandparent descend from its own grandchild.
+-- throws_ok's 3rd argument is the expected error MESSAGE, not a
+-- description — see 02_profiles_security.sql's note; description is
+-- the 4th argument. prevent_lineage_cycle raises a plain
+-- `raise exception`, always P0001.
 select throws_ok(
   $$ update animals set dam_id = 'd0000000-0000-0000-0000-000000001003'
      where id = 'd0000000-0000-0000-0000-000000001001' $$,
+  'P0001',
+  'this would create a cycle in the animal''s lineage — the proposed parent is already a descendant',
   'setting a descendant as a proposed parent is rejected as a lineage cycle'
 );
 
 -- The direct case: an animal cannot be its own parent.
 select throws_ok(
   $$ update animals set dam_id = id where id = 'd0000000-0000-0000-0000-000000001001' $$,
+  'P0001',
+  'an animal cannot be its own parent',
   'an animal cannot be set as its own dam'
 );
 

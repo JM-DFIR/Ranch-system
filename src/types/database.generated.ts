@@ -5211,7 +5211,20 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      revoke_invitation: {
+        Args: { p_invitation_id: string }
+        Returns: undefined
+      }
+      soft_delete_ranch_section: {
+        Args: { p_section_id: string }
+        Returns: undefined
+      }
+      soft_delete_reference_row: {
+        Args: { p_id: string; p_table: string }
+        Returns: undefined
+      }
       touch_presence: { Args: never; Returns: undefined }
+      unassign_ranch: { Args: { p_assignment_id: string }; Returns: undefined }
       uuid_generate_v7: { Args: never; Returns: string }
     }
     Enums: {

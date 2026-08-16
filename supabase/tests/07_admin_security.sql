@@ -8,7 +8,7 @@
 --     error (RLS filters, it doesn't throw).
 -- ---------------------------------------------------------------------
 begin;
-select plan(9);
+select plan(10);
 
 select tests.clear_authentication();
 
@@ -51,9 +51,15 @@ select lives_ok(
   'an owner can assign a manager to a ranch'
 );
 
+-- Goes through the unassign_ranch RPC (0032_soft_delete_rpcs.sql), not
+-- a plain UPDATE — Postgres RLS requires the row RESULTING from an
+-- UPDATE to still satisfy the table's SELECT policy, and
+-- ranch_assignments_select filters deleted_at is null, so a plain
+-- client-side `update ... set deleted_at = now()` rejects its own
+-- write with 42501. Confirmed against a real local instance, not
+-- assumed.
 select lives_ok(
-  $$ update ranch_assignments set deleted_at = now()
-     where id = 'd0000000-0000-0000-0000-000000000201' $$,
+  $$ select unassign_ranch('d0000000-0000-0000-0000-000000000201') $$,
   'an owner can unassign (soft-delete) that assignment'
 );
 
@@ -84,23 +90,43 @@ select tests.authenticate_as(
   'd0000000-0000-0000-0000-000000000012', 'd0000000-0000-0000-0000-000000000001', 'ranch_manager'
 );
 
+-- throws_ok's 3rd argument is the expected error MESSAGE, not a
+-- description — see 02_profiles_security.sql's note; description is
+-- the 4th argument. An RLS WITH CHECK failure on INSERT is always
+-- 42501, with Postgres's own standard message.
 select throws_ok(
   $$ insert into ranch_assignments (id, org_id, ranch_id, profile_id) values
        ('d0000000-0000-0000-0000-000000000203', 'd0000000-0000-0000-0000-000000000001',
         'd0000000-0000-0000-0000-000000000101', 'd0000000-0000-0000-0000-000000000012') $$,
+  '42501',
+  'new row violates row-level security policy for table "ranch_assignments"',
   'a manager cannot assign ranches, including to themselves'
 );
 
-select throws_ok(
+-- Not throws_ok: organization_settings_owner_update's USING clause
+-- excludes the manager entirely (is_owner() is false), so the row is
+-- never matched in the first place — an UPDATE whose USING clause
+-- matches no rows is a silent no-op in Postgres, not a thrown
+-- exception (only a WITH CHECK failure on a row that WAS matched
+-- throws). The actual, correct assertion is that the value is
+-- untouched, not that an error was raised.
+select lives_ok(
   $$ update organization_settings set stale_health_days = 30
      where org_id = 'd0000000-0000-0000-0000-000000000001' $$,
-  'a manager cannot change organisation settings'
+  'a manager''s attempt to change organisation settings runs without error...'
+);
+select is(
+  (select stale_health_days from organization_settings where org_id = 'd0000000-0000-0000-0000-000000000001'),
+  90,
+  '...but silently changes nothing, since organization_settings_owner_update never matched the row'
 );
 
 select throws_ok(
   $$ insert into invitations (org_id, email, role, invited_by) values
        ('d0000000-0000-0000-0000-000000000001', 'someone@example.com', 'ranch_manager',
         'd0000000-0000-0000-0000-000000000012') $$,
+  '42501',
+  'new row violates row-level security policy for table "invitations"',
   'a manager cannot invite a new user'
 );
 

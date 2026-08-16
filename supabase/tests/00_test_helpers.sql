@@ -9,6 +9,18 @@
 -- ---------------------------------------------------------------------
 create extension if not exists pgtap with schema extensions;
 
+-- A trivial plan/pass/finish, unlike every other file here, exists
+-- purely so pg_prove has a TAP plan to parse — with none at all it
+-- reports this file as a parse error ("No plan found in TAP output"),
+-- which fails the whole `supabase test db` run's exit code even though
+-- every real test (01-08) passes. Found running the full suite for
+-- real, not theoretical: 42/42 real assertions can pass and the
+-- command still exits non-zero without this. Placed after CREATE
+-- EXTENSION, not before: plan() is itself a pgtap function, so calling
+-- it any earlier would fail on a database where pgtap wasn't already
+-- pre-installed by the local Postgres image.
+select plan(1);
+
 -- `GRANT ... ON ALL FUNCTIONS` only covers functions that exist at the
 -- moment it runs — pgtap's assertion functions (ok, is, throws_ok,
 -- plan, finish, …) didn't exist when 0018_grants.sql granted on the
@@ -98,3 +110,6 @@ $$;
 -- whatever powerful role the SQL editor originally connects as.
 grant usage on schema tests to authenticated;
 grant execute on all functions in schema tests to authenticated;
+
+select pass('pgtap extension, tests schema and shared helpers are ready');
+select * from finish();

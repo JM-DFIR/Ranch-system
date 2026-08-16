@@ -58,23 +58,46 @@ select lives_ok(
   'manager can transfer an animal out to a ranch they do not manage'
 );
 
+-- Checked as the OWNER, not the manager: ranch B isn't one the manager
+-- is assigned to, so once the animal actually lands there, animals_select's
+-- has_ranch_access(ranch_id) makes it invisible to the manager's own
+-- query — that would make this assertion fail even on a fully correct
+-- transfer, for a reason that has nothing to do with record_movement()
+-- itself. The owner can see every ranch, so this checks the real data.
+select tests.authenticate_as(
+  'c0000000-0000-0000-0000-000000000011', 'c0000000-0000-0000-0000-000000000001', 'owner'
+);
 select is(
   (select ranch_id from animals where id = 'c0000000-0000-0000-0000-000000001001'),
   'c0000000-0000-0000-0000-000000000102'::uuid,
   'the animal''s ranch_id actually updated to the destination'
 );
+select tests.authenticate_as(
+  'c0000000-0000-0000-0000-000000000012', 'c0000000-0000-0000-0000-000000000001', 'ranch_manager'
+);
 
 -- Negative case — the one that matters most: the manager tries to
 -- claim an animal whose current ranch (C) they have no access to,
 -- naming their OWN ranch (A) as the destination. This must fail.
+-- throws_ok's 3rd argument is the expected error MESSAGE, not a
+-- description — see 02_profiles_security.sql's note; description is
+-- the 4th argument. record_movement's own access check is a plain
+-- `raise exception`, always P0001.
 select throws_ok(
   $$ select record_movement(
        'c0000000-0000-0000-0000-000000001002'::uuid,
        'c0000000-0000-0000-0000-000000000101'::uuid
      ) $$,
+  'P0001',
+  'you do not have access to this animal''s current ranch',
   'manager cannot claim an animal from a ranch they do not manage, even into their own ranch'
 );
 
+-- Same visibility caveat as above — ranch C was never assigned to the
+-- manager either, so check as the owner.
+select tests.authenticate_as(
+  'c0000000-0000-0000-0000-000000000011', 'c0000000-0000-0000-0000-000000000001', 'owner'
+);
 select is(
   (select ranch_id from animals where id = 'c0000000-0000-0000-0000-000000001002'),
   'c0000000-0000-0000-0000-000000000103'::uuid,

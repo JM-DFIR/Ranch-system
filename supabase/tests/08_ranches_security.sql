@@ -9,7 +9,7 @@
 --     for a ranch the manager actually has access to.
 -- ---------------------------------------------------------------------
 begin;
-select plan(6);
+select plan(7);
 
 select tests.clear_authentication();
 
@@ -58,15 +58,31 @@ select tests.authenticate_as(
   'f0000000-0000-0000-0000-000000000012', 'f0000000-0000-0000-0000-000000000001', 'ranch_manager'
 );
 
+-- throws_ok's 3rd argument is the expected error MESSAGE, not a
+-- description — see 02_profiles_security.sql's note; description is
+-- the 4th argument. An RLS WITH CHECK failure on INSERT is always
+-- 42501, with Postgres's own standard message.
 select throws_ok(
   $$ insert into ranches (id, org_id, name) values
        ('f0000000-0000-0000-0000-000000000104', 'f0000000-0000-0000-0000-000000000001', 'Manager''s Ranch') $$,
+  '42501',
+  'new row violates row-level security policy for table "ranches"',
   'a manager cannot create a ranch'
 );
 
-select throws_ok(
+-- Not throws_ok: ranches_owner_update's USING clause requires
+-- is_owner(), which is false for the manager even on a ranch they
+-- manage — the row is never matched, so this is a silent 0-row update,
+-- not a thrown exception (Postgres only throws on a WITH CHECK failure
+-- for a row that WAS matched; a USING failure just matches nothing).
+select lives_ok(
   $$ update ranches set name = 'Renamed by manager' where id = 'f0000000-0000-0000-0000-000000000101' $$,
-  'a manager cannot structurally edit a ranch, even one they manage'
+  'a manager''s attempt to structurally edit a ranch runs without error...'
+);
+select is(
+  (select name from ranches where id = 'f0000000-0000-0000-0000-000000000101'),
+  'Ranch A',
+  '...but silently changes nothing, since ranches_owner_update never matched the row'
 );
 
 select lives_ok(
@@ -78,6 +94,8 @@ select lives_ok(
 select throws_ok(
   $$ insert into ranch_sections (org_id, ranch_id, name) values
        ('f0000000-0000-0000-0000-000000000001', 'f0000000-0000-0000-0000-000000000102', 'Should not work') $$,
+  '42501',
+  'new row violates row-level security policy for table "ranch_sections"',
   'a manager cannot add a section to a ranch they do not manage'
 );
 
