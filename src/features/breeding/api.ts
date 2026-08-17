@@ -128,6 +128,21 @@ export async function fetchSireOptions(orgId: string): Promise<SireOption[]> {
   return (data ?? []).map((a) => ({ id: a.id, tagNumber: a.tag_number }));
 }
 
+// Same shape as fetchSireOptions, the female half — Edit Animal's dam
+// field is the other caller (breeding events only ever pick a sire for
+// an existing dam, so this one didn't exist until Edit needed it).
+export async function fetchDamOptions(orgId: string): Promise<SireOption[]> {
+  const { data, error } = await supabase
+    .from("animals")
+    .select("id, tag_number")
+    .eq("org_id", orgId)
+    .eq("sex", "female")
+    .is("deleted_at", null)
+    .order("tag_number");
+  if (error) throw error;
+  return (data ?? []).map((a) => ({ id: a.id, tagNumber: a.tag_number }));
+}
+
 // ---------------------------------------------------------------------
 // Record Breeding (M4 — session-pack.md Part 5). breeding_events has no
 // bulk RPC — one plain multi-row insert, one row per selected dam, each

@@ -7,6 +7,7 @@ import {
   fetchBreedingCalendar,
   fetchBreedingEvents,
   fetchBreedingRegister,
+  fetchDamOptions,
   fetchSireOptions,
   recordBirth,
   recordBreedingEvent,
@@ -113,6 +114,15 @@ export function useSireOptions(orgId: string | undefined) {
   return useQuery({
     queryKey: queryKeys.breeding.sireOptions(orgId ?? ""),
     queryFn: () => fetchSireOptions(orgId ?? ""),
+    enabled: !!orgId,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useDamOptions(orgId: string | undefined) {
+  return useQuery({
+    queryKey: queryKeys.breeding.damOptions(orgId ?? ""),
+    queryFn: () => fetchDamOptions(orgId ?? ""),
     enabled: !!orgId,
     staleTime: 5 * 60 * 1000,
   });

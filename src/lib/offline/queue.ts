@@ -97,9 +97,15 @@ interface EnqueueAttachPhotoParams {
   createdBy: string;
 }
 
-export async function enqueueAttachPhoto(params: EnqueueAttachPhotoParams): Promise<void> {
+// Returns the queue entry's own id — the animal profile's "change
+// photo" action (unlike Batch Enrollment's fire-and-forget call) wants
+// to know once this specific entry has actually synced, so it can
+// refresh the displayed photo and report real success rather than just
+// "queued."
+export async function enqueueAttachPhoto(params: EnqueueAttachPhotoParams): Promise<string> {
+  const id = uuidv7();
   const entry: QueueEntry = {
-    id: uuidv7(),
+    id,
     operationType: "attach_photo",
     payload: { animalId: params.animalId, orgId: params.orgId },
     photoBlobs: [params.photo, params.thumbnail],
@@ -109,6 +115,7 @@ export async function enqueueAttachPhoto(params: EnqueueAttachPhotoParams): Prom
     attemptCount: 0,
   };
   await offlineDb.writeQueue.add(entry);
+  return id;
 }
 
 interface EnqueueCreateHealthEventParams {

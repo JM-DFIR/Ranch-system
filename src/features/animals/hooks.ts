@@ -12,6 +12,7 @@ import {
   fetchAnimalSummaries,
   fetchAnimalTimeline,
   getAnimalPhotoSignedUrl,
+  getAnimalPhotoSignedUrls,
   type AnimalRegisterParams,
   type LineageDirection,
   type TimelineEventType,
@@ -25,6 +26,19 @@ export function useAnimalPhotoUrl(photoPath: string | null | undefined) {
       return getAnimalPhotoSignedUrl(photoPath);
     },
     enabled: !!photoPath,
+  });
+}
+
+// The register's batched counterpart — one request for every photo on
+// the current page, not one per row (see getAnimalPhotoSignedUrls).
+// Sorted before joining into the key so re-fetching the same page in a
+// different row order (a re-sort) doesn't miss the cache.
+export function useAnimalPhotoUrls(photoPaths: string[]) {
+  const sortedPaths = [...photoPaths].sort();
+  return useQuery({
+    queryKey: ["animals", "photo-urls", sortedPaths],
+    queryFn: () => getAnimalPhotoSignedUrls(sortedPaths),
+    enabled: sortedPaths.length > 0,
   });
 }
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { OnChangeFn, PaginationState, RowSelectionState, SortingState } from "@tanstack/react-table";
 import { PawPrint } from "lucide-react";
 
@@ -7,10 +7,10 @@ import { PageHeader } from "@/components/patterns/PageHeader";
 import { EmptyState } from "@/components/patterns/EmptyState";
 import { ErrorState } from "@/components/patterns/ErrorState";
 import { DataTable } from "@/components/patterns/DataTable";
-import { Route as AnimalsRoute } from "@/routes/_authenticated/animals";
+import { Route as AnimalsRoute } from "@/routes/_authenticated/animals.index";
 import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
-import { animalColumns } from "../columns";
-import { useAnimalRegister } from "../hooks";
+import { buildAnimalColumns } from "../columns";
+import { useAnimalPhotoUrls, useAnimalRegister } from "../hooks";
 import { useColumnVisibility, useDensity } from "../usePreferences";
 import { DEFAULT_PAGE_SIZE, DEFAULT_SORT, DEFAULT_SORT_DIR, hasActiveAnimalFilters, type PageSize } from "../schema";
 import type { AnimalRegisterParams } from "../api";
@@ -76,9 +76,16 @@ export function AnimalRegisterPage() {
   }
 
   const { data, isLoading, isError, error, refetch } = useAnimalRegister(profile?.orgId, params);
-  const rows = data?.rows ?? [];
+  const rows = useMemo(() => data?.rows ?? [], [data?.rows]);
   const totalCount = data?.totalCount ?? 0;
   const selectedRows = rows.filter((row) => rowSelection[row.id]);
+
+  // One signed-URL request for every photo on the current page, not one
+  // per row (see useAnimalPhotoUrls) — columns are rebuilt only when
+  // that map actually changes, not on every render.
+  const photoPaths = useMemo(() => rows.map((r) => r.photoPath).filter((p): p is string => !!p), [rows]);
+  const { data: photoUrls } = useAnimalPhotoUrls(photoPaths);
+  const columns = useMemo(() => buildAnimalColumns(photoUrls ?? {}), [photoUrls]);
 
   const onSortingChange: OnChangeFn<SortingState> = (updater) => {
     const next = typeof updater === "function" ? updater(sorting) : updater;
@@ -147,7 +154,7 @@ export function AnimalRegisterPage() {
           <>
             <FilterBar />
             <DataTable
-              columns={animalColumns}
+              columns={columns}
               data={rows}
               rowCount={totalCount}
               isLoading={isLoading}

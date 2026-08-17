@@ -38,6 +38,53 @@ export const DEFAULT_SORT = "tag_number";
 export const DEFAULT_SORT_DIR = "asc";
 export const DEFAULT_PAGE_SIZE: PageSize = 50;
 
+// Edit Animal — every identity field enrollment collects, minus the two
+// with their own dedicated, purpose-built flows already: ranch (Transfer,
+// which resolves from_ranch_id server-side and has its own access-control
+// story, CLAUDE.md §7 — a plain field edit here would bypass all of that)
+// and status (Change status / Record death). Photo replacement is out of
+// scope too — it needs the camera/compression pipeline, not a form field.
+export const animalEditSchema = z
+  .object({
+    tagNumber: z.string().min(1, { error: "Tag number is required." }),
+    name: z.string().optional(),
+    speciesId: z.string().min(1, { error: "Choose a species." }),
+    breedId: z.string().optional(),
+    sex: z.enum(["male", "female", "unknown"], { error: "Choose a sex." }),
+    color: z.string().optional(),
+    dateOfBirth: z.string().optional(),
+    dobIsEstimated: z.boolean(),
+    acquisitionType: z.enum(["born_on_ranch", "purchased", "gift", "unknown"], { error: "Choose how this animal was acquired." }),
+    acquisitionDate: z.string().optional(),
+    damId: z.string().optional(),
+    sireId: z.string().optional(),
+    sectionId: z.string().optional(),
+    anitracAin: z.string().optional(),
+    notes: z.string().optional(),
+  })
+  .refine((data) => !data.dateOfBirth || data.dateOfBirth <= new Date().toISOString().slice(0, 10), {
+    error: "Date of birth can't be in the future.",
+    path: ["dateOfBirth"],
+  })
+  .refine((data) => !data.acquisitionDate || data.acquisitionDate <= new Date().toISOString().slice(0, 10), {
+    error: "Acquisition date can't be in the future.",
+    path: ["acquisitionDate"],
+  })
+  .refine((data) => !data.anitracAin || /^\d{15}$/.test(data.anitracAin), {
+    // Matches animals.anitrac_ain's own check constraint exactly
+    // (0006_animals.sql: `anitrac_ain ~ '^[0-9]{15}$'`) — caught here,
+    // in plain language, instead of surfacing Postgres's raw
+    // check-violation message as a generic "Couldn't save changes."
+    error: "ANITRAC AIN must be exactly 15 digits.",
+    path: ["anitracAin"],
+  })
+  .refine((data) => !data.damId || !data.sireId || data.damId !== data.sireId, {
+    error: "Dam and sire can't be the same animal.",
+    path: ["sireId"],
+  });
+
+export type AnimalEditValues = z.infer<typeof animalEditSchema>;
+
 // Shared by FilterBar (its own "Clear filters" button) and
 // AnimalRegisterPage (which empty-state copy to show) — one
 // definition of "a filter is active" so the two can't drift.

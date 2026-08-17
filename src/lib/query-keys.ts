@@ -76,6 +76,7 @@ export const queryKeys = {
     register: (orgId: string, params: unknown) => ["breeding", orgId, "register", params] as const,
     calendar: (orgId: string, ranchId: string | undefined) => ["breeding", orgId, "calendar", ranchId] as const,
     sireOptions: (orgId: string) => ["breeding", orgId, "sire-options"] as const,
+    damOptions: (orgId: string) => ["breeding", orgId, "dam-options"] as const,
   },
   movements: {
     list: (animalId: string) => ["movements", "list", animalId] as const,

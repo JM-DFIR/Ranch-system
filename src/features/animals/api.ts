@@ -225,6 +225,72 @@ export async function fetchAnimalProfile(animalId: string): Promise<AnimalProfil
   };
 }
 
+export interface AnimalEditPayload {
+  tagNumber: string;
+  name: string | undefined;
+  speciesId: string;
+  breedId: string | undefined;
+  sex: "male" | "female" | "unknown";
+  color: string | undefined;
+  dateOfBirth: string | undefined;
+  dobIsEstimated: boolean;
+  acquisitionType: "born_on_ranch" | "purchased" | "gift" | "unknown";
+  acquisitionDate: string | undefined;
+  damId: string | undefined;
+  sireId: string | undefined;
+  sectionId: string | undefined;
+  anitracAin: string | undefined;
+  notes: string | undefined;
+}
+
+// A plain field update, same shape as ChangeStatusDialog's — ranch_id
+// and status_id are deliberately never touched here (Transfer and
+// Change status/Record death own those, CLAUDE.md §7). updated_by is
+// left for the trigger to stamp (it only fills audit columns that are
+// still NULL, CLAUDE.md §6 — ChangeStatusDialog's own update omits it
+// the same way). Every optional field is written as `?? null` rather
+// than omitted: an update that dropped a field the form cleared would
+// silently leave the old value in place instead of actually clearing
+// it. dam_id/sire_id go through the same columns the cycle-prevention
+// trigger already guards (0006_animals.sql) — nothing extra needed
+// here for that.
+export async function updateAnimal(animalId: string, values: AnimalEditPayload): Promise<void> {
+  const { error } = await supabase
+    .from("animals")
+    .update({
+      tag_number: values.tagNumber,
+      name: values.name ?? null,
+      species_id: values.speciesId,
+      breed_id: values.breedId ?? null,
+      sex: values.sex,
+      color: values.color ?? null,
+      date_of_birth: values.dateOfBirth ?? null,
+      dob_is_estimated: values.dobIsEstimated,
+      acquisition_type: values.acquisitionType,
+      acquisition_date: values.acquisitionDate ?? null,
+      dam_id: values.damId ?? null,
+      sire_id: values.sireId ?? null,
+      section_id: values.sectionId ?? null,
+      anitrac_ain: values.anitracAin ?? null,
+      notes: values.notes ?? null,
+    })
+    .eq("id", animalId);
+  if (error) throw error;
+}
+
+// "Remove photo" isn't one of the five offline-queued operations
+// (CLAUDE.md §8 — only attach_photo, and that only ever adds) — a
+// removal is a plain field clear, same as any other Edit field, so it
+// goes straight through like updateAnimal does rather than needing a
+// queue entry of its own. The old object in the animal-photos bucket
+// is left in place rather than deleted — an orphaned Storage blob
+// isn't harmful, and this project doesn't otherwise reach into Storage
+// deletion from client code.
+export async function removeAnimalPhoto(animalId: string): Promise<void> {
+  const { error } = await supabase.from("animals").update({ photo_path: null }).eq("id", animalId);
+  if (error) throw error;
+}
+
 // Signed URL for a photo already in the animal-photos bucket (no public
 // buckets — CLAUDE.md §7). Same pattern as ranches' cover image
 // (getRanchCoverSignedUrl) — this was the one piece never wired up: the
@@ -235,6 +301,23 @@ export async function getAnimalPhotoSignedUrl(filePath: string): Promise<string>
   const { data, error } = await supabase.storage.from("animal-photos").createSignedUrl(filePath, 3600);
   if (error) throw error;
   return data.signedUrl;
+}
+
+// The register's own version — one call for every photo on the current
+// page (up to 200 rows) via Storage's bulk createSignedUrls, instead of
+// one request per row. Keyed by path so the register's columns can look
+// each animal's URL up directly; a path Storage couldn't sign (removed
+// object, say) is just left out of the map rather than failing the
+// whole page.
+export async function getAnimalPhotoSignedUrls(filePaths: string[]): Promise<Record<string, string>> {
+  if (filePaths.length === 0) return {};
+  const { data, error } = await supabase.storage.from("animal-photos").createSignedUrls(filePaths, 3600);
+  if (error) throw error;
+  const map: Record<string, string> = {};
+  for (const row of data ?? []) {
+    if (row.signedUrl && row.path) map[row.path] = row.signedUrl;
+  }
+  return map;
 }
 
 // ---------------------------------------------------------------------

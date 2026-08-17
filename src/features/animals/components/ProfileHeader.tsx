@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MoreVertical, PawPrint } from "lucide-react";
+import { Camera, MoreVertical, PawPrint } from "lucide-react";
 
 import { formatAge } from "@/lib/format";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,8 @@ import { RecordBreedingDrawer } from "@/features/breeding/components/RecordBreed
 import { RecordBirthDrawer } from "@/features/breeding/components/RecordBirthDrawer";
 import { ChangeStatusDialog } from "./ChangeStatusDialog";
 import { RecordDeathDialog } from "./RecordDeathDialog";
+import { EditAnimalDrawer } from "./EditAnimalDrawer";
+import { ChangeAnimalPhotoDialog } from "./ChangeAnimalPhotoDialog";
 import { useAnimalPhotoUrl } from "../hooks";
 import type { AnimalProfile } from "../api";
 
@@ -32,12 +34,12 @@ interface ProfileHeaderProps {
 }
 
 // Record vaccination, weight, treatment, illness, vet visit, transfer,
-// breeding and birth are all real now (Sessions 6, 8, and M4). Edit
-// still renders disabled — it needs a full edit form, not built yet.
-// Change status and Record death were already real from Session 4.
-// Breeding/birth only show for a female animal — breeding_events.dam_id
-// and births.dam_id are both females-only by the schema's own design
-// (BreedingTab.tsx draws the same line for the read side).
+// breeding, birth and edit are all real now (Sessions 6, 8, M4, and the
+// edit form). Change status and Record death were already real from
+// Session 4. Breeding/birth only show for a female animal —
+// breeding_events.dam_id and births.dam_id are both females-only by the
+// schema's own design (BreedingTab.tsx draws the same line for the read
+// side).
 export function ProfileHeader({ animal }: ProfileHeaderProps) {
   const { data: photoUrl } = useAnimalPhotoUrl(animal.photoPath);
   const [changeStatusOpen, setChangeStatusOpen] = useState(false);
@@ -50,19 +52,29 @@ export function ProfileHeader({ animal }: ProfileHeaderProps) {
   const [transferOpen, setTransferOpen] = useState(false);
   const [recordBreedingOpen, setRecordBreedingOpen] = useState(false);
   const [recordBirthOpen, setRecordBirthOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [photoOpen, setPhotoOpen] = useState(false);
 
   return (
     <div className="flex flex-col gap-4 border-b border-line pb-4">
-      <div className="flex flex-wrap items-start gap-4">
-        <div className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-card bg-muted text-muted-foreground">
+      <div className="flex flex-col items-start gap-4 sm:flex-row sm:flex-wrap">
+        <button
+          type="button"
+          onClick={() => setPhotoOpen(true)}
+          className="group relative flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-card bg-muted text-muted-foreground"
+          aria-label={photoUrl ? "Change photo" : "Add a photo"}
+        >
           {photoUrl ? (
             <img src={photoUrl} alt="" className="size-full object-cover" />
           ) : (
             <PawPrint className="size-8" aria-hidden />
           )}
-        </div>
+          <span className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all group-hover:bg-black/40 group-hover:opacity-100 focus-visible:bg-black/40 focus-visible:opacity-100">
+            <Camera className="size-6 text-white" aria-hidden />
+          </span>
+        </button>
 
-        <div className="min-w-0 flex-1 space-y-1.5">
+        <div className="min-w-0 w-full space-y-1.5 sm:w-auto sm:flex-1">
           <div className="flex flex-wrap items-baseline gap-2">
             <h1 className="font-mono text-26 font-medium tabular-nums text-foreground">{animal.tagNumber}</h1>
             {animal.name ? <span className="text-20 text-muted-foreground">{animal.name}</span> : null}
@@ -86,7 +98,7 @@ export function ProfileHeader({ animal }: ProfileHeaderProps) {
           </div>
         </div>
 
-        <div className="flex shrink-0 flex-wrap items-center gap-2">
+        <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:shrink-0">
           <Button size="sm" onClick={() => setRecordVaccinationOpen(true)}>
             Record vaccination
           </Button>
@@ -96,7 +108,7 @@ export function ProfileHeader({ animal }: ProfileHeaderProps) {
           <Button size="sm" variant="outline" onClick={() => setTransferOpen(true)}>
             Transfer
           </Button>
-          <Button size="sm" variant="outline" disabled title="Coming in a later session">
+          <Button size="sm" variant="outline" onClick={() => setEditOpen(true)}>
             Edit
           </Button>
           <DropdownMenu>
@@ -129,6 +141,8 @@ export function ProfileHeader({ animal }: ProfileHeaderProps) {
 
       <ChangeStatusDialog open={changeStatusOpen} onOpenChange={setChangeStatusOpen} animal={animal} />
       <RecordDeathDialog open={recordDeathOpen} onOpenChange={setRecordDeathOpen} animal={animal} />
+      <EditAnimalDrawer open={editOpen} onOpenChange={setEditOpen} animal={animal} />
+      <ChangeAnimalPhotoDialog open={photoOpen} onOpenChange={setPhotoOpen} animal={animal} />
       <RecordTreatmentDrawer
         open={recordTreatmentOpen}
         onOpenChange={setRecordTreatmentOpen}
