@@ -48,7 +48,14 @@ export function AppShell({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-background">
+    // h-screen + overflow-hidden, not min-h-screen: the shell itself must
+    // be capped to exactly the viewport, or a tall sidebar nav (fifteen
+    // items across five groups) just grows the whole page instead of
+    // scrolling internally — no visible scrollbar, items below the fold
+    // unreachable except by scrolling the entire document past the
+    // TopBar. Capping the frame here is what makes DesktopSidebar's own
+    // overflow-y-auto (below) and <main>'s actually take effect.
+    <div className="flex h-screen overflow-hidden bg-background">
       <DesktopSidebar collapsed={collapsed} onToggleCollapsed={() => setCollapsed((c) => !c)} />
       <MobileNav open={mobileNavOpen} onOpenChange={setMobileNavOpen} />
       <div className="flex min-w-0 flex-1 flex-col">
