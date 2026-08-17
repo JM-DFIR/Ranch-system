@@ -188,7 +188,7 @@ export function RecordBirthDrawer({ open, onOpenChange, dam, searchableAnimals =
           </div>
         ) : null}
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="birth-date">Birth date</Label>
             <Input id="birth-date" type="date" max={TODAY()} {...register("birthDate")} />
@@ -242,7 +242,7 @@ export function RecordBirthDrawer({ open, onOpenChange, dam, searchableAnimals =
                     </Button>
                   ) : null}
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   <div className="space-y-1">
                     <Label htmlFor={`offspring-${index}-tag`} className="text-12">
                       Tag number

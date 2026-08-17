@@ -2,6 +2,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { Link } from "@tanstack/react-router";
 
 import { formatDate } from "@/lib/format";
+import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
 import type {
   IllnessRegisterRow,
   TreatmentRegisterRow,
@@ -14,8 +15,9 @@ import type {
 // their own (unlike the animal register), so the Link is the only
 // interactive element in the cell.
 function AnimalTagCell({ animalId, tagNumber, animalName }: { animalId: string; tagNumber: string; animalName: string | null }) {
+  const { ranch } = AuthenticatedRoute.useSearch();
   return (
-    <Link to="/animals/$animalId" params={{ animalId }} className="hover:underline">
+    <Link to="/animals/$animalId" params={{ animalId }} search={{ ranch }} className="hover:underline">
       <span className="font-mono tabular-nums">{tagNumber}</span>
       {animalName ? <span className="ml-1.5 text-muted-foreground">{animalName}</span> : null}
     </Link>

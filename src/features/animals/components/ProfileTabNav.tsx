@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
 import { cn } from "@/lib/utils";
+import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
 
 interface Tab {
   label: string;
@@ -30,6 +31,8 @@ interface ProfileTabNavProps {
 // highlighted while on every other tab too, since they're all
 // descendant paths of it.
 export function ProfileTabNav({ animalId }: ProfileTabNavProps) {
+  const { ranch } = AuthenticatedRoute.useSearch();
+
   return (
     <nav className="flex gap-1 overflow-x-auto border-b border-line" aria-label="Animal profile sections">
       {TABS.map((tab) => (
@@ -37,6 +40,7 @@ export function ProfileTabNav({ animalId }: ProfileTabNavProps) {
           key={tab.to}
           to={tab.to}
           params={{ animalId }}
+          search={{ ranch }}
           activeOptions={{ exact: tab.to === "/animals/$animalId" }}
           className={cn(
             "shrink-0 whitespace-nowrap border-b-2 border-transparent px-3 py-2.5 text-13 font-medium text-muted-foreground transition-colors hover:text-foreground",

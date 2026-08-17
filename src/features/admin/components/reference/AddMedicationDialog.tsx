@@ -61,7 +61,7 @@ export function AddMedicationDialog({ open, onOpenChange }: AddMedicationDialogP
             <Input id="medication-name" {...register("name")} />
             {errors.name ? <p className="text-13 text-status-critical">{errors.name.message}</p> : null}
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label htmlFor="medication-ingredient">Active ingredient</Label>
               <Input id="medication-ingredient" {...register("activeIngredient")} />

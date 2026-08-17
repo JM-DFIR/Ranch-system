@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 
 import { formatDate } from "@/lib/format";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
 import { useAnimalOverviewSummary, useAnimalSummaries, useAnimalTimeline } from "../../hooks";
 import type { AnimalProfile } from "../../api";
 
@@ -29,6 +30,7 @@ function Card({ title, children }: { title: string; children: ReactNode }) {
 }
 
 export function OverviewTab({ animal }: OverviewTabProps) {
+  const { ranch } = AuthenticatedRoute.useSearch();
   const { data: summary, isLoading: summaryLoading } = useAnimalOverviewSummary(animal.id, animal.sex);
   const { data: recentEvents, isLoading: eventsLoading } = useAnimalTimeline(animal.id, undefined, 3);
   const { data: parents } = useAnimalSummaries([animal.damId, animal.sireId].filter((id): id is string => !!id));
@@ -69,7 +71,7 @@ export function OverviewTab({ animal }: OverviewTabProps) {
             label="Dam"
             value={
               dam ? (
-                <Link to="/animals/$animalId" params={{ animalId: dam.id }} className="text-primary hover:underline">
+                <Link to="/animals/$animalId" params={{ animalId: dam.id }} search={{ ranch }} className="text-primary hover:underline">
                   {dam.tagNumber}
                 </Link>
               ) : null
@@ -79,7 +81,7 @@ export function OverviewTab({ animal }: OverviewTabProps) {
             label="Sire"
             value={
               sire ? (
-                <Link to="/animals/$animalId" params={{ animalId: sire.id }} className="text-primary hover:underline">
+                <Link to="/animals/$animalId" params={{ animalId: sire.id }} search={{ ranch }} className="text-primary hover:underline">
                   {sire.tagNumber}
                 </Link>
               ) : null

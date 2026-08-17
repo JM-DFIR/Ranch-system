@@ -9,6 +9,7 @@ import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
 import { queryKeys } from "@/lib/query-keys";
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "@/components/ui/command";
 import { NAV_GROUPS } from "@/app/shell/nav-items";
+import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
 
 interface AnimalSearchResult {
   id: string;
@@ -49,6 +50,7 @@ interface CommandPaletteProps {
 // (future entry points can trigger the same `open` state).
 export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const { profile } = useAuth();
+  const { ranch } = AuthenticatedRoute.useSearch();
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebouncedValue(query, 200);
@@ -73,7 +75,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
 
   const goToAnimal = (animalId: string) => {
     onOpenChange(false);
-    void navigate({ to: "/animals/$animalId", params: { animalId } });
+    void navigate({ to: "/animals/$animalId", params: { animalId }, search: { ranch } });
   };
 
   return (
@@ -108,7 +110,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                   onSelect={() => {
                     if (!item.to) return;
                     onOpenChange(false);
-                    void navigate({ to: item.to });
+                    void navigate({ to: item.to, search: { ranch } });
                   }}
                 >
                   <item.icon aria-hidden />

@@ -209,7 +209,7 @@ export function RecordIllnessDrawer({ open, onOpenChange, preselectedAnimals, se
           )}
         />
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="illness-onset">Onset date</Label>
             <Input id="illness-onset" type="date" max={TODAY()} {...register("onsetDate")} />
@@ -243,7 +243,7 @@ export function RecordIllnessDrawer({ open, onOpenChange, preselectedAnimals, se
           <Textarea id="illness-symptoms" {...register("symptoms")} />
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label>Status</Label>
             <Controller

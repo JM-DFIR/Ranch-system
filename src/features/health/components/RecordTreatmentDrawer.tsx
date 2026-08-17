@@ -226,7 +226,7 @@ export function RecordTreatmentDrawer({ open, onOpenChange, preselectedAnimals, 
           )}
         />
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="treat-date">Treatment date</Label>
             <Input id="treat-date" type="date" max={TODAY()} {...register("treatmentDate")} />
@@ -238,7 +238,7 @@ export function RecordTreatmentDrawer({ open, onOpenChange, preselectedAnimals, 
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="treat-route">Route</Label>
             <Input id="treat-route" {...register("route")} placeholder="e.g. Intramuscular" />
@@ -267,7 +267,7 @@ export function RecordTreatmentDrawer({ open, onOpenChange, preselectedAnimals, 
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="treat-withdrawal">Withdrawal until</Label>
             <Input id="treat-withdrawal" type="date" {...register("withdrawalUntil")} />

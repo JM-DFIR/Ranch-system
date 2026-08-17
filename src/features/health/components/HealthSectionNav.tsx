@@ -1,5 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
+import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
+
 interface Tab {
   label: string;
   to: string;
@@ -20,12 +22,15 @@ const TABS: Tab[] = [
 // `/health/*` now would just be churn; they're one click away from the
 // hub's own card grid instead (HealthHubPage.tsx).
 export function HealthSectionNav() {
+  const { ranch } = AuthenticatedRoute.useSearch();
+
   return (
     <nav className="flex gap-1 overflow-x-auto border-b border-line" aria-label="Health sections">
       {TABS.map((tab) => (
         <Link
           key={tab.to}
           to={tab.to}
+          search={{ ranch }}
           activeOptions={{ exact: tab.to === "/health" }}
           className="shrink-0 whitespace-nowrap border-b-2 border-transparent px-3 py-2.5 text-13 font-medium text-muted-foreground transition-colors hover:text-foreground"
           activeProps={{ className: "!border-primary !text-foreground" }}

@@ -161,7 +161,7 @@ export function AnimalRegisterPage() {
               onColumnVisibilityChange={setColumnVisibility}
               getRowId={(row) => row.id}
               density={density}
-              onRowClick={(row) => void navigate({ to: "/animals/$animalId", params: { animalId: row.id } })}
+              onRowClick={(row) => void navigate({ to: "/animals/$animalId", params: { animalId: row.id }, search: { ranch } })}
               emptyState={emptyState}
             />
             {rows.length > 0 ? (

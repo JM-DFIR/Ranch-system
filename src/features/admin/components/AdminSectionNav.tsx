@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
 import { useAuth } from "@/lib/auth";
+import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
 
 interface Tab {
   label: string;
@@ -24,6 +25,7 @@ const TABS: Tab[] = [
 // (0021_reference_catalogue_manager_write.sql).
 export function AdminSectionNav() {
   const { isOwner } = useAuth();
+  const { ranch } = AuthenticatedRoute.useSearch();
   const tabs = TABS.filter((tab) => !tab.ownerOnly || isOwner);
 
   return (
@@ -32,6 +34,7 @@ export function AdminSectionNav() {
         <Link
           key={tab.to}
           to={tab.to}
+          search={{ ranch }}
           activeOptions={{ exact: tab.to === "/admin" }}
           className="shrink-0 whitespace-nowrap border-b-2 border-transparent px-3 py-2.5 text-13 font-medium text-muted-foreground transition-colors hover:text-foreground"
           activeProps={{ className: "!border-primary !text-foreground" }}

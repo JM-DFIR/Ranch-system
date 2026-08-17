@@ -62,11 +62,11 @@ export function BulkActionBar({ selectedRows, onClearSelection }: BulkActionBarP
   return (
     <>
       <div className="fixed inset-x-0 bottom-4 z-40 flex justify-center px-4">
-        <div className="flex items-center gap-2 rounded-card border border-line bg-card px-4 py-2.5 shadow-lg">
-          <span className="text-14 font-medium whitespace-nowrap">
+        <div className="flex max-w-full items-center gap-2 overflow-x-auto rounded-card border border-line bg-card px-4 py-2.5 shadow-lg">
+          <span className="shrink-0 text-14 font-medium whitespace-nowrap">
             {selectedRows.length} {selectedRows.length === 1 ? "animal" : "animals"} selected
           </span>
-          <div className="mx-1 h-5 w-px bg-line" aria-hidden />
+          <div className="mx-1 h-5 w-px shrink-0 bg-line" aria-hidden />
           {actions.map((action) => (
             <Button
               key={action.label}
@@ -75,14 +75,14 @@ export function BulkActionBar({ selectedRows, onClearSelection }: BulkActionBarP
               disabled={!action.onSelect}
               title={action.onSelect ? undefined : "Coming in a later session"}
               onClick={() => action.onSelect?.(selectedRows)}
-              className="gap-1.5"
+              className="shrink-0 gap-1.5"
             >
               <action.icon className="size-3.5" aria-hidden />
               {action.label}
             </Button>
           ))}
-          <div className="mx-1 h-5 w-px bg-line" aria-hidden />
-          <Button variant="ghost" size="icon-sm" onClick={onClearSelection} aria-label="Clear selection">
+          <div className="mx-1 h-5 w-px shrink-0 bg-line" aria-hidden />
+          <Button variant="ghost" size="icon-sm" className="shrink-0" onClick={onClearSelection} aria-label="Clear selection">
             <X className="size-4" aria-hidden />
           </Button>
         </div>

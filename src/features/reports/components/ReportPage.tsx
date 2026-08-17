@@ -36,7 +36,7 @@ export function ReportPage() {
 
   return (
     <div className="flex flex-col gap-4 p-4 md:p-6">
-      <Link to="/reports" className="flex w-fit items-center gap-1 text-13 text-muted-foreground hover:text-foreground">
+      <Link to="/reports" search={{ ranch }} className="flex w-fit items-center gap-1 text-13 text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-3.5" aria-hidden />
         Back to reports
       </Link>

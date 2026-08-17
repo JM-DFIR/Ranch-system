@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
-import { ArrowLeft, MoreVertical, PawPrint } from "lucide-react";
+import { MoreVertical, PawPrint } from "lucide-react";
 
 import { formatAge } from "@/lib/format";
 import { Button } from "@/components/ui/button";
@@ -52,10 +51,6 @@ export function ProfileHeader({ animal }: ProfileHeaderProps) {
 
   return (
     <div className="flex flex-col gap-4 border-b border-line pb-4">
-      <Link to="/animals" className="flex w-fit items-center gap-1 text-13 text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="size-3.5" aria-hidden />
-        Back to register
-      </Link>
       <div className="flex flex-wrap items-start gap-4">
         {/* photo_path resolution (upload/replace) is Session 5's camera +
             compression pipeline, same deferral as the register's thumbnail

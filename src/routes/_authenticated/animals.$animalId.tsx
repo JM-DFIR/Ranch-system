@@ -4,6 +4,7 @@ import { ArrowLeft, PawPrint } from "lucide-react";
 import { EmptyState } from "@/components/patterns/EmptyState";
 import { ErrorState } from "@/components/patterns/ErrorState";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
 import { useAnimalProfile } from "@/features/animals/hooks";
 import { ProfileHeader } from "@/features/animals/components/ProfileHeader";
 import { ProfileTabNav } from "@/features/animals/components/ProfileTabNav";
@@ -18,11 +19,12 @@ export const Route = createFileRoute("/_authenticated/animals/$animalId")({
 
 function AnimalProfileLayout() {
   const { animalId } = Route.useParams();
+  const { ranch } = AuthenticatedRoute.useSearch();
   const { data: animal, isLoading, isError, error, refetch } = useAnimalProfile(animalId);
 
   return (
     <div className="flex flex-col gap-4 p-4 md:p-6">
-      <Link to="/animals" className="flex w-fit items-center gap-1 text-13 text-muted-foreground hover:text-foreground">
+      <Link to="/animals" search={{ ranch }} className="flex w-fit items-center gap-1 text-13 text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-3.5" aria-hidden />
         Back to register
       </Link>

@@ -3,6 +3,7 @@ import { MapPin, TriangleAlert } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
 import type { RanchStat } from "@/features/ranches/api";
 
 interface RanchComparisonStripProps {
@@ -29,6 +30,8 @@ function topSpecies(breakdown: Record<string, number>, limit = 3): string {
 // linked to the animal register pre-scoped to that ranch, back when
 // Ranch Detail didn't exist yet.
 export function RanchComparisonStrip({ ranches, isLoading }: RanchComparisonStripProps) {
+  const { ranch: scopedRanch } = AuthenticatedRoute.useSearch();
+
   if (isLoading) {
     return (
       <div className="flex gap-3 overflow-x-auto pb-1">
@@ -47,6 +50,7 @@ export function RanchComparisonStrip({ ranches, isLoading }: RanchComparisonStri
           key={r.ranchId}
           to="/ranches/$ranchId"
           params={{ ranchId: r.ranchId }}
+          search={{ ranch: scopedRanch }}
           className="flex w-56 shrink-0 flex-col gap-2 rounded-card border border-line bg-card p-3 transition-colors hover:border-primary"
         >
           <div className="flex items-center gap-2">

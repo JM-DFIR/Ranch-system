@@ -207,7 +207,7 @@ export function RecordTransferDrawer({ open, onOpenChange, preselectedAnimals, s
           </div>
         ) : null}
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="transfer-date">Movement date</Label>
             <Input id="transfer-date" type="date" max={TODAY()} {...register("movementDate")} />

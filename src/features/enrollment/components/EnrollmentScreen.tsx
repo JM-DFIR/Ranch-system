@@ -162,7 +162,7 @@ export function EnrollmentScreen({ ranchId }: EnrollmentScreenProps) {
   };
 
   if (step === "summary") {
-    return <SessionSummary enrollments={sessionEnrollments} onContinue={() => setStep("camera")} />;
+    return <SessionSummary enrollments={sessionEnrollments} onContinue={() => setStep("camera")} ranchId={ranchId} />;
   }
 
   if (statusLoading) {

@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
 import { PageHeader } from "@/components/patterns/PageHeader";
+import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
 import { REPORTS } from "../registry";
 
 // The Report Gallery (M6 — session-pack.md Part 5), grouped by the
@@ -8,6 +9,7 @@ import { REPORTS } from "../registry";
 // HealthHubPage.tsx — pure navigation, no live numbers on the cards
 // themselves.
 export function ReportGalleryPage() {
+  const { ranch } = AuthenticatedRoute.useSearch();
   const byModule = new Map<string, typeof REPORTS>();
   for (const report of REPORTS) {
     const list = byModule.get(report.module) ?? [];
@@ -27,6 +29,7 @@ export function ReportGalleryPage() {
                 key={report.id}
                 to="/reports/$reportId"
                 params={{ reportId: report.id }}
+                search={{ ranch }}
                 className="flex flex-col gap-2 rounded-card border border-line bg-card p-4 transition-colors hover:border-primary/40 hover:bg-secondary/40"
               >
                 <div className="flex size-8 items-center justify-center rounded-card bg-muted text-muted-foreground">

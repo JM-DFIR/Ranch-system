@@ -2,7 +2,17 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { Link } from "@tanstack/react-router";
 
 import { formatDate } from "@/lib/format";
+import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
 import type { BreedingRegisterRow } from "./api";
+
+function DamCell({ damId, damTagNumber }: { damId: string; damTagNumber: string }) {
+  const { ranch } = AuthenticatedRoute.useSearch();
+  return (
+    <Link to="/animals/$animalId" params={{ animalId: damId }} search={{ ranch }} className="hover:underline">
+      <span className="font-mono tabular-nums">{damTagNumber}</span>
+    </Link>
+  );
+}
 
 export const breedingRegisterColumns: ColumnDef<BreedingRegisterRow>[] = [
   {
@@ -10,9 +20,7 @@ export const breedingRegisterColumns: ColumnDef<BreedingRegisterRow>[] = [
     header: "Dam",
     cell: ({ row }) =>
       row.original.damId ? (
-        <Link to="/animals/$animalId" params={{ animalId: row.original.damId }} className="hover:underline">
-          <span className="font-mono tabular-nums">{row.original.damTagNumber}</span>
-        </Link>
+        <DamCell damId={row.original.damId} damTagNumber={row.original.damTagNumber} />
       ) : (
         row.original.damTagNumber
       ),

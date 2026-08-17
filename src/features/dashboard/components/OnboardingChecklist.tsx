@@ -3,6 +3,7 @@ import { Check, PawPrint, ScanLine } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
 import type { FirstRunState } from "../api";
 
 interface OnboardingChecklistProps {
@@ -23,6 +24,7 @@ interface Step {
 // Manager both shipped after this checklist was first written, when
 // they were still "coming in a later session" placeholders.
 export function OnboardingChecklist({ state }: OnboardingChecklistProps) {
+  const { ranch } = AuthenticatedRoute.useSearch();
   const steps: Step[] = [
     {
       title: "Create your first ranch",
@@ -78,7 +80,7 @@ export function OnboardingChecklist({ state }: OnboardingChecklistProps) {
               <p className="text-13 text-muted-foreground">{step.description}</p>
               {step.action ? (
                 <Button asChild size="sm" className="mt-1">
-                  <Link to={step.action.to} search={{}}>
+                  <Link to={step.action.to} search={{ ranch }}>
                     <ScanLine aria-hidden />
                     {step.action.label}
                   </Link>

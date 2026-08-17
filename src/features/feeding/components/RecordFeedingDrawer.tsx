@@ -190,13 +190,13 @@ export function RecordFeedingDrawer({ open, onOpenChange, preselectedAnimals, se
           {errors.feedItemId ? <p className="text-13 text-status-critical">{errors.feedItemId.message}</p> : null}
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="feed-date">Feed date</Label>
             <Input id="feed-date" type="date" max={TODAY()} {...register("feedDate")} />
             {errors.feedDate ? <p className="text-13 text-status-critical">{errors.feedDate.message}</p> : null}
           </div>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label htmlFor="feed-quantity">Quantity</Label>
               <Input id="feed-quantity" type="number" step="0.1" min="0" {...register("quantity")} />

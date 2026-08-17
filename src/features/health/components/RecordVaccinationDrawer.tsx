@@ -248,7 +248,7 @@ export function RecordVaccinationDrawer({
           {errors.vaccineId ? <p className="text-13 text-status-critical">{errors.vaccineId.message}</p> : null}
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="vac-date">Date administered</Label>
             <Input id="vac-date" type="date" max={TODAY()} {...register("dateAdministered")} />
@@ -260,7 +260,7 @@ export function RecordVaccinationDrawer({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="vac-batch">Batch number</Label>
             <Input id="vac-batch" {...register("batchNumber")} />

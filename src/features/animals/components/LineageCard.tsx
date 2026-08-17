@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { PawPrint } from "lucide-react";
 
+import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
 import type { AnimalSummary } from "../api";
 
 const SEX_GLYPH: Record<string, string> = { male: "♂", female: "♀", unknown: "—" };
@@ -13,10 +14,13 @@ interface LineageCardProps {
 // photo_path resolution deferred the same way as everywhere else in
 // this session (Session 5's camera pipeline) — glyph fallback here too.
 export function LineageCard({ animal, highlighted = false }: LineageCardProps) {
+  const { ranch } = AuthenticatedRoute.useSearch();
+
   return (
     <Link
       to="/animals/$animalId"
       params={{ animalId: animal.id }}
+      search={{ ranch }}
       className={`flex w-36 shrink-0 flex-col items-center gap-1.5 rounded-card border p-3 text-center transition-colors hover:border-primary ${
         highlighted ? "border-primary bg-accent" : "border-line bg-card"
       }`}

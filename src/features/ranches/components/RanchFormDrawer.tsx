@@ -163,7 +163,7 @@ export function RanchFormDrawer({ open, onOpenChange, ranch }: RanchFormDrawerPr
           <Textarea id="ranch-description" rows={2} {...register("description")} />
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="ranch-size">Size (acres)</Label>
             <Input id="ranch-size" type="number" min={0} step="0.1" {...register("sizeAcres")} />
@@ -193,7 +193,7 @@ export function RanchFormDrawer({ open, onOpenChange, ranch }: RanchFormDrawerPr
           <Label htmlFor="ranch-contact-name">Contact name</Label>
           <Input id="ranch-contact-name" {...register("contactName")} />
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="ranch-contact-phone">Contact phone</Label>
             <Input id="ranch-contact-phone" {...register("contactPhone")} />

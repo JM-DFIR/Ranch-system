@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { MapPin, TriangleAlert } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
 import type { RanchOption, RanchStat } from "../api";
 import { useRanchCoverUrl } from "../hooks";
 
@@ -27,11 +28,13 @@ function topSpecies(breakdown: Record<string, number>, limit = 3): string {
 // of ranches).
 export function RanchCard({ ranch, stats }: RanchCardProps) {
   const { data: coverUrl } = useRanchCoverUrl(ranch.coverImagePath);
+  const { ranch: scopedRanch } = AuthenticatedRoute.useSearch();
 
   return (
     <Link
       to="/ranches/$ranchId"
       params={{ ranchId: ranch.id }}
+      search={{ ranch: scopedRanch }}
       className="flex flex-col overflow-hidden rounded-card border border-line bg-card transition-colors hover:border-primary/40"
     >
       {coverUrl ? (

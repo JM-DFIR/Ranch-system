@@ -5,6 +5,7 @@ import { ChevronRight } from "lucide-react";
 interface Breadcrumb {
   label: string;
   to?: LinkProps["to"];
+  search?: LinkProps["search"];
 }
 
 interface PageHeaderProps {
@@ -23,7 +24,7 @@ export function PageHeader({ title, description, actions, breadcrumbs }: PageHea
             <span key={crumb.label} className="flex items-center gap-1">
               {index > 0 ? <ChevronRight className="size-3.5" aria-hidden /> : null}
               {crumb.to ? (
-                <Link to={crumb.to} className="hover:text-foreground">
+                <Link to={crumb.to} search={crumb.search} className="hover:text-foreground">
                   {crumb.label}
                 </Link>
               ) : (

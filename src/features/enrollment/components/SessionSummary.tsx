@@ -12,13 +12,16 @@ export interface SessionEnrollment {
 interface SessionSummaryProps {
   enrollments: SessionEnrollment[];
   onContinue: () => void;
+  ranchId: string;
 }
 
 // Shown when the exit control is used (session-pack.md, Session 5b) —
 // "Exit control returns to the app WITH a session summary," not a
 // straight navigation away, so the visible "Back to app" link here is
-// the one moment this screen actually leaves Enrollment Mode.
-export function SessionSummary({ enrollments, onContinue }: SessionSummaryProps) {
+// the one moment this screen actually leaves Enrollment Mode. It carries
+// the ranch just enrolled against back into the app, rather than
+// dropping to "all ranches" — you were just standing on this ranch.
+export function SessionSummary({ enrollments, onContinue, ranchId }: SessionSummaryProps) {
   const { waitingToSync } = useEnrollmentProgress();
 
   return (
@@ -58,7 +61,9 @@ export function SessionSummary({ enrollments, onContinue }: SessionSummaryProps)
           Continue enrolling
         </Button>
         <Button variant="outline" size="lg" asChild>
-          <Link to="/animals">Back to app</Link>
+          <Link to="/animals" search={{ ranch: ranchId }}>
+            Back to app
+          </Link>
         </Button>
       </div>
     </div>

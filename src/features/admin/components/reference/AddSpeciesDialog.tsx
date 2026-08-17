@@ -62,7 +62,7 @@ export function AddSpeciesDialog({ open, onOpenChange }: AddSpeciesDialogProps) 
             <Input id="species-name" {...register("name")} />
             {errors.name ? <p className="text-13 text-status-critical">{errors.name.message}</p> : null}
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label htmlFor="species-prefix">Tag prefix</Label>
               <Input id="species-prefix" placeholder="e.g. MUX" {...register("defaultTagPrefix")} />

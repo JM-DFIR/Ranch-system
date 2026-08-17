@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { MapPin, Pencil } from "lucide-react";
 
 import { useAuth } from "@/lib/auth";
+import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
 import { PageHeader } from "@/components/patterns/PageHeader";
 import { ErrorState } from "@/components/patterns/ErrorState";
 import { StatCard } from "@/components/patterns/StatCard";
@@ -25,6 +26,7 @@ function topSpecies(breakdown: Record<string, number>): { name: string; count: n
 
 export function RanchDetailPage({ ranchId }: RanchDetailPageProps) {
   const { isOwner } = useAuth();
+  const { ranch: scopedRanch } = AuthenticatedRoute.useSearch();
   const { data: ranch, isLoading, isError, error, refetch } = useRanchDetail(ranchId);
   const [editOpen, setEditOpen] = useState(false);
 
@@ -64,7 +66,7 @@ export function RanchDetailPage({ ranchId }: RanchDetailPageProps) {
       </div>
 
       <PageHeader
-        breadcrumbs={[{ label: "Ranches", to: "/ranches" }, { label: ranch.name }]}
+        breadcrumbs={[{ label: "Ranches", to: "/ranches", search: { ranch: scopedRanch } }, { label: ranch.name }]}
         title={ranch.name}
         description={ranch.location ?? undefined}
         actions={

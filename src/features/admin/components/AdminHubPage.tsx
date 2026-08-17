@@ -1,14 +1,15 @@
-import { Link, type LinkProps } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { ScrollText, Settings2, Tags, Users, type LucideIcon } from "lucide-react";
 
 import { useAuth } from "@/lib/auth";
 import { PageHeader } from "@/components/patterns/PageHeader";
+import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
 
 interface HubCard {
   label: string;
   description: string;
   icon: LucideIcon;
-  to: LinkProps["to"];
+  to: string;
   ownerOnly?: boolean;
 }
 
@@ -25,6 +26,7 @@ const CARDS: HubCard[] = [
 // each destination's own route guard).
 export function AdminHubPage() {
   const { isOwner } = useAuth();
+  const { ranch } = AuthenticatedRoute.useSearch();
   const cards = CARDS.filter((card) => !card.ownerOnly || isOwner);
 
   return (
@@ -35,6 +37,7 @@ export function AdminHubPage() {
           <Link
             key={card.label}
             to={card.to}
+            search={{ ranch }}
             className="flex flex-col gap-2 rounded-card border border-line bg-card p-4 transition-colors hover:border-primary/40 hover:bg-secondary/40"
           >
             <div className="flex size-8 items-center justify-center rounded-card bg-muted text-muted-foreground">

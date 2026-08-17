@@ -1,13 +1,14 @@
-import { Link, type LinkProps } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { Pill, Stethoscope, ThermometerSun, TriangleAlert, Syringe, type LucideIcon } from "lucide-react";
 
 import { PageHeader } from "@/components/patterns/PageHeader";
+import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
 
 interface HubCard {
   label: string;
   description: string;
   icon: LucideIcon;
-  to: LinkProps["to"];
+  to: string;
 }
 
 const CARDS: HubCard[] = [
@@ -25,6 +26,8 @@ const CARDS: HubCard[] = [
 // that here would just be another query to keep in sync for a screen
 // whose actual job is getting you to the right place.
 export function HealthHubPage() {
+  const { ranch } = AuthenticatedRoute.useSearch();
+
   return (
     <div className="flex flex-col gap-4">
       <PageHeader title="Health" description="Vaccinations, treatments, illnesses and vet visits across every ranch." />
@@ -33,6 +36,7 @@ export function HealthHubPage() {
           <Link
             key={card.label}
             to={card.to}
+            search={{ ranch }}
             className="flex flex-col gap-2 rounded-card border border-line bg-card p-4 transition-colors hover:border-primary/40 hover:bg-secondary/40"
           >
             <div className="flex size-8 items-center justify-center rounded-card bg-muted text-muted-foreground">

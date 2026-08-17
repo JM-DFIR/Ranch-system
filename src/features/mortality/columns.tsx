@@ -3,7 +3,18 @@ import { Link } from "@tanstack/react-router";
 import { Check, X } from "lucide-react";
 
 import { formatDate } from "@/lib/format";
+import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
 import type { MortalityRegisterRow } from "./api";
+
+function AnimalTagCell({ animalId, tagNumber, animalName }: { animalId: string; tagNumber: string; animalName: string | null }) {
+  const { ranch } = AuthenticatedRoute.useSearch();
+  return (
+    <Link to="/animals/$animalId" params={{ animalId }} search={{ ranch }} className="hover:underline">
+      <span className="font-mono tabular-nums">{tagNumber}</span>
+      {animalName ? <span className="ml-1.5 text-muted-foreground">{animalName}</span> : null}
+    </Link>
+  );
+}
 
 export const mortalityRegisterColumns: ColumnDef<MortalityRegisterRow>[] = [
   {
@@ -18,10 +29,7 @@ export const mortalityRegisterColumns: ColumnDef<MortalityRegisterRow>[] = [
     header: "Animal",
     cell: ({ row }) =>
       row.original.animalId ? (
-        <Link to="/animals/$animalId" params={{ animalId: row.original.animalId }} className="hover:underline">
-          <span className="font-mono tabular-nums">{row.original.tagNumber}</span>
-          {row.original.animalName ? <span className="ml-1.5 text-muted-foreground">{row.original.animalName}</span> : null}
-        </Link>
+        <AnimalTagCell animalId={row.original.animalId} tagNumber={row.original.tagNumber} animalName={row.original.animalName} />
       ) : (
         row.original.tagNumber
       ),

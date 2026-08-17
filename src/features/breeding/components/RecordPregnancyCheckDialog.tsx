@@ -71,7 +71,7 @@ export function RecordPregnancyCheckDialog({ open, onOpenChange, damId, damTagNu
           <DialogDescription>A result of pregnant or not pregnant also updates the breeding event's status.</DialogDescription>
         </DialogHeader>
         <form onSubmit={(e) => void onSubmit(e)} className="flex flex-col gap-3">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label htmlFor="check-date">Check date</Label>
               <Input id="check-date" type="date" max={TODAY()} {...register("checkDate")} />
@@ -99,7 +99,7 @@ export function RecordPregnancyCheckDialog({ open, onOpenChange, damId, damTagNu
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label htmlFor="check-method">Method</Label>
               <Input id="check-method" {...register("method")} placeholder="e.g. Ultrasound" />

@@ -270,7 +270,7 @@ export function RecordBreedingDrawer({ open, onOpenChange, preselectedAnimals, s
                     onChange={(e) => field.onChange({ type: "service", serviceDate: e.target.value })}
                   />
                 ) : (
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <Input
                       type="date"
                       max={TODAY()}
