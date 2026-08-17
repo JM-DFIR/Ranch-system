@@ -25,7 +25,14 @@ const buttonVariants = cva(
         lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
         icon: "size-9",
         "icon-xs": "size-6 rounded-md [&_svg:not([class*='size-'])]:size-3",
-        "icon-sm": "size-8",
+        // 44px — the real touch-target guideline (iOS HIG / Material),
+        // not a step toward it. This is the only icon-button size
+        // actually used anywhere in the app (grep confirms every
+        // `size="icon*"` call site is "icon-sm"), so changing it here
+        // is the systemic fix, not a per-instance patch: every icon
+        // button everywhere gets touch-safe at once, with nothing left
+        // inconsistent by construction.
+        "icon-sm": "size-11",
         "icon-lg": "size-10",
       },
     },
