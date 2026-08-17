@@ -81,6 +81,10 @@ export function BreedingRegisterPage() {
               pagination={pagination}
               onPaginationChange={onPaginationChange}
               getRowId={(row) => row.id}
+              onRowClick={(row) => {
+                if (!row.damId) return;
+                void navigate({ to: "/animals/$animalId", params: { animalId: row.damId }, search: { ranch } });
+              }}
               emptyState={emptyState}
             />
             {rows.length > 0 ? (

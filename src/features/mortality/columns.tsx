@@ -9,7 +9,7 @@ import type { MortalityRegisterRow } from "./api";
 function AnimalTagCell({ animalId, tagNumber, animalName }: { animalId: string; tagNumber: string; animalName: string | null }) {
   const { ranch } = AuthenticatedRoute.useSearch();
   return (
-    <Link to="/animals/$animalId" params={{ animalId }} search={{ ranch }} className="hover:underline">
+    <Link to="/animals/$animalId" params={{ animalId }} search={{ ranch }} data-stop-row-click className="hover:underline">
       <span className="font-mono tabular-nums">{tagNumber}</span>
       {animalName ? <span className="ml-1.5 text-muted-foreground">{animalName}</span> : null}
     </Link>

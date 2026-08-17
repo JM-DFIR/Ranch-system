@@ -702,7 +702,7 @@ export interface VetVisitRegisterRow {
   veterinarianName: string | null;
   purpose: string | null;
   nextVisitDate: string | null;
-  animalTags: string[];
+  animals: { id: string; tagNumber: string }[];
 }
 
 export interface VetVisitRegisterResult {
@@ -719,7 +719,7 @@ export async function fetchVetVisitRegister(params: HealthRegisterParams): Promi
   let query = supabase
     .from("vet_visits")
     .select(
-      "id, visit_date, purpose, next_visit_date, ranch:ranches(name), veterinarian:veterinarians(name), vet_visit_animals(animal:animals(tag_number))",
+      "id, visit_date, purpose, next_visit_date, ranch:ranches(name), veterinarian:veterinarians(name), vet_visit_animals(animal:animals(id, tag_number))",
       { count: "exact" },
     )
     .is("deleted_at", null);
@@ -743,7 +743,9 @@ export async function fetchVetVisitRegister(params: HealthRegisterParams): Promi
       veterinarianName: row.veterinarian?.name ?? null,
       purpose: row.purpose,
       nextVisitDate: row.next_visit_date,
-      animalTags: (row.vet_visit_animals ?? []).map((vva) => vva.animal?.tag_number).filter((t): t is string => !!t),
+      animals: (row.vet_visit_animals ?? [])
+        .map((vva) => (vva.animal ? { id: vva.animal.id, tagNumber: vva.animal.tag_number } : null))
+        .filter((a): a is { id: string; tagNumber: string } => !!a),
     })),
     totalCount: count ?? 0,
   };

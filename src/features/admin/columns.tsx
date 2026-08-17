@@ -1,8 +1,30 @@
 import type { ColumnDef } from "@tanstack/react-table";
+import { Link } from "@tanstack/react-router";
 
 import { formatDateTime } from "@/lib/format";
+import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
 import { Badge } from "@/components/ui/badge";
 import type { AuditLogEntry, OrgMember } from "./api";
+
+// Only "animals" entries have a record id that's directly an animal's
+// own id — every other table the audit log covers (movements,
+// mortalities, breeding_events, births, vaccinations, treatments,
+// illnesses) has its own record id pointing at a row in that table,
+// not at an animal, and the log doesn't carry that association. Rather
+// than guess or build seven more lookups, only the one case that's
+// actually correct gets a link; the rest stay plain text.
+function RecordCell({ tableName, recordId }: { tableName: string; recordId: string | null }) {
+  const { ranch } = AuthenticatedRoute.useSearch();
+  if (!recordId) return <span className="font-mono text-12 text-muted-foreground">—</span>;
+  if (tableName === "animals") {
+    return (
+      <Link to="/animals/$animalId" params={{ animalId: recordId }} search={{ ranch }} className="font-mono text-12 tabular-nums hover:underline">
+        {recordId.slice(0, 8)}
+      </Link>
+    );
+  }
+  return <span className="font-mono text-12 tabular-nums text-muted-foreground">{recordId.slice(0, 8)}</span>;
+}
 
 const ROLE_LABEL: Record<OrgMember["role"], string> = { owner: "Owner", ranch_manager: "Ranch manager" };
 
@@ -110,7 +132,7 @@ export const auditLogColumns: ColumnDef<AuditLogEntry>[] = [
   {
     id: "recordId",
     header: "Record",
-    cell: ({ row }) => <span className="font-mono text-12 tabular-nums text-muted-foreground">{row.original.recordId?.slice(0, 8) ?? "—"}</span>,
+    cell: ({ row }) => <RecordCell tableName={row.original.tableName} recordId={row.original.recordId} />,
     enableSorting: false,
   },
 ];

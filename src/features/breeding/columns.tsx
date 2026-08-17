@@ -8,7 +8,7 @@ import type { BreedingRegisterRow } from "./api";
 function DamCell({ damId, damTagNumber }: { damId: string; damTagNumber: string }) {
   const { ranch } = AuthenticatedRoute.useSearch();
   return (
-    <Link to="/animals/$animalId" params={{ animalId: damId }} search={{ ranch }} className="hover:underline">
+    <Link to="/animals/$animalId" params={{ animalId: damId }} search={{ ranch }} data-stop-row-click className="hover:underline">
       <span className="font-mono tabular-nums">{damTagNumber}</span>
     </Link>
   );

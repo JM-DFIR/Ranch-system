@@ -91,6 +91,10 @@ export function CareActivityRegisterPage() {
               pagination={pagination}
               onPaginationChange={onPaginationChange}
               getRowId={(row) => row.id}
+              onRowClick={(row) => {
+                if (!row.animalId) return;
+                void navigate({ to: "/animals/$animalId", params: { animalId: row.animalId }, search: { ranch } });
+              }}
               emptyState={emptyState}
             />
             {rows.length > 0 ? (

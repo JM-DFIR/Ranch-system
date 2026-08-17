@@ -90,6 +90,7 @@ export function VaccinationRegisterPage() {
               pagination={pagination}
               onPaginationChange={onPaginationChange}
               getRowId={(row) => row.id}
+              onRowClick={(row) => void navigate({ to: "/animals/$animalId", params: { animalId: row.animalId }, search: { ranch } })}
               emptyState={emptyState}
             />
             {rows.length > 0 ? (

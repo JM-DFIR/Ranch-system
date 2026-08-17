@@ -10,16 +10,30 @@ import type {
   VetVisitRegisterRow,
 } from "./api";
 
-// Every register links its animal tag back to the profile — `data-stop-row-click`
-// isn't needed here since these registers don't set an onRowClick of
-// their own (unlike the animal register), so the Link is the only
-// interactive element in the cell.
+// Every register links its animal tag back to the profile. The
+// vaccination/treatment/illness registers also set their own
+// onRowClick to the same destination — data-stop-row-click keeps this
+// Link as the thing that actually handles the click rather than
+// letting it double-fire alongside the row handler.
 function AnimalTagCell({ animalId, tagNumber, animalName }: { animalId: string; tagNumber: string; animalName: string | null }) {
   const { ranch } = AuthenticatedRoute.useSearch();
   return (
-    <Link to="/animals/$animalId" params={{ animalId }} search={{ ranch }} className="hover:underline">
+    <Link to="/animals/$animalId" params={{ animalId }} search={{ ranch }} data-stop-row-click className="hover:underline">
       <span className="font-mono tabular-nums">{tagNumber}</span>
       {animalName ? <span className="ml-1.5 text-muted-foreground">{animalName}</span> : null}
+    </Link>
+  );
+}
+
+// Vet visits have no row-level onRowClick (see vetVisitRegisterColumns
+// below — a visit can cover several animals, so there's no single
+// destination for the row itself), so this one needs no
+// data-stop-row-click of its own.
+function AnimalTagLink({ id, tagNumber }: { id: string; tagNumber: string }) {
+  const { ranch } = AuthenticatedRoute.useSearch();
+  return (
+    <Link to="/animals/$animalId" params={{ animalId: id }} search={{ ranch }} className="font-mono tabular-nums hover:underline">
+      {tagNumber}
     </Link>
   );
 }
@@ -130,9 +144,20 @@ export const vetVisitRegisterColumns: ColumnDef<VetVisitRegisterRow>[] = [
   {
     id: "animals",
     header: "Animals",
+    // A vet visit can cover several animals at once — there's no single
+    // "the" animal for a row-level click to target, so each one gets
+    // its own link instead (unlike every other health register, which
+    // is one row per animal).
     cell: ({ row }) =>
-      row.original.animalTags.length > 0 ? (
-        <span className="font-mono text-13 tabular-nums">{row.original.animalTags.join(", ")}</span>
+      row.original.animals.length > 0 ? (
+        <span className="flex flex-wrap gap-x-1.5 gap-y-0.5">
+          {row.original.animals.map((a, i) => (
+            <span key={a.id} className="whitespace-nowrap">
+              <AnimalTagLink id={a.id} tagNumber={a.tagNumber} />
+              {i < row.original.animals.length - 1 ? "," : ""}
+            </span>
+          ))}
+        </span>
       ) : (
         "—"
       ),

@@ -227,6 +227,7 @@ export interface FeedingRegisterRow {
   id: string;
   feedDate: string;
   scopeLabel: string;
+  animalId: string | null;
   feedItemName: string;
   quantity: number;
   unit: string;
@@ -252,7 +253,7 @@ export async function fetchFeedingRegister(params: FeedingCareRegisterParams): P
   let query = supabase
     .from("feeding_records")
     .select(
-      "id, feed_date, quantity, unit, feed_item:feed_items(name), ranch:ranches(name), animal:animals(tag_number)",
+      "id, feed_date, quantity, unit, feed_item:feed_items(name), ranch:ranches(name), animal:animals(id, tag_number)",
       { count: "exact" },
     )
     .is("deleted_at", null);
@@ -279,6 +280,7 @@ export async function fetchFeedingRegister(params: FeedingCareRegisterParams): P
       id: nonNull(row.id, "id"),
       feedDate: nonNull(row.feed_date, "feed_date"),
       scopeLabel: row.ranch?.name ? `${row.ranch.name} (ranch-wide)` : (row.animal?.tag_number ?? "—"),
+      animalId: row.animal?.id ?? null,
       feedItemName: row.feed_item?.name ?? "Feed",
       quantity: nonNull(row.quantity, "quantity"),
       unit: nonNull(row.unit, "unit"),
@@ -291,6 +293,7 @@ export interface CareActivityRegisterRow {
   id: string;
   activityDate: string;
   scopeLabel: string;
+  animalId: string | null;
   activityTypeName: string;
   product: string | null;
   nextDueDate: string | null;
@@ -305,7 +308,7 @@ export async function fetchCareActivityRegister(params: FeedingCareRegisterParam
   let query = supabase
     .from("care_activities")
     .select(
-      "id, activity_date, product, next_due_date, activity_type:care_activity_types(name), ranch:ranches(name), animal:animals(tag_number)",
+      "id, activity_date, product, next_due_date, activity_type:care_activity_types(name), ranch:ranches(name), animal:animals(id, tag_number)",
       { count: "exact" },
     )
     .is("deleted_at", null);
@@ -332,6 +335,7 @@ export async function fetchCareActivityRegister(params: FeedingCareRegisterParam
       id: nonNull(row.id, "id"),
       activityDate: nonNull(row.activity_date, "activity_date"),
       scopeLabel: row.ranch?.name ? `${row.ranch.name} (ranch-wide)` : (row.animal?.tag_number ?? "—"),
+      animalId: row.animal?.id ?? null,
       activityTypeName: row.activity_type?.name ?? "Care activity",
       product: row.product,
       nextDueDate: row.next_due_date,
