@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { PawPrint } from "lucide-react";
 
 import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
+import { useAnimalPhotoUrl } from "../hooks";
 import type { AnimalSummary } from "../api";
 
 const SEX_GLYPH: Record<string, string> = { male: "♂", female: "♀", unknown: "—" };
@@ -11,10 +12,9 @@ interface LineageCardProps {
   highlighted?: boolean;
 }
 
-// photo_path resolution deferred the same way as everywhere else in
-// this session (Session 5's camera pipeline) — glyph fallback here too.
 export function LineageCard({ animal, highlighted = false }: LineageCardProps) {
   const { ranch } = AuthenticatedRoute.useSearch();
+  const { data: photoUrl } = useAnimalPhotoUrl(animal.photoPath);
 
   return (
     <Link
@@ -25,8 +25,8 @@ export function LineageCard({ animal, highlighted = false }: LineageCardProps) {
         highlighted ? "border-primary bg-accent" : "border-line bg-card"
       }`}
     >
-      <div className="flex size-10 items-center justify-center rounded-full bg-muted text-muted-foreground">
-        <PawPrint className="size-5" aria-hidden />
+      <div className="flex size-10 items-center justify-center overflow-hidden rounded-full bg-muted text-muted-foreground">
+        {photoUrl ? <img src={photoUrl} alt="" className="size-full object-cover" /> : <PawPrint className="size-5" aria-hidden />}
       </div>
       <span className="font-mono text-13 font-medium tabular-nums text-foreground">{animal.tagNumber}</span>
       {animal.name ? <span className="truncate text-12 text-muted-foreground">{animal.name}</span> : null}

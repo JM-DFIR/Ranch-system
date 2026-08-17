@@ -225,6 +225,18 @@ export async function fetchAnimalProfile(animalId: string): Promise<AnimalProfil
   };
 }
 
+// Signed URL for a photo already in the animal-photos bucket (no public
+// buckets — CLAUDE.md §7). Same pattern as ranches' cover image
+// (getRanchCoverSignedUrl) — this was the one piece never wired up: the
+// upload/attach path (enrollment, both modes, via the offline queue's
+// attach_photo operation) has worked since Session 5, but nothing ever
+// read photo_path back into a URL and rendered it anywhere.
+export async function getAnimalPhotoSignedUrl(filePath: string): Promise<string> {
+  const { data, error } = await supabase.storage.from("animal-photos").createSignedUrl(filePath, 3600);
+  if (error) throw error;
+  return data.signedUrl;
+}
+
 // ---------------------------------------------------------------------
 // Lightweight animal identity — parents-linked (Overview) and the
 // Lineage tree's cards both just need id/tag/name/sex/photo, not the

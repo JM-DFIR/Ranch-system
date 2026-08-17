@@ -11,10 +11,22 @@ import {
   fetchAnimalRegister,
   fetchAnimalSummaries,
   fetchAnimalTimeline,
+  getAnimalPhotoSignedUrl,
   type AnimalRegisterParams,
   type LineageDirection,
   type TimelineEventType,
 } from "./api";
+
+export function useAnimalPhotoUrl(photoPath: string | null | undefined) {
+  return useQuery({
+    queryKey: ["animals", "photo-url", photoPath],
+    queryFn: () => {
+      if (!photoPath) throw new Error("No photo set");
+      return getAnimalPhotoSignedUrl(photoPath);
+    },
+    enabled: !!photoPath,
+  });
+}
 
 // Three separate queries rather than one combined fetch: register rows
 // and facet counts both change on every filter keystroke and should

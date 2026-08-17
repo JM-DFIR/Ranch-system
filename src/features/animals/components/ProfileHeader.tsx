@@ -22,6 +22,7 @@ import { RecordBreedingDrawer } from "@/features/breeding/components/RecordBreed
 import { RecordBirthDrawer } from "@/features/breeding/components/RecordBirthDrawer";
 import { ChangeStatusDialog } from "./ChangeStatusDialog";
 import { RecordDeathDialog } from "./RecordDeathDialog";
+import { useAnimalPhotoUrl } from "../hooks";
 import type { AnimalProfile } from "../api";
 
 const SEX_GLYPH: Record<string, string> = { male: "♂", female: "♀", unknown: "—" };
@@ -38,6 +39,7 @@ interface ProfileHeaderProps {
 // and births.dam_id are both females-only by the schema's own design
 // (BreedingTab.tsx draws the same line for the read side).
 export function ProfileHeader({ animal }: ProfileHeaderProps) {
+  const { data: photoUrl } = useAnimalPhotoUrl(animal.photoPath);
   const [changeStatusOpen, setChangeStatusOpen] = useState(false);
   const [recordDeathOpen, setRecordDeathOpen] = useState(false);
   const [recordVaccinationOpen, setRecordVaccinationOpen] = useState(false);
@@ -52,11 +54,12 @@ export function ProfileHeader({ animal }: ProfileHeaderProps) {
   return (
     <div className="flex flex-col gap-4 border-b border-line pb-4">
       <div className="flex flex-wrap items-start gap-4">
-        {/* photo_path resolution (upload/replace) is Session 5's camera +
-            compression pipeline, same deferral as the register's thumbnail
-            column (columns.tsx) — glyph fallback until that lands. */}
-        <div className="flex size-20 shrink-0 items-center justify-center rounded-card bg-muted text-muted-foreground">
-          <PawPrint className="size-8" aria-hidden />
+        <div className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-card bg-muted text-muted-foreground">
+          {photoUrl ? (
+            <img src={photoUrl} alt="" className="size-full object-cover" />
+          ) : (
+            <PawPrint className="size-8" aria-hidden />
+          )}
         </div>
 
         <div className="min-w-0 flex-1 space-y-1.5">

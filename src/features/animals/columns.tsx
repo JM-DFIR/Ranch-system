@@ -7,11 +7,14 @@ import { StatusBadge } from "@/components/patterns/StatusBadge";
 import { AttentionBadge } from "@/components/patterns/AttentionBadge";
 import type { AnimalRegisterRow } from "./api";
 
-// Always renders the fallback glyph today: photo_path resolution to an
-// actual image URL (public vs. signed, storage bucket policy) is part
-// of the photo-capture work in Session 5, not this session — no animal
-// has a photo_path set yet since nothing writes one. Kept as its own
-// component so that work only has to change this one place.
+// Still the fallback glyph, deliberately — unlike the profile header and
+// lineage cards (a handful of photos per view at most), a register page
+// can hold up to 200 rows, and useAnimalPhotoUrl fetches one signed URL
+// per animal: that's 200 individual Storage requests on a single page
+// load, exactly the kind of thing that hurts on the rural signal this
+// app is built for. Wiring this up for real needs Supabase's bulk
+// createSignedUrls(paths[]) — one request for the whole visible page —
+// not this same per-row hook reused blindly. Flagged, not built here.
 function AnimalThumbnail() {
   return (
     <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
