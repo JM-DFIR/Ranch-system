@@ -32,6 +32,32 @@ export interface AttentionQueueItem {
   photoPath: string | null;
 }
 
+export interface AnimalAttentionReason {
+  reason: AttentionReason;
+  severity: "high" | "medium" | "info";
+  dueDate: string | null;
+}
+
+// The animal profile's own view into v_animals_requiring_attention —
+// AttentionBadge (register, profile header) only ever shows a count
+// from the separate, pre-aggregated summary view (blueprint.md §0.5
+// #5), so a badge reading "1 issue" has never actually said what the
+// issue is anywhere in the app except the standalone Attention Queue.
+// This is the same per-reason view, filtered to one animal, so the
+// profile itself can finally answer that.
+export async function fetchAnimalAttentionReasons(animalId: string): Promise<AnimalAttentionReason[]> {
+  const { data, error } = await supabase
+    .from("v_animals_requiring_attention")
+    .select("reason, severity, due_date")
+    .eq("animal_id", animalId);
+  if (error) throw error;
+  return (data ?? []).map((row) => ({
+    reason: nonNull(row.reason, "reason") as AttentionReason,
+    severity: nonNull(row.severity, "severity") as AnimalAttentionReason["severity"],
+    dueDate: row.due_date,
+  }));
+}
+
 const SEVERITY_RANK: Record<string, number> = { high: 3, medium: 2, info: 1 };
 
 // The Attention Queue's detail screen (session-pack.md, Session 8 — "M3

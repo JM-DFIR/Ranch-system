@@ -3,9 +3,18 @@ import { Link } from "@tanstack/react-router";
 
 import { formatDate } from "@/lib/format";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
+import { useAnimalAttentionReasons } from "@/features/attention/hooks";
+import { ATTENTION_REASON_META } from "@/features/attention/reasonMeta";
 import { useAnimalOverviewSummary, useAnimalSummaries, useAnimalTimeline } from "../../hooks";
 import type { AnimalProfile } from "../../api";
+
+const SEVERITY_BADGE: Record<"high" | "medium" | "info", "critical" | "warn" | "info"> = {
+  high: "critical",
+  medium: "warn",
+  info: "info",
+};
 
 interface OverviewTabProps {
   animal: AnimalProfile;
@@ -34,12 +43,44 @@ export function OverviewTab({ animal }: OverviewTabProps) {
   const { data: summary, isLoading: summaryLoading } = useAnimalOverviewSummary(animal.id, animal.sex);
   const { data: recentEvents, isLoading: eventsLoading } = useAnimalTimeline(animal.id, undefined, 3);
   const { data: parents } = useAnimalSummaries([animal.damId, animal.sireId].filter((id): id is string => !!id));
+  const { data: attentionReasons } = useAnimalAttentionReasons(animal.attentionReasonCount > 0 ? animal.id : undefined);
 
   const dam = parents?.find((p) => p.id === animal.damId);
   const sire = parents?.find((p) => p.id === animal.sireId);
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+      {animal.attentionReasonCount > 0 ? (
+        <Card title="Needs attention">
+          {attentionReasons && attentionReasons.length > 0 ? (
+            <ul className="space-y-2.5">
+              {attentionReasons.map((r) => {
+                const meta = ATTENTION_REASON_META[r.reason];
+                const Icon = meta.icon;
+                return (
+                  <li key={r.reason} className="flex items-start gap-2.5">
+                    <div className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-card bg-muted text-muted-foreground">
+                      <Icon className="size-3.5" aria-hidden />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="text-14 text-foreground">{meta.label}</span>
+                        <Badge variant={SEVERITY_BADGE[r.severity]}>{r.severity}</Badge>
+                      </div>
+                      {r.dueDate ? (
+                        <p className="font-mono text-12 tabular-nums text-muted-foreground">Due {formatDate(r.dueDate)}</p>
+                      ) : null}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <Skeleton className="h-12 w-full" />
+          )}
+        </Card>
+      ) : null}
+
       <Card title="Identity">
         <dl className="grid grid-cols-2 gap-3">
           <Field label="Species" value={animal.speciesName} />

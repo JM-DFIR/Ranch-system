@@ -55,6 +55,10 @@ export const queryKeys = {
     veterinarianOptions: (orgId: string) => ["health", "veterinarian-options", orgId] as const,
     veterinarianDirectory: (orgId: string) => ["health", "veterinarian-directory", orgId] as const,
     attentionQueue: (orgId: string, ranchId: string | undefined) => ["health", "attention-queue", orgId, ranchId] as const,
+    // The animal profile's own "why is this flagged" list — the same
+    // per-reason view as the queue, filtered to one animal, so a badge
+    // reading "2 issues" always has somewhere to actually show them.
+    animalAttentionReasons: (animalId: string) => ["health", "animal-attention-reasons", animalId] as const,
     // The four standalone health registers (Part 5's "M3 remainder").
     vaccinationRegister: (orgId: string, params: unknown) => ["health", orgId, "vaccination-register", params] as const,
     treatmentRegister: (orgId: string, params: unknown) => ["health", orgId, "treatment-register", params] as const,
