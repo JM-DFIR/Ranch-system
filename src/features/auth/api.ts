@@ -2,8 +2,9 @@ import { supabase } from "@/lib/supabase";
 import type { LoginInput } from "./schema";
 
 export async function signIn({ email, password }: LoginInput) {
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) throw error;
+  return data.session;
 }
 
 export async function signOut() {

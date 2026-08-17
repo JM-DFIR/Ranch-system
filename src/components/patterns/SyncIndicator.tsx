@@ -3,6 +3,7 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { CircleAlert, RefreshCw } from "lucide-react";
 
 import { offlineDb, type QueueEntry } from "@/lib/offline/db";
+import { drainQueue } from "@/lib/offline/sync";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,8 +31,19 @@ export function SyncIndicator() {
 
   const hasConflicts = conflicts.length > 0;
 
+  // Opening the panel is the moment a person is explicitly checking on
+  // sync status — treat it as a manual "try now" too, not just a
+  // read-only view. The passive triggers (mount, the browser 'online'
+  // event, the 30s interval — useSyncWorker.ts) still run underneath,
+  // but a stuck queue shouldn't require waiting on one of those to
+  // happen to line up with the tap.
+  const handleOpenChange = (next: boolean) => {
+    setOpen(next);
+    if (next) void drainQueue();
+  };
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
@@ -61,7 +73,13 @@ export function SyncIndicator() {
           ) : null}
           {pending.length > 0 ? (
             <div className="p-3">
-              <p className="mb-2 text-12 font-medium text-muted-foreground">Waiting to sync</p>
+              <div className="mb-2 flex items-center justify-between gap-2">
+                <p className="text-12 font-medium text-muted-foreground">Waiting to sync</p>
+                <Button size="sm" variant="ghost" className="h-6 gap-1 px-2 text-12" onClick={() => void drainQueue()}>
+                  <RefreshCw className="size-3" aria-hidden />
+                  Sync now
+                </Button>
+              </div>
               <div className="space-y-2">
                 {pending.map((entry) => (
                   <PendingRow key={entry.id} entry={entry} />
@@ -76,8 +94,9 @@ export function SyncIndicator() {
 }
 
 function PendingRow({ entry }: { entry: QueueEntry }) {
-  const retry = () => {
-    void offlineDb.writeQueue.update(entry.id, { status: "pending", lastError: undefined });
+  const retry = async () => {
+    await offlineDb.writeQueue.update(entry.id, { status: "pending", lastError: undefined });
+    void drainQueue();
   };
 
   return (
@@ -87,7 +106,7 @@ function PendingRow({ entry }: { entry: QueueEntry }) {
         {entry.lastError ? <p className="truncate text-12 text-status-critical">{entry.lastError}</p> : null}
       </div>
       {entry.status === "failed" ? (
-        <Button size="sm" variant="outline" onClick={retry}>
+        <Button size="sm" variant="outline" onClick={() => void retry()}>
           Retry
         </Button>
       ) : (

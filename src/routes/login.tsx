@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
 import { signIn } from "@/features/auth/api";
+import { setSessionQueryData } from "@/lib/auth";
 import { loginSchema, type LoginInput } from "@/features/auth/schema";
 import { AuthPageShell } from "@/features/auth/components/AuthPageShell";
 import { Button } from "@/components/ui/button";
@@ -22,6 +24,7 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { redirect } = Route.useSearch();
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -33,12 +36,17 @@ function LoginPage() {
 
   const onSubmit = async (values: LoginInput) => {
     setFormError(null);
+    let session;
     try {
-      await signIn(values);
+      session = await signIn(values);
     } catch (error) {
       setFormError(error instanceof Error ? error.message : "Something went wrong. Try again.");
       return;
     }
+    // Seed the session cache synchronously before navigating — see
+    // setSessionQueryData's own comment for why this can't just rely
+    // on the auth-state-change listener's async invalidation.
+    setSessionQueryData(queryClient, session);
     await navigate({ href: redirect ?? "/" });
   };
 

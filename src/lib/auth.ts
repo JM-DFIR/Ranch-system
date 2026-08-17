@@ -42,6 +42,20 @@ export function useSession() {
   };
 }
 
+// Seeds the session query synchronously right after a real sign-in,
+// rather than waiting on onAuthStateChange's invalidation (below) to
+// land. That listener fires asynchronously — a `navigate()` straight
+// after signIn() can reach _authenticated's requireSession guard
+// before the invalidated query has actually refetched, so the guard
+// reads the still-stale "no session" cache (staleTime: Infinity means
+// it's never refetched on its own) and redirects straight back to
+// /login. The button looks broken; a second attempt only works because
+// enough time passed for the listener's refetch to catch up. Called
+// from login.tsx immediately before navigating away.
+export function setSessionQueryData(queryClient: QueryClient, session: Session | null) {
+  queryClient.setQueryData(SESSION_QUERY_KEY, { session });
+}
+
 // The protected-route guard itself, shared between every top-level
 // auth-gated layout — _authenticated.tsx (the App Shell) and
 // _enrollment.tsx (Session 5b's full-screen, sidebar-free Enrollment

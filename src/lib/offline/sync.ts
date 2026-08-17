@@ -206,11 +206,23 @@ async function syncEntry(entry: QueueEntry): Promise<void> {
 let draining = false;
 
 // Drains every due entry once. Safe to call repeatedly (on 'online', on
-// an interval, on mount) — re-entrant calls are no-ops while a drain is
-// already in flight, and each entry's own nextRetryAt is what actually
-// paces retries, not the caller's schedule.
+// an interval, on mount, on a manual "sync now" tap) — re-entrant calls
+// are no-ops while a drain is already in flight, and each entry's own
+// nextRetryAt is what actually paces retries, not the caller's schedule.
+//
+// Deliberately does NOT gate on navigator.onLine. That flag is well
+// known to be unreliable on mobile browsers — it can get stuck
+// reporting "offline" after a network handoff (wifi/cellular, a screen
+// lock, a flaky rural signal drop, exactly the conditions CLAUDE.md
+// says this feature has to work under) even though the connection is
+// genuinely fine, which silently blocked every sync attempt forever,
+// including manual retries, with no way to recover short of the flag
+// happening to flip back on its own. A genuinely offline attempt just
+// fails its network call and falls into the existing retry/backoff
+// path below — already the correct, cheap fallback — so there's
+// nothing this pre-check was protecting that isn't already handled.
 export async function drainQueue(): Promise<void> {
-  if (draining || !navigator.onLine) return;
+  if (draining) return;
   draining = true;
 
   try {

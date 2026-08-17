@@ -150,6 +150,29 @@ describe("drainQueue", () => {
     expect(entry?.status).toBe("synced");
   });
 
+  it("attempts a sync even when navigator.onLine (wrongly) reports offline", async () => {
+    // navigator.onLine is known to get stuck false on mobile browsers
+    // after a network handoff even with a real connection — drainQueue
+    // must not treat it as a hard gate. Real offline still fails
+    // naturally via the mocked network call below, same as any other
+    // transient error (see the retry-with-backoff test above).
+    const originalOnLine = Object.getOwnPropertyDescriptor(navigator, "onLine") ?? Object.getOwnPropertyDescriptor(Navigator.prototype, "onLine");
+    Object.defineProperty(navigator, "onLine", { value: false, configurable: true });
+
+    try {
+      await offlineDb.writeQueue.add(baseEntry({ id: "animal-offline-flag" }));
+      await drainQueue();
+
+      const entry = await offlineDb.writeQueue.get("animal-offline-flag");
+      expect(entry?.status).toBe("synced");
+      expect(callOrder).toEqual(["insert"]);
+    } finally {
+      if (originalOnLine) {
+        Object.defineProperty(navigator, "onLine", originalOnLine);
+      }
+    }
+  });
+
   it("lands a unique_violation in 'conflict' rather than retrying it forever or dropping it", async () => {
     mockState.insertError = { code: "23505" };
     await offlineDb.writeQueue.add(baseEntry({ id: "animal-3", payload: { orgId: "org-1", ranchId: "ranch-1", statusId: "status-1", tagNumber: "M47" } }));
