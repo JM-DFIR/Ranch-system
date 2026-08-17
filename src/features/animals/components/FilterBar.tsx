@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/auth";
 import { queryKeys } from "@/lib/query-keys";
 import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
 import { fetchRanchList } from "@/features/ranches/api";
-import { Route as AnimalsRoute } from "@/routes/_authenticated/animals";
+import { Route as AnimalsRoute } from "@/routes/_authenticated/animals.index";
 import { Route as AuthenticatedRoute } from "@/routes/_authenticated";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";

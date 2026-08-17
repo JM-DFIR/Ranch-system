@@ -1,13 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 
-import { animalsSearchSchema } from "@/features/animals/schema";
-import { AnimalRegisterPage } from "@/features/animals/components/AnimalRegisterPage";
-
-// Session 3 — the animal register. `ranch` is not part of this route's
-// own search schema; it's inherited from the parent `_authenticated`
-// route (Session 2's global ranch scope), read via AuthenticatedRoute
-// in the components below rather than duplicated here.
+// Bare Outlet layout, same pattern as reports.tsx — the register moved
+// to animals.index.tsx. See that file's comment: without this split,
+// this file's own name made it the implicit parent of every
+// animals.$animalId* route (TanStack Router's file-based convention),
+// but its old component (the register) never rendered an <Outlet>, so
+// the animal profile could never actually display — see git history
+// for the full diagnosis.
 export const Route = createFileRoute("/_authenticated/animals")({
-  validateSearch: animalsSearchSchema,
-  component: AnimalRegisterPage,
+  component: Outlet,
 });
